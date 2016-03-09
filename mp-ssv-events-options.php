@@ -5,14 +5,21 @@ if (!function_exists("add_mp_ssv_menu")) {
 		add_submenu_page( 'mp_ssv_settings', 'General', 'General', 'manage_options', 'mp_ssv_settings');
 	}
 	function mp_ssv_settings_page() {
-		?>
-		<div class="wrap">
-			<h2>MP-SSV General Options</h2>
-		</div>
-		<?php
+		include_once "mp-ssv-general-options.php";
 	}
 	add_action('admin_menu', 'add_mp_ssv_menu');
 }
+
+if (!function_exists("add_mp_ssv_mailchimp_menu")) {
+	function add_mp_ssv_mailchimp_menu() {
+		add_submenu_page( 'mp_ssv_settings', 'MailChimp Options', 'MailChimp', 'manage_options', "mailchimp_options", 'mp_ssv_mailchimp_settings_page' );
+	}
+	function mp_ssv_mailchimp_settings_page() {
+		include_once "mp-ssv-mailchimp-options.php";
+	}
+	add_action('admin_menu', 'add_mp_ssv_mailchimp_menu');
+}
+
 
 function addMPSSVEventsOptions() {
 	add_submenu_page( 'mp_ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'mp_ssv_events_settings_page' );
