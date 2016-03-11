@@ -1,36 +1,4 @@
-<?php
-if (!function_exists("add_mp_ssv_menu")) {
-	function add_mp_ssv_menu() {
-		add_menu_page('MP SSV Options', 'MP-SSV Options', 'manage_options', 'mp_ssv_settings', 'mp_ssv_settings_page');
-		add_submenu_page( 'mp_ssv_settings', 'General', 'General', 'manage_options', 'mp_ssv_settings');
-	}
-	function mp_ssv_settings_page() {
-		include_once "mp-ssv-general-options.php";
-	}
-	add_action('admin_menu', 'add_mp_ssv_menu');
-}
-
-if (!function_exists("add_mp_ssv_mailchimp_menu")) {
-	function add_mp_ssv_mailchimp_menu() {
-		add_submenu_page( 'mp_ssv_settings', 'MailChimp Options', 'MailChimp', 'manage_options', "mailchimp_options", 'mp_ssv_mailchimp_settings_page' );
-	}
-	function mp_ssv_mailchimp_settings_page() {
-		include_once "mp-ssv-mailchimp-options.php";
-	}
-	add_action('admin_menu', 'add_mp_ssv_mailchimp_menu');
-}
-
-
-function addMPSSVEventsOptions() {
-	add_submenu_page( 'mp_ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'mp_ssv_events_settings_page' );
-}
-function mp_ssv_events_settings_page() {
-	global $options;
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		mp_ssv_settings_save();
-	}
-	?>
-	<div class="wrap">
+<div class="wrap">
 	<h2>Events Options</h2>
 
 	<form method="post" action="#">
@@ -165,37 +133,5 @@ function mp_ssv_events_settings_page() {
 		</table>
 		
 		<?php submit_button(); ?>
-
 	</form>
-	</div>
-	<?php
-}
-add_action('admin_menu', 'addMPSSVEventsOptions');
-
-function mp_ssv_settings_save() {
-	global $options;
-	if (isset($_POST['mp_ssv_event_guest_registration'])) {
-		update_option('mp_ssv_event_guest_registration', 'true');
-	} else {
-		update_option('mp_ssv_event_guest_registration', 'false');
-	}
-	update_option('mp_ssv_event_default_registration_status', $_POST['mp_ssv_event_default_registration_status']);
-	update_option('mp_ssv_event_registration_message', $_POST['mp_ssv_event_registration_message']);
-	update_option('mp_ssv_event_cancelation_message', $_POST['mp_ssv_event_cancelation_message']);
-	update_option('mp_ssv_event_default_start_time', $_POST['mp_ssv_event_default_start_time']);
-	update_option('mp_ssv_event_default_end_time', $_POST['mp_ssv_event_default_end_time']);
-	update_option('mp_ssv_event_time_zone', $_POST['mp_ssv_event_time_zone']);
-}
-
-function register_my_cool_plugin_settings() {
-	//register our settings
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_guest_registration' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_default_registration_status' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_registration_message' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_cancelation_message' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_default_start_time' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_default_end_time' );
-	register_setting( 'mp-ssv-events-options-group', 'mp_ssv_event_time_zone' );
-}
-add_action( 'admin_init', 'register_my_cool_plugin_settings' );
-?>
+</div>

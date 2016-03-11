@@ -10,11 +10,11 @@
 * License URI: http://www.wtfpl.net/txt/copying/
 */
 
-include_once "mp-ssv-events-profile-content.php";
-include_once "mp-ssv-events-location-widget.php";
-include_once "mp-ssv-events-post-type.php";
-include_once "mp-ssv-events-options.php";
-include_once "mp-ssv-event-content.php";
+include_once "profile-content.php";
+include_once "location-widget.php";
+include_once "post-type.php";
+include_once "event-content.php";
+include_once "options/options.php";
 
 function register_mp_ssv_events() {
 	/* Database */
