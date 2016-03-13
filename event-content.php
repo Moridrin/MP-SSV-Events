@@ -1,5 +1,5 @@
 <?php
-function add_event_content($content) {
+function mp_ssv_add_event_content($content) {
 	global $post;
 	global $wpdb;
 	$user_registered = false;
@@ -156,7 +156,7 @@ function add_event_content($content) {
 add_filter( 'the_content', 'add_event_content' );
 
 
-function get_date_and_time($post) {
+function mp_ssv_get_date_and_time($post) {
 	$start_date = get_post_meta($post->ID, 'start_date', true);
 	$start_time = get_post_meta($post->ID, 'start_time', true);
 	$end_date = get_post_meta($post->ID, 'end_date', true);

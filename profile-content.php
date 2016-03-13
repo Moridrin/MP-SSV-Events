@@ -1,6 +1,6 @@
 <?php
 
-function profile_page_registrations_table_content() {
+function mp_ssv_profile_page_registrations_table_content() {
 	global $wpdb;
 	$current_user = wp_get_current_user();
 	ob_start();

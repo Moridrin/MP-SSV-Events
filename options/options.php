@@ -3,7 +3,7 @@ include_once "mp-ssv-general-options.php";
 include_once "mp-ssv-mailchimp-options.php";
 include_once "mailchimp-tab.php";
 
-function add_mp_ssv_events_options() {
+function mp_ssv_add_mp_ssv_events_options() {
 	add_submenu_page( 'mp_ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'mp_ssv_events_settings_page' );
 }
 

@@ -7,17 +7,17 @@ class mp_ssv_location extends WP_Widget {
 	}
 
 	// widget form creation
-	function form($instance) {	
+	function mp_ssv_form($instance) {	
 	/* ... */
 	}
 
 	// widget update
-	function update($new_instance, $old_instance) {
+	function mp_ssv_update($new_instance, $old_instance) {
 		/* ... */
 	}
 
 	// widget display
-	function widget($args, $instance) {
+	function mp_ssv_widget($args, $instance) {
 		global $post;
 		if (get_post_type($post) != 'events') {
 			return;
@@ -39,7 +39,7 @@ class mp_ssv_location extends WP_Widget {
 					<div id="map" style="height: 280px;"></div>
 					<script type="text/javascript">
 					var map;
-					function initMap() {
+					function mp_ssv_initMap() {
 						var displaySuggestions = function(predictions, status) {
 							if (status != google.maps.places.PlacesServiceStatus.OK) {
 								alert(status);
@@ -84,7 +84,7 @@ class mp_ssv_location extends WP_Widget {
 				
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSLKTf5i2FMM9mGYWFYV2-ydzhpxHGQo8&callback=initialize"></script>
 <script>
-function initialize() {
+function mp_ssv_initialize() {
   var mapProp = {
     center:new google.maps.LatLng(51.508742,-0.120850),
     zoom:5,
@@ -130,7 +130,7 @@ $(document).ready(initialize);
 					<div id="map" style="height: 280px;"></div>
 					<script type="text/javascript">
 					var map;
-					function initMap() {
+					function mp_ssv_initMap() {
 						var displaySuggestions = function(predictions, status) {
 							if (status != google.maps.places.PlacesServiceStatus.OK) {
 								alert(status);

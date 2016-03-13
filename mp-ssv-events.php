@@ -16,7 +16,7 @@ include_once "post-type.php";
 include_once "event-content.php";
 include_once "options/options.php";
 
-function register_mp_ssv_events() {
+function mp_ssv_register_mp_ssv_events() {
 	/* Database */
 	global $wpdb;
 	require_once(ABSPATH.'wp-admin/includes/upgrade.php');
@@ -46,13 +46,13 @@ function register_mp_ssv_events() {
 }
 register_activation_hook(__FILE__, 'register_mp_ssv_events');
 
-function unregister_mp_ssv_events() {
+function mp_ssv_unregister_mp_ssv_events() {
 	$page = get_page_by_title('Events');
 	wp_delete_post($page->ID, true);
 }
 register_deactivation_hook(__FILE__, 'unregister_mp_ssv_events');
 
-function events_template( $archive_template ) {
+function mp_ssv_events_template( $archive_template ) {
      global $post;
 
      if ( is_post_type_archive ( 'events' ) ) {
@@ -62,12 +62,12 @@ function events_template( $archive_template ) {
 }
 add_filter( 'archive_template', 'events_template' ) ;
 
-function get_user_name($user_ID) {
+function mp_ssv_get_user_name($user_ID) {
 	$user = get_user_by( 'ID', $user_ID );
 	return $user->display_name;
 }
 
-function get_local_time_string($time_string) {
+function mp_ssv_get_local_time_string($time_string) {
 	global $wpdb;
 	$time = DateTime::createFromFormat('H:i', $time_string);
 	$table_name = $wpdb->prefix."mp_ssv_event_timezone";
@@ -82,7 +82,7 @@ function get_local_time_string($time_string) {
 	return $time->format('H:i');
 }
 
-function get_local_datetime($time) {
+function mp_ssv_get_local_datetime($time) {
 	global $wpdb;
 	$table_name = $wpdb->prefix."mp_ssv_event_timezone";
 	$mp_ssv_event_time_zone = get_option('mp_ssv_event_time_zone');

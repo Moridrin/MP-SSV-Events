@@ -1,5 +1,5 @@
 <?php
-function register_events_post_category() {
+function mp_ssv_register_events_post_category() {
  
 	$labels = array(
 		'name' => _x('Events', 'events'),
@@ -41,7 +41,7 @@ function register_events_post_category() {
 }
 add_action('init', 'register_events_post_category');
 
-function register_event_category_taxonomy() {
+function mp_ssv_register_event_category_taxonomy() {
 	register_taxonomy(
 		'event_category',
 		'events',
@@ -58,7 +58,7 @@ function register_event_category_taxonomy() {
 }
 add_action('init', 'register_event_category_taxonomy');
 
-function add_events_metaboxes() {
+function mp_ssv_add_events_metaboxes() {
 	add_meta_box('mp_ssv_events_registration', 'Registration', 'mp_ssv_events_registration', 'events', 'side', 'default');
 	add_meta_box('mp_ssv_events_date', 'Date', 'mp_ssv_events_date', 'events', 'side', 'default');
 	add_meta_box('mp_ssv_events_location', 'Location', 'mp_ssv_events_location', 'events', 'side', 'default');
