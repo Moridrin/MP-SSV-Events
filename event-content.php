@@ -90,7 +90,7 @@ function mp_ssv_add_event_content($content) {
 			if ($event_registration->status == 'pending') {
 				$content .= '<li>';
 				if ($event_registration->userID != null) {
-					$content .= get_user_name($event_registration->userID).'<p class="note"> (pending)</p>';
+					$content .= mp_ssv_get_user_name($event_registration->userID).'<p class="note"> (pending)</p>';
 				} else {
 					$content .= $event_registration->first_name." ".$event_registration->last_name.'<p class="note"> (pending)</p>';
 				}
@@ -98,7 +98,7 @@ function mp_ssv_add_event_content($content) {
 			} else if ($event_registration->status == 'approved') {
 				$content .= '<li>';
 				if ($event_registration->userID != null) {
-					$content .= get_user_name($event_registration->userID);
+					$content .= mp_ssv_get_user_name($event_registration->userID);
 				} else {
 					$content .= $event_registration->first_name." ".$event_registration->last_name;
 				}
@@ -150,10 +150,10 @@ function mp_ssv_add_event_content($content) {
 	} else {
 		$content .= 'You must sign in to register';
 	}
-	$content = get_date_and_time($post).$content;
+	$content = mp_ssv_get_date_and_time($post).$content;
 	return $content;
 }
-add_filter( 'the_content', 'add_event_content' );
+add_filter( 'the_content', 'mp_ssv_add_event_content' );
 
 
 function mp_ssv_get_date_and_time($post) {

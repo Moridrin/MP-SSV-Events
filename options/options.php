@@ -14,7 +14,7 @@ function mp_ssv_events_settings_page() {
 	}
 	include_once "options-page.php";
 }
-add_action('admin_menu', 'add_mp_ssv_events_options');
+add_action('admin_menu', 'mp_ssv_add_mp_ssv_events_options');
 
 function mp_ssv_settings_save() {
 	global $options;

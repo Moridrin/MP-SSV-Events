@@ -60,7 +60,7 @@ function mp_ssv_events_template( $archive_template ) {
      }
      return $archive_template;
 }
-add_filter( 'archive_template', 'events_template' ) ;
+add_filter( 'archive_template', 'mp_ssv_events_template' ) ;
 
 function mp_ssv_get_user_name($user_ID) {
 	$user = get_user_by( 'ID', $user_ID );

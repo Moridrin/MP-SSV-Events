@@ -7,17 +7,17 @@ class mp_ssv_location extends WP_Widget {
 	}
 
 	// widget form creation
-	function mp_ssv_form($instance) {	
+	function form($instance) {	
 	/* ... */
 	}
 
 	// widget update
-	function mp_ssv_update($new_instance, $old_instance) {
+	function update($new_instance, $old_instance) {
 		/* ... */
 	}
 
 	// widget display
-	function mp_ssv_widget($args, $instance) {
+	function widget($args, $instance) {
 		global $post;
 		if (get_post_type($post) != 'events') {
 			return;
@@ -123,7 +123,7 @@ function mp_ssv_initialize() {
 	?>
 	map.fitBounds(bounds);
 }
-$(document).ready(initialize);
+$(document).ready(mp_ssv_initialize);
 </script>
 <div id="googleMap" style="width:100%;height:300px;"></div>
 				<!--

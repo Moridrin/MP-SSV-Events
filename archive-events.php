@@ -48,9 +48,9 @@ get_header(); ?>
 						<th style="padding-left: 0px; padding-right:5px; white-space: nowrap;">
 							<?php
 							$start_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'start_date', true).get_post_meta(get_the_ID(), 'start_time', true));
-							$start_date_time = get_local_datetime($start_date_time);
+							$start_date_time = mp_ssv_get_local_datetime($start_date_time);
 							$end_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'end_date', true).get_post_meta(get_the_ID(), 'end_time', true));
-							$end_date_time = get_local_datetime($end_date_time);
+							$end_date_time = mp_ssv_get_local_datetime($end_date_time);
 							echo get_post_meta(get_the_ID(), 'start_date', true)." ";
 							echo get_post_meta(get_the_ID(), 'start_time', true)."<br/>";
 							if ($start_date_time != $end_date_time) {
@@ -109,9 +109,9 @@ get_header(); ?>
 						<th style="padding-left: 0px; padding-right:5px; white-space: nowrap;">
 							<?php
 							$start_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'start_date', true).get_post_meta(get_the_ID(), 'start_time', true));
-							$start_date_time = get_local_datetime($start_date_time);
+							$start_date_time = mp_ssv_get_local_datetime($start_date_time);
 							$end_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'end_date', true).get_post_meta(get_the_ID(), 'end_time', true));
-							$end_date_time = get_local_datetime($end_date_time);
+							$end_date_time = mp_ssv_get_local_datetime($end_date_time);
 							echo get_post_meta(get_the_ID(), 'start_date', true)." ";
 							echo get_post_meta(get_the_ID(), 'start_time', true)."<br/>";
 							if ($start_date_time != $end_date_time) {
@@ -168,4 +168,4 @@ get_header(); ?>
 	</div>
 	<?php get_sidebar(); ?>
 </div>
-<?php get_barter(); ?>
+<?php get_footer(); ?>
