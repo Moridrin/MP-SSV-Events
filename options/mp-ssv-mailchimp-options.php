@@ -1,4 +1,5 @@
 <?php
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 if (!function_exists("mp_ssv_add_mp_ssv_mailchimp_menu")) {
 	function mp_ssv_add_mp_ssv_mailchimp_menu() {
 		add_submenu_page( 'mp_ssv_settings', 'MailChimp Options', 'MailChimp', 'manage_options', "mp-ssv-mailchimp-options", 'mp_ssv_mailchimp_settings_page' );
@@ -22,10 +23,10 @@ if (!function_exists("mp_ssv_add_mp_ssv_mailchimp_menu")) {
 			<h1>MP-SSV MailChimp Options</h1>
 			<h2 class="nav-tab-wrapper">
 				<a href="?page=mp-ssv-mailchimp-options&tab=general" class="nav-tab <?php if ($active_tab == "general") { echo "nav-tab-active"; } ?>">General</a>
-				<?php if (function_exists("mp_ssv_mailchimp_settings_page_frontend_members_tab")) { ?>
+				<?php if (is_plugin_active('mp-ssv-frontend-members/mp-ssv-frontend-members.php')) { ?>
 					<a href="?page=mp-ssv-mailchimp-options&tab=frontend_members" class="nav-tab <?php if ($active_tab == "frontend_members") { echo "nav-tab-active"; } ?>">Frontend Members</a>
 				<?php } ?>
-				<?php if (function_exists("mp_ssv_mailchimp_settings_page_events_tab")) { ?>
+				<?php if (is_plugin_active('mp-ssv-frontend-members/mp-ssv-frontend-members.php')) { ?>
 					<a href="?page=mp-ssv-mailchimp-options&tab=events" class="nav-tab <?php if ($active_tab == "events") { echo "nav-tab-active"; } ?>">Events</a>
 				<?php } ?>
 				<a href="?page=mp-ssv-mailchimp-options&tab=help" class="nav-tab <?php if ($active_tab == "help") { echo "nav-tab-active"; } ?>">Help</a>

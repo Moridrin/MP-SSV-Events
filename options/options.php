@@ -18,6 +18,11 @@ add_action('admin_menu', 'mp_ssv_add_mp_ssv_events_options');
 
 function mp_ssv_settings_save() {
 	global $options;
+	if (isset($_POST['mp_ssv_show_registrations_in_profile'])) {
+		update_option('mp_ssv_show_registrations_in_profile', 'true');
+	} else {
+		update_option('mp_ssv_show_registrations_in_profile', 'false');
+	}
 	if (isset($_POST['mp_ssv_event_guest_registration'])) {
 		update_option('mp_ssv_event_guest_registration', 'true');
 	} else {
