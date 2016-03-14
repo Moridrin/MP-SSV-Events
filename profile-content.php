@@ -22,7 +22,7 @@ function mp_ssv_profile_page_registrations_table_content() {
 		INNER JOIN wp_postmeta AS event_meta
 		ON event_post.ID = event_meta.post_id
 		WHERE event_meta.meta_key = "start_date"
-		AND event_meta.meta_value > "'.date("Y-m-d").'"
+		AND event_meta.meta_value >= "'.date("Y-m-d").'"
 		AND registration.userID = '.$current_user->ID;
 		$upcoming_events = $wpdb->get_results($sql);
 	foreach ($upcoming_events as $upcoming_event) {

@@ -39,7 +39,7 @@ get_header(); ?>
 					
 				while ( have_posts() ) {
 					the_post();
-					if (get_post_meta(get_the_ID(), 'end_date', true) > date("Y-m-d")) {
+					if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
 					?>
 					<tr>
 						<th style="padding-right:5px;">
