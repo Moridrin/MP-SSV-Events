@@ -9,30 +9,33 @@ function mp_ssv_add_mp_ssv_events_options() {
 
 function mp_ssv_events_settings_page() {
 	global $options;
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		mp_ssv_settings_save();
+	$active_tab = "general";
+	if(isset($_GET['tab'])) {
+		$active_tab = $_GET['tab'];
 	}
-	include_once "options-page.php";
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		if ($active_tab == "general") {
+			include_once "general-tab-save.php";
+		} else if ($active_tab == "email") {
+			include_once "email-tab-save.php";
+		}
+	}
+	?>
+	<div class="wrap">
+		<h1>Events Options</h1>
+		<h2 class="nav-tab-wrapper">
+			<a href="?page=<?php echo __FILE__; ?>&tab=general" class="nav-tab <?php if ($active_tab == "general") { echo "nav-tab-active"; } ?>">General</a>
+			<a href="?page=<?php echo __FILE__; ?>&tab=email" class="nav-tab <?php if ($active_tab == "email") { echo "nav-tab-active"; } ?>">Email</a>
+		</h2>
+		<?php
+		if ($active_tab == "general") {
+			include_once "general-tab.php";
+		} else if ($active_tab == "email") {
+			include_once "email-tab.php";
+		}
+		?>
+	</div>
+	<?php
 }
 add_action('admin_menu', 'mp_ssv_add_mp_ssv_events_options');
-
-function mp_ssv_settings_save() {
-	global $options;
-	if (isset($_POST['mp_ssv_show_registrations_in_profile'])) {
-		update_option('mp_ssv_show_registrations_in_profile', 'true');
-	} else {
-		update_option('mp_ssv_show_registrations_in_profile', 'false');
-	}
-	if (isset($_POST['mp_ssv_event_guest_registration'])) {
-		update_option('mp_ssv_event_guest_registration', 'true');
-	} else {
-		update_option('mp_ssv_event_guest_registration', 'false');
-	}
-	update_option('mp_ssv_event_default_registration_status', $_POST['mp_ssv_event_default_registration_status']);
-	update_option('mp_ssv_event_registration_message', $_POST['mp_ssv_event_registration_message']);
-	update_option('mp_ssv_event_cancelation_message', $_POST['mp_ssv_event_cancelation_message']);
-	update_option('mp_ssv_event_default_start_time', $_POST['mp_ssv_event_default_start_time']);
-	update_option('mp_ssv_event_default_end_time', $_POST['mp_ssv_event_default_end_time']);
-	update_option('mp_ssv_event_time_zone', $_POST['mp_ssv_event_time_zone']);
-}
 ?>

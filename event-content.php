@@ -38,10 +38,12 @@ function mp_ssv_add_event_content($content) {
 						'eventID' => $event_ID,
 						'status' => get_option('mp_ssv_event_default_registration_status'),
 						'first_name' => $_POST['first_name'],
-						'last_name' => $_POST['last_name']
+						'last_name' => $_POST['last_name'],
+						'email' => $_POST['email']
 					),
 					array(
 						'%d',
+						'%s',
 						'%s',
 						'%s',
 						'%s'
@@ -140,6 +142,10 @@ function mp_ssv_add_event_content($content) {
 		$content .= '<tr valign="top">';
 		$content .= '<th scope="row">Last Name</th>';
 		$content .= '<td><input type="text" name="last_name"></td>';
+		$content .= '</tr>';
+		$content .= '<tr valign="top">';
+		$content .= '<th scope="row">Email</th>';
+		$content .= '<td><input type="email" name="email"></td>';
 		$content .= '</tr>';
 		$content .= '<tr valign="top">';
 		$content .= '<th scope="row"/>';

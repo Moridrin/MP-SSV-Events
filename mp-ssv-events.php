@@ -30,6 +30,7 @@ function mp_ssv_register_mp_ssv_events() {
 			status text NOT NULL,
 			first_name varchar(30),
 			last_name varchar(30),
+			email varchar(30),
 			UNIQUE KEY id (id)
 		) $charset_collate;";
 	dbDelta($sql);
@@ -82,17 +83,12 @@ function mp_ssv_get_local_time_string($time_string) {
 	return $time->format('H:i');
 }
 
-function mp_ssv_get_local_datetime($time) {
-	global $wpdb;
-	$table_name = $wpdb->prefix."mp_ssv_event_timezone";
-	$mp_ssv_event_time_zone = get_option('mp_ssv_event_time_zone');
-	$result = $wpdb->get_row("SELECT * FROM $table_name WHERE `id` = $mp_ssv_event_time_zone");
-	$gmt_adjustment = $result->gmt_adjustment;
-	if ($gmt_adjustment[0] == '+') {
-		$time->sub(new DateInterval('PT'.$gmt_adjustment[1].$gmt_adjustment[2].'H'.$gmt_adjustment[4].$gmt_adjustment[5].'M'));
-	} else {
-		$time->add(new DateInterval('PT'.$gmt_adjustment[1].$gmt_adjustment[2].'H'.$gmt_adjustment[4].$gmt_adjustment[5].'M'));
+if (!function_exists("mp_ssv_redirect")) {
+	function mp_ssv_redirect($location) {
+		$redirect_script = '<script type="text/javascript">';
+		$redirect_script .= 'window.location = "' . $location . '"';
+		$redirect_script .= '</script>';
+		echo $redirect_script;
 	}
-	return $time;
 }
 ?>
