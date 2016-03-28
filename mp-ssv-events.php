@@ -43,15 +43,14 @@ function mp_ssv_register_mp_ssv_events() {
 			UNIQUE KEY id (id)
 		) $charset_collate;";
 	dbDelta($sql);
-	require_once('mp-ssv-events-timezone-table.php');
 }
-register_activation_hook(__FILE__, 'register_mp_ssv_events');
+register_activation_hook(__FILE__, 'mp_ssv_register_mp_ssv_events');
 
 function mp_ssv_unregister_mp_ssv_events() {
 	$page = get_page_by_title('Events');
 	wp_delete_post($page->ID, true);
 }
-register_deactivation_hook(__FILE__, 'unregister_mp_ssv_events');
+register_deactivation_hook(__FILE__, 'mp_ssv_unregister_mp_ssv_events');
 
 function mp_ssv_events_template( $archive_template ) {
      global $post;

@@ -120,3 +120,4 @@ if (!function_exists("mp_ssv_get_merge_fields")) {
 		return $results;
 	}
 }
+?>

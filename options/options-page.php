@@ -1,3 +1,4 @@
+<?php ?>
 <div class="wrap">
 	<h2>Events Options</h2>
 
@@ -57,3 +58,4 @@
 		<?php submit_button(); ?>
 	</form>
 </div>
+<?php ?>

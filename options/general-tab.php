@@ -1,3 +1,4 @@
+<?php ?>
 <form method="post" action="#">
 	<table class="form-table">
 		<?php include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); ?>
@@ -51,3 +52,4 @@
 	
 	<?php submit_button(); ?>
 </form>
+<?php ?>

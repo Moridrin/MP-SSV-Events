@@ -1,3 +1,4 @@
+<?php ?>
 <form method="post" action="#">
 	<table class="form-table">
 		<tr valign="top">
@@ -25,3 +26,4 @@
 	
 	<?php submit_button(); ?>
 </form>
+<?php ?>
