@@ -8,14 +8,14 @@
  */
 
 get_header(); ?>
-
-<header class="entry-header">
-	<?php
-	echo '<h1 class="entry-title">Events</h1>';
-	?>
+<header class="full-width-entry-header mui--visible-xs-block">
+	<h1 class="entry-title mui--z2">Events</h1>
 </header><!-- .entry-header -->
 <div id="page" class="container mui-container">
-	<div class="mui-col-xs-12 mui-col-md-9">
+	<div class="mui-col-xs-12 <?php if (is_dynamic_sidebar()) { echo "mui-col-md-9"; } ?>">
+		<header class="breaking-entry-header mui--hidden-xs">
+			<h1 class="entry-title mui--z2">Events</h1>
+		</header><!-- .entry-header -->
 		<div id="primary" class="content-area">
 			<main id="main" class="site-main" role="main">
 			<?php if ( have_posts() ) : 
@@ -24,7 +24,7 @@ get_header(); ?>
 				
 				<table style="width: 100%;" class="sortable">
 				<tr>
-					<th><h2>Upcoming Events</h2></th>
+					<th colspan="3"><h1>Upcoming Events</h1></th>
 				</tr>
 				<tr>
 					<th>Title</th>
@@ -41,7 +41,7 @@ get_header(); ?>
 				}
 				?>
 				<tr>
-					<th><h2>Past Events</h2></th>
+					<th colspan="3"><h1>Past Events</h1></th>
 				</tr>
 				<tr>
 					<th>Title</th>
@@ -150,6 +150,7 @@ function mp_ssv_get_xs_event() {
 	?>
 	<a href="<?php echo get_permalink(get_the_ID()); ?>">
 		<div style="text-align: center;
+								margin: 10px;
 								padding-bottom: 25%;
 								position: relative;
 								background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),

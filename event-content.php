@@ -77,8 +77,8 @@ function mp_ssv_add_event_content($content) {
 
 
 	/* Content */
-	if (strpos($content, '<h3>') === false) {
-		$content = '<h3>About</h3>'.$content;
+	if (strpos($content, '<h1>') === false) {
+		$content = '<h1>About</h1>'.$content;
 	}
 
 	/* Guest List */
@@ -86,7 +86,7 @@ function mp_ssv_add_event_content($content) {
 	$table_name = $wpdb->prefix."mp_ssv_event_registration";
 	$event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE `eventID` = $event_ID");
 	if (!empty($event_registrations)) {
-		$content .= '<h3>Guest List</h3>';
+		$content .= '<h1>Guest List</h1>';
 		$content .= '<ul>';
 		foreach ($event_registrations as $event_registration) {
 			if ($event_registration->status == 'pending') {
@@ -129,8 +129,8 @@ function mp_ssv_add_event_content($content) {
 			$content .= '</form>';
 		}
 	} else if (get_option('mp_ssv_event_guest_registration') == 'true') {
-		if (strpos($content, '<h3>') === false) {
-			$content .= '<h3>Registration</h3>';
+		if (strpos($content, '<h1>') === false) {
+			$content .= '<h1>Registration</h1>';
 		}
 		$content .= '<form action="#" method="POST">';
 		$content .= '<input type="hidden" name="action" value="register">';
@@ -167,27 +167,46 @@ function mp_ssv_get_date_and_time($post) {
 	$start_time = get_post_meta($post->ID, 'start_time', true);
 	$end_date = get_post_meta($post->ID, 'end_date', true);
 	$end_time = get_post_meta($post->ID, 'end_time', true);
-	$date_and_time = '<h3>When</h3>';
-	$date_and_time .= '<table>';
-	$date_and_time .= '<tr>';
-	$date_and_time .= '<th>';
-	$date_and_time .= 'Start:';
-	$date_and_time .= '</th>';
-	$date_and_time .= '<td>';
-	$date_and_time .= $start_date.' '.$start_time;
-	$date_and_time .= '</td>';
-	$date_and_time .= '</tr>';
-	if ($start_date != $end_date || $start_time != $end_time) {
-		$date_and_time .= '<tr>';
-		$date_and_time .= '<th>';
-		$date_and_time .= 'End:';
-		$date_and_time .= '</th>';
-		$date_and_time .= '<td>';
-		$date_and_time .= $end_date.' '.$end_time;
-		$date_and_time .= '</td>';
-		$date_and_time .= '</tr>';
-	}
-	$date_and_time .= '</table>';
+	ob_start();
+	?>
+	<h1>When</h1>
+	<table>
+		<tr>
+			<th style="padding-right: 10px;">Start: </th>
+			<td style="padding-left: 0px; padding-right:5px; white-space: nowrap;" class="mui--hidden-sm mui--hidden-md">
+				<?php
+				$start_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'start_date', true).get_post_meta(get_the_ID(), 'start_time', true));
+				$end_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'end_date', true).get_post_meta(get_the_ID(), 'end_time', true));
+				echo get_post_meta(get_the_ID(), 'start_date', true)." ";
+				echo get_post_meta(get_the_ID(), 'start_time', true)."<br/>";
+				?>
+			</td>
+		</tr>
+		<?php if ($start_date_time != $end_date_time) { ?>
+		<tr>
+			<th>End: </th>
+			<td>
+				<?php
+					echo get_post_meta(get_the_ID(), 'end_date', true)." ";
+					echo get_post_meta(get_the_ID(), 'end_time', true)."<br/>";
+				?>
+			</td>
+		</tr>
+		<?php } ?>
+	</table>
+	<?php
+	echo '<a target="_blank" href="https://www.google.com/calendar/render?
+	action=TEMPLATE
+	&text='.get_the_title(get_the_ID()).'
+	&dates='.$start_date_time->format('Ymd\\THi00\\Z').'/'.$end_date_time->format('Ymd\\THi00\\Z').'
+	&location='.get_post_meta(get_the_ID(), 'location', true).'">Google Calendar</a>';
+	echo "<br/>";
+	echo '<a target="_blank" href="http://calendar.live.com/calendar/calendar.aspx?rru=addevent
+	&dtstart='.$start_date_time->format('Ymd\\THi00\\Z').'
+	&dtend='.$end_date_time->format('Ymd\\THi00\\Z').'
+	&summary='.get_the_title(get_the_ID()).'
+	&location='.get_post_meta(get_the_ID(), 'location', true).'">Live Calendar</a>';
+	$date_and_time = ob_get_clean();
 	return $date_and_time;
 }
 ?>
