@@ -17,8 +17,8 @@ include_once "event-content.php";
 include_once "options/options.php";
 
 function mp_ssv_register_mp_ssv_events() {
-	if (!is_plugin_active('MP-SSV-General/mp-ssv-general.php')) {
-		wp_die('Sorry, but this plugin requires <a href="http://studentensurvival.com/plugins/mp-ssv-general">SSV Gemeral</a> to be installed and active. <br><a href="' . admin_url( 'plugins.php' ) . '">&laquo; Return to Plugins</a>');
+	if (!is_plugin_active('mp-ssv-general/mp-ssv-general.php')) {
+		wp_die('Sorry, but this plugin requires <a href="http://studentensurvival.com/plugins/mp-ssv-general">SSV General</a> to be installed and active. <br><a href="' . admin_url( 'plugins.php' ) . '">&laquo; Return to Plugins</a>');
 	}
 	/* Database */
 	global $wpdb;
