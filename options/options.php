@@ -1,8 +1,4 @@
 <?php
-if (is_plugin_active('mp-ssv-mailchimp/mp-ssv-mailchimp.php')) {
-	include_once "mailchimp-tab.php";
-}
-
 function mp_ssv_add_mp_ssv_events_options() {
 	add_submenu_page( 'mp_ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'mp_ssv_events_settings_page' );
 }

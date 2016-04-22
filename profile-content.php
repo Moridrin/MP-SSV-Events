@@ -7,7 +7,7 @@ function mp_ssv_profile_page_registrations_table_content() {
 ?>
 <table style="width: 100%;">
 	<tr>
-		<th><h3>Upcoming Events</h3></th>
+		<th><h1>Upcoming Events</h1></th>
 	</tr>
 	<tr>
 		<th>Event</th>
@@ -37,7 +37,7 @@ function mp_ssv_profile_page_registrations_table_content() {
 	ob_start();
 	?>
 	<tr>
-		<th><h3>Past Events</h3></th>
+		<th><h1>Past Events</h1></th>
 	</tr>
 	<tr>
 		<th>Event</th>
