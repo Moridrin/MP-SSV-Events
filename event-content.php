@@ -92,7 +92,7 @@ function mp_ssv_add_event_content($content) {
 			if ($event_registration->status == 'pending') {
 				$content .= '<li>';
 				if ($event_registration->userID != null) {
-					$content .= mp_ssv_get_user_name($event_registration->userID).'<p class="note"> (pending)</p>';
+					$content .= FrontendMember::get_by_id($event_registration->userID)->getMeta('display_name').'<p class="note"> (pending)</p>';
 				} else {
 					$content .= $event_registration->first_name." ".$event_registration->last_name.'<p class="note"> (pending)</p>';
 				}
@@ -100,7 +100,7 @@ function mp_ssv_add_event_content($content) {
 			} else if ($event_registration->status == 'approved') {
 				$content .= '<li>';
 				if ($event_registration->userID != null) {
-					$content .= mp_ssv_get_user_name($event_registration->userID);
+					$content .= FrontendMember::get_by_id($event_registration->userID)->getMeta('display_name');
 				} else {
 					$content .= $event_registration->first_name." ".$event_registration->last_name;
 				}
