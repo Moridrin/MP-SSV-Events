@@ -12,6 +12,7 @@
 
 include_once "profile-content.php";
 include_once "location-widget.php";
+include_once "category-widget.php";
 include_once "post-type.php";
 include_once "event-content.php";
 include_once "options/options.php";
