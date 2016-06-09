@@ -198,7 +198,7 @@ function mp_ssv_get_date_and_time($post) {
 	echo '<a target="_blank" href="https://www.google.com/calendar/render?
 	action=TEMPLATE
 	&text='.get_the_title(get_the_ID()).'
-	&dates='.$start_date_time->format('Ymd\\THi00\\Z').'/'.$end_date_time->format('Ymd\\THi00\\Z').'
+	&dates='.$start_date_time->format('Ymd\\THi00\\').'/'.$end_date_time->format('Ymd\\THi00\\').'
 	&location='.get_post_meta(get_the_ID(), 'location', true).'">Google Calendar</a>';
 	echo "<br/>";
 	echo '<a target="_blank" href="http://calendar.live.com/calendar/calendar.aspx?rru=addevent
