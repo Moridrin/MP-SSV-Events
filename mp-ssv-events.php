@@ -65,4 +65,20 @@ function mp_ssv_events_template( $archive_template ) {
      return $archive_template;
 }
 add_filter( 'archive_template', 'mp_ssv_events_template' ) ;
+
+function mp_ssv_pre_get_event_posts( $query ) {
+	// do not modify queries in the admin
+//	if( is_admin() ) {
+//		return $query;
+//	}
+	// only modify queries for 'event' post type
+	if( isset($query->query_vars['post_type']) && $query->query_vars['post_type'] == 'events' ) {
+		$query->set('orderby', 'meta_value');
+		$query->set('meta_key', 'start_date');
+		$query->set('order', 'DESC');
+	}
+	// return
+	return $query;
+}
+add_action('pre_get_posts', 'mp_ssv_pre_get_event_posts');
 ?>
