@@ -7,6 +7,16 @@
  * @since      MP-SSV 1.0
  */
 
+$hasUpcomingEvents = false;
+$hasPastEvents = false;
+while (have_posts()) {
+	the_post();
+	if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
+		$hasUpcomingEvents = true;
+	} else {
+		$hasPastEvents = true;
+	}
+}
 get_header(); ?>
 	<header class="full-width-entry-header mui--visible-xs-block">
 		<h1 class="entry-title mui--z2">Events</h1>
@@ -26,16 +36,6 @@ get_header(); ?>
 
 							<table style="width: 100%;" class="sortable">
 								<?php
-								$hasUpcomingEvents = false;
-								$hasPastEvents = false;
-								while (have_posts()) {
-									the_post();
-									if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
-										$hasUpcomingEvents = true;
-									} else {
-										$hasPastEvents = true;
-									}
-								}
 								if ($hasUpcomingEvents) {
 									?>
 									<tr>
@@ -48,12 +48,17 @@ get_header(); ?>
 									</tr>
 									<?php
 
+									$upcomingEvents = array();
 									while (have_posts()) {
 										the_post();
 										if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
+											ob_start();
 											mp_ssv_get_event();
+											$upcomingEvents[] = ob_get_clean();
 										}
 									}
+									$upcomingEvents = array_reverse($upcomingEvents);
+									echo implode('', $upcomingEvents);
 								}
 								if ($hasPastEvents) {
 									?>
@@ -77,21 +82,32 @@ get_header(); ?>
 							</table>
 						</div>
 						<div class="mui--visible-xs-block">
-							<h1>Upcoming Events</h1>
 							<?php
-							while (have_posts()) {
-								the_post();
-								if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
-									mp_ssv_get_xs_event();
+							if ($hasUpcomingEvents) {
+								?>
+								<h1>Upcoming Events</h1>
+								<?php
+								$upcomingEvents = array();
+								while (have_posts()) {
+									the_post();
+									if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
+										ob_start();
+										mp_ssv_get_xs_event();
+										$upcomingEvents[] = ob_get_clean();
+									}
 								}
+								$upcomingEvents = array_reverse($upcomingEvents);
+								echo implode('', $upcomingEvents);
 							}
-							?>
-							<h1>Past Events</h1>
-							<?php
-							while (have_posts()) {
-								the_post();
-								if (get_post_meta(get_the_ID(), 'end_date', true) < date("Y-m-d")) {
-									mp_ssv_get_xs_event();
+							if ($hasPastEvents) {
+								?>
+								<h1>Past Events</h1>
+								<?php
+								while (have_posts()) {
+									the_post();
+									if (get_post_meta(get_the_ID(), 'end_date', true) < date("Y-m-d")) {
+										mp_ssv_get_xs_event();
+									}
 								}
 							}
 							?>
