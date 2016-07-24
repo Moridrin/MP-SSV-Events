@@ -11,9 +11,9 @@ function mp_ssv_events_settings_page() {
 	}
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if ($active_tab == "general") {
-			include_once "general-tab-save.php";
+			require_once "general-tab-save.php";
 		} else if ($active_tab == "email") {
-			include_once "email-tab-save.php";
+			require_once "email-tab-save.php";
 		}
 	}
 	?>
@@ -26,9 +26,9 @@ function mp_ssv_events_settings_page() {
 		</h2>
 		<?php
 		if ($active_tab == "general") {
-			include_once "general-tab.php";
+			require_once "general-tab.php";
 		} else if ($active_tab == "email") {
-			include_once "email-tab.php";
+			require_once "email-tab.php";
 		}
 		?>
 	</div>

@@ -1,7 +1,7 @@
 <?php ?>
 <form method="post" action="#">
 	<table class="form-table">
-		<?php include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); ?>
+		<?php require_once( ABSPATH . 'wp-admin/includes/plugin.php' ); ?>
 		<?php if (is_plugin_active('mp-ssv-frontend-members/mp-ssv-frontend-members.php')) { ?>
 		<tr valign="top">
 			<th scope="row">Show Registrations in Profile Page</th>

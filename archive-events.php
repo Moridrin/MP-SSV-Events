@@ -139,33 +139,18 @@ get_header(); ?>
 <?php
 function mp_ssv_get_event()
 {
+    $event = Event::get_by_id(get_the_ID());
 	?>
 	<tr>
 		<th style="padding-right:5px;">
 			<a href="<?php echo get_permalink(get_the_ID()); ?>"><?php the_title(); ?></a><br/>
 		</th>
 		<th style="padding-left: 0px; padding-right:5px; white-space: nowrap;" class="mui--hidden-sm mui--hidden-md">
-			<?php
-			$start_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'start_date', true) . get_post_meta(get_the_ID(), 'start_time', true));
-			$end_date_time = DateTime::createFromFormat('Y-m-dH:i', get_post_meta(get_the_ID(), 'end_date', true) . get_post_meta(get_the_ID(), 'end_time', true));
-			echo get_post_meta(get_the_ID(), 'start_date', true) . " ";
-			echo get_post_meta(get_the_ID(), 'start_time', true) . "<br/>";
-			if ($start_date_time != $end_date_time) {
-				echo get_post_meta(get_the_ID(), 'end_date', true) . " ";
-				echo get_post_meta(get_the_ID(), 'end_time', true) . "<br/>";
-			}
-			echo '<a target="_blank" href="https://www.google.com/calendar/render?
-			action=TEMPLATE
-			&text=' . get_the_title(get_the_ID()) . '
-			&dates=' . $start_date_time->format('Ymd\\THi00\\') . '/' . $end_date_time->format('Ymd\\THi00\\') . '
-			&location=' . get_post_meta(get_the_ID(), 'location', true) . '">Google Calendar</a>';
-			echo "<br/>";
-			echo '<a target="_blank" href="http://calendar.live.com/calendar/calendar.aspx?rru=addevent
-			&dtstart=' . $start_date_time->format('Ymd\\THi00\\Z') . '
-			&dtend=' . $end_date_time->format('Ymd\\THi00\\Z') . '
-			&summary=' . get_the_title(get_the_ID()) . '
-			&location=' . get_post_meta(get_the_ID(), 'location', true) . '">Live Calendar</a>';
-			?>
+			<?php $event->echoStartDate(); ?>
+            <?php $event->echoEndDate(); ?>
+            <a target="_blank" href="<?php $event->getGoogleCalendarURL(); ?>">Google Calendar</a>
+			<br/>
+            <a target="_blank" href="<?php $event->getLiveCalendarURL(); ?>">Live Calendar</a>
 		</th>
 		<td class="mobile-hide" style="padding: 5px;">
 			<?php
