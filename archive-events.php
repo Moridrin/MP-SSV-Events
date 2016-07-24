@@ -11,10 +11,10 @@ $hasUpcomingEvents = false;
 $hasPastEvents = false;
 while (have_posts()) {
     the_post();
-    if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
-        $hasUpcomingEvents = true;
-    } else {
+    if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
         $hasPastEvents = true;
+    } else {
+        $hasUpcomingEvents = true;
     }
 }
 get_header(); ?>
@@ -51,7 +51,7 @@ get_header(); ?>
                                     $upcomingEvents = array();
                                     while (have_posts()) {
                                         the_post();
-                                        if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
+                                        if (get_post_meta(get_the_ID(), 'start_date', true) >= date("Y-m-d")) {
                                             ob_start();
                                             mp_ssv_get_event();
                                             $upcomingEvents[] = ob_get_clean();
@@ -73,7 +73,7 @@ get_header(); ?>
                                     <?php
                                     while (have_posts()) {
                                         the_post();
-                                        if (get_post_meta(get_the_ID(), 'end_date', true) < date("Y-m-d")) {
+                                        if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
                                             mp_ssv_get_event();
                                         }
                                     }
@@ -90,7 +90,7 @@ get_header(); ?>
                                 $upcomingEvents = array();
                                 while (have_posts()) {
                                     the_post();
-                                    if (get_post_meta(get_the_ID(), 'end_date', true) >= date("Y-m-d")) {
+                                    if (get_post_meta(get_the_ID(), 'start_date', true) >= date("Y-m-d")) {
                                         ob_start();
                                         mp_ssv_get_xs_event();
                                         $upcomingEvents[] = ob_get_clean();
@@ -105,7 +105,7 @@ get_header(); ?>
                                 <?php
                                 while (have_posts()) {
                                     the_post();
-                                    if (get_post_meta(get_the_ID(), 'end_date', true) < date("Y-m-d")) {
+                                    if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
                                         mp_ssv_get_xs_event();
                                     }
                                 }
