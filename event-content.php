@@ -8,13 +8,10 @@ function mp_ssv_add_event_content($content)
     /* Return */
     if ($post->post_type != 'events') {
         return $content;
-    } else {
-        if (get_post_meta($post->ID, 'registration', true) == 'false') {
-            return $content;
-        }
     }
+    $event = Event::get_by_id($post->ID);
 
-    /* Save POST */
+    #region Save POST
     if (isset($_POST['submit'])) {
         if ($_POST['action'] == 'register') {
             $table_name = $wpdb->prefix . "mp_ssv_event_registration";
@@ -83,14 +80,14 @@ function mp_ssv_add_event_content($content)
             }
         }
     }
+    #endregion
 
-
-    /* Content */
+    #region Content
     if (strpos($content, '<h1>') === false) {
         $content = '<h1>About</h1>' . $content;
     }
 
-    /* Guest List */
+    #region Guest List
     $event_ID = get_the_ID();
     $table_name = $wpdb->prefix . "mp_ssv_event_registration";
     $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE `eventID` = $event_ID");
@@ -125,53 +122,61 @@ function mp_ssv_add_event_content($content)
         }
         $content .= '</ul>';
     }
-    /* Registration */
-    if ($registration_message != "") {
-        $content .= $registration_message;
-    }
-    if (is_user_logged_in()) {
-        if ($user_registered) {
-            $content .= '<form action="#" method="POST">';
-            $content .= '<input type="hidden" name="action" value="cancel">';
-            $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--danger mui-btn--small">Cancel Registration</button>';
-            $content .= '</form>';
-        } else {
-            $content .= '<form action="#" method="POST">';
-            $content .= '<input type="hidden" name="action" value="register">';
-            $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button>';
-            $content .= '</form>';
+    #endregion
+
+    #region Registration
+    if ($event->canRegister()) {
+        if ($registration_message != "") {
+            $content .= $registration_message;
         }
-    } else {
-        if (get_option('mp_ssv_event_guest_registration') == 'true') {
-            if (strpos($content, '<h1>') === false) {
-                $content .= '<h1>Registration</h1>';
+        if (is_user_logged_in()) {
+            if ($user_registered) {
+                $content .= '<form action="#" method="POST">';
+                $content .= '<input type="hidden" name="action" value="cancel">';
+                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--danger mui-btn--small">Cancel Registration</button>';
+                $content .= '</form>';
+            } else {
+                $content .= '<form action="#" method="POST">';
+                $content .= '<input type="hidden" name="action" value="register">';
+                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button>';
+                $content .= '</form>';
             }
-            $content .= '<form action="#" method="POST">';
-            $content .= '<input type="hidden" name="action" value="register">';
-            $content .= '<table class="form-table">';
-            $content .= '<tr valign="top">';
-            $content .= '<th scope="row">First Name</th>';
-            $content .= '<td><input type="text" name="first_name"></td>';
-            $content .= '</tr>';
-            $content .= '<tr valign="top">';
-            $content .= '<th scope="row">Last Name</th>';
-            $content .= '<td><input type="text" name="last_name"></td>';
-            $content .= '</tr>';
-            $content .= '<tr valign="top">';
-            $content .= '<th scope="row">Email</th>';
-            $content .= '<td><input type="email" name="email"></td>';
-            $content .= '</tr>';
-            $content .= '<tr valign="top">';
-            $content .= '<th scope="row"/>';
-            $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
-            $content .= '</tr>';
-            $content .= '</table>';
-            $content .= '</form>';
         } else {
-            $content .= 'You must sign in to register';
+            if (get_option('mp_ssv_event_guest_registration') == 'true') {
+                if (strpos($content, '<h1>') === false) {
+                    $content .= '<h1>Registration</h1>';
+                }
+                $content .= '<form action="#" method="POST">';
+                $content .= '<input type="hidden" name="action" value="register">';
+                $content .= '<table class="form-table">';
+                $content .= '<tr valign="top">';
+                $content .= '<th scope="row">First Name</th>';
+                $content .= '<td><input type="text" name="first_name"></td>';
+                $content .= '</tr>';
+                $content .= '<tr valign="top">';
+                $content .= '<th scope="row">Last Name</th>';
+                $content .= '<td><input type="text" name="last_name"></td>';
+                $content .= '</tr>';
+                $content .= '<tr valign="top">';
+                $content .= '<th scope="row">Email</th>';
+                $content .= '<td><input type="email" name="email"></td>';
+                $content .= '</tr>';
+                $content .= '<tr valign="top">';
+                $content .= '<th scope="row"/>';
+                $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
+                $content .= '</tr>';
+                $content .= '</table>';
+                $content .= '</form>';
+            } else {
+                $content .= 'You must sign in to register';
+            }
         }
     }
+    #endregion
+
     $content = mp_ssv_get_date_and_time($post) . $content;
+    #endregion
+
     return $content;
 }
 

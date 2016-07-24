@@ -173,6 +173,9 @@ class Event
         return $URL;
     }
 
+    /**
+     * @return bool true if the Event is valid (all mandatory fields are filled).
+     */
     public function isValid() {
         if ($this->startDate == false) {
             return false;
@@ -180,10 +183,17 @@ class Event
         return true;
     }
 
+    /**
+     * @return bool true if the event is published
+     */
     public function isPublished() {
         if ($this->post->post_status == 'publish') {
             return true;
         }
         return false;
+    }
+
+    public function canRegister() {
+        return $this->isRegistrationEnabled() && $this->startDate > new DateTime();
     }
 }
