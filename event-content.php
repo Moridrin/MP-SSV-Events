@@ -43,7 +43,7 @@ function mp_ssv_add_event_content($content)
     if (!empty($event_registrations)) {
         $content .= '<h1>Guest List</h1>';
         $content .= '<ul>';
-        foreach ($event_registrations as $event_registration) {
+        foreach ($event->getRegistrations() as $event_registration) {
             if ($event_registration->status == 'pending') {
                 $content .= '<li>';
                 if ($event_registration->userID != null) {
@@ -141,7 +141,7 @@ function mp_ssv_get_date_and_time($post)
     <table>
         <tr>
             <th style="padding-right: 10px;">Start:</th>
-            <td style="padding-left: 0px; padding-right:5px; white-space: nowrap;"
+            <td style="padding-left: 0; padding-right:5px; white-space: nowrap;"
                 class="mui--hidden-sm mui--hidden-md">
                 <?php $event->echoStartDate(); ?>
             </td>

@@ -41,7 +41,7 @@ class Event
     /**
      * @var array
      */
-    public $registrations;
+    private $registrations;
 
     /**
      * Event constructor.
@@ -60,17 +60,6 @@ class Event
         );
         $this->location = get_post_meta(get_the_ID(), 'location', true);
         $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
-
-        //Get registrations
-        global $wpdb;
-        $table_name = $wpdb->prefix . "mp_ssv_event_registration";
-        $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE `eventID` = $this->ID");
-        if (!empty($event_registrations)) {
-            foreach ($event_registrations as $event_registration) {
-                $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
-            }
-        }
-
     }
 
     /**
@@ -88,7 +77,7 @@ class Event
      */
     public function getPostId()
     {
-        return $this->postId;
+        return $this->post->ID;
     }
 
     /**
@@ -149,14 +138,6 @@ class Event
     public function getLocation()
     {
         return $this->location;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRegistrationEnabled()
-    {
-        return $this->registration_enabled;
     }
 
     /**
@@ -223,6 +204,14 @@ class Event
     }
 
     /**
+     * @return bool
+     */
+    public function isRegistrationEnabled()
+    {
+        return $this->registration_enabled;
+    }
+
+    /**
      * @param int|WP_User|FrontendMember|null $user use null to test with the current user.
      *
      * @return bool
@@ -245,5 +234,21 @@ class Event
             }
         }
         return false;
+    }
+
+    /**
+     * @return array of registrations
+     */
+    public function getRegistrations()
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+        $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE eventID = $this->ID");
+        if (!empty($event_registrations)) {
+            foreach ($event_registrations as $event_registration) {
+                $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
+            }
+        }
+        return $this->registrations;
     }
 }
