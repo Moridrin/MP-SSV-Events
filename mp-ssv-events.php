@@ -11,6 +11,7 @@
  */
 
 require_once "models/Event.php";
+require_once "models/Registration.php";
 require_once "profile-content.php";
 require_once "location-widget.php";
 require_once "category-widget.php";

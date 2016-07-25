@@ -14,70 +14,19 @@ function mp_ssv_add_event_content($content)
     #region Save POST
     if (isset($_POST['submit'])) {
         if ($_POST['action'] == 'register') {
-            $table_name = $wpdb->prefix . "mp_ssv_event_registration";
-            $event_ID = get_the_ID();
             if (is_user_logged_in()) {
-                $userID = wp_get_current_user()->ID;
-                $wpdb->insert(
-                    $table_name,
-                    array(
-                        'userID'  => $userID,
-                        'eventID' => $event_ID,
-                        'status'  => get_option('mp_ssv_event_default_registration_status')
-                    ),
-                    array(
-                        '%d',
-                        '%d',
-                        '%s'
-                    )
-                );
+                Registration::createNew(get_the_ID(), new FrontendMember(wp_get_current_user()));
             } else {
-                $wpdb->insert(
-                    $table_name,
-                    array(
-                        'eventID'    => $event_ID,
-                        'status'     => get_option('mp_ssv_event_default_registration_status'),
-                        'first_name' => $_POST['first_name'],
-                        'last_name'  => $_POST['last_name'],
-                        'email'      => $_POST['email']
-                    ),
-                    array(
-                        '%d',
-                        '%s',
-                        '%s',
-                        '%s',
-                        '%s'
-                    )
-                );
+                Registration::createNew(get_the_ID(), null, $_POST['first_name'], $_POST['last_name'], $_POST['email']);
             }
-            $registration_message = '<div class="notification">' . stripslashes(
+            $registration_message = '<div class="mui-panel notification">' . stripslashes(
                     get_option('mp_ssv_event_registration_message')
                 ) . '</div>';
-            $to = get_the_author_meta('user_email');
-            $subject = "New Registration for " . get_the_title();
-            $display_name = "";
-            if (is_user_logged_in()) {
-                $display_name = wp_get_current_user()->display_name;
-            } else {
-                $display_name = $_POST['first_name'] . " " . $_POST['last_name'];
-            }
-            $message = $display_name . ' has just registered for ' . get_the_title() . '.';
-            wp_mail($to, $subject, $message);
-        } else {
-            if ($_POST['action'] == 'cancel') {
-                $user = wp_get_current_user();
-                $table_name = $wpdb->prefix . "mp_ssv_event_registration";
-                $user_ID = get_current_user_id();
-                $event_ID = get_the_ID();
-                $wpdb->delete($table_name, array('userID' => $user_ID, 'eventID' => $event_ID));
-                $registration_message = '<div class="notification">' . stripslashes(
-                        get_option('mp_ssv_event_cancelation_message')
-                    ) . '</div>';
-                $to = get_the_author_meta('user_email');
-                $subject = "Cancelation for " . get_the_title();
-                $message = $user->display_name . ' has just canceled his/her registration for ' . get_the_title() . '.';
-                wp_mail($to, $subject, $message);
-            }
+        } elseif ($_POST['action'] == 'cancel') {
+            Registration::delete(get_the_ID(), new FrontendMember(wp_get_current_user()));
+            $registration_message = '<div class="mui-panel notification">' . stripslashes(
+                    get_option('mp_ssv_event_cancelation_message')
+                ) . '</div>';
         }
     }
     #endregion

@@ -14,6 +14,11 @@ class Event
     public $post;
 
     /**
+     * @var int the ID of the WP_Post
+     */
+    public $ID;
+
+    /**
      * @var DateTime
      */
     private $startDate;
@@ -34,6 +39,11 @@ class Event
     private $registration_enabled;
 
     /**
+     * @var array
+     */
+    public $registrations;
+
+    /**
      * Event constructor.
      *
      * @param WP_Post $post
@@ -41,6 +51,7 @@ class Event
     public function __construct($post)
     {
         $this->post = $post;
+        $this->ID = $post->ID;
         $this->startDate = DateTime::createFromFormat(
             'Y-m-dH:i', get_post_meta($post->ID, 'start_date', true) . get_post_meta($post->ID, 'start_time', true)
         );
@@ -49,6 +60,17 @@ class Event
         );
         $this->location = get_post_meta(get_the_ID(), 'location', true);
         $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
+
+        //Get registrations
+        global $wpdb;
+        $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+        $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE `eventID` = $this->ID");
+        if (!empty($event_registrations)) {
+            foreach ($event_registrations as $event_registration) {
+                $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
+            }
+        }
+
     }
 
     /**
@@ -176,7 +198,8 @@ class Event
     /**
      * @return bool true if the Event is valid (all mandatory fields are filled).
      */
-    public function isValid() {
+    public function isValid()
+    {
         if ($this->startDate == false) {
             return false;
         }
@@ -186,14 +209,41 @@ class Event
     /**
      * @return bool true if the event is published
      */
-    public function isPublished() {
+    public function isPublished()
+    {
         if ($this->post->post_status == 'publish') {
             return true;
         }
         return false;
     }
 
-    public function canRegister() {
+    public function canRegister()
+    {
         return $this->isRegistrationEnabled() && $this->startDate > new DateTime();
+    }
+
+    /**
+     * @param int|WP_User|FrontendMember|null $user use null to test with the current user.
+     *
+     * @return bool
+     */
+    public function isRegistered($user = null)
+    {
+        $userID = null;
+        if (is_int($user)) {
+            $userID = $user;
+        } elseif ($user instanceof WP_User || $user instanceof FrontendMember) {
+            $userID = $user->ID;
+        } else {
+            $userID = get_current_user_id();
+        }
+        if (count($this->registrations) > 0) {
+            foreach ($this->registrations as $registration) {
+                if ($registration->member->ID == $userID) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
