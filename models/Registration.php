@@ -161,7 +161,7 @@ class Registration
         return new Registration(
             $eventId,
             $event_registration->status,
-            $event_registration->userID,
+            FrontendMember::get_by_id($event_registration->userID),
             $event_registration->first_name,
             $event_registration->last_name,
             $event_registration->email

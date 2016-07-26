@@ -37,35 +37,33 @@ function mp_ssv_add_event_content($content)
     }
 
     #region Guest List
-    $event_ID = get_the_ID();
-    $table_name = $wpdb->prefix . "mp_ssv_event_registration";
-    $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE `eventID` = $event_ID");
+    $event_registrations = $event->getRegistrations();
     if (!empty($event_registrations)) {
         $content .= '<h1>Guest List</h1>';
         $content .= '<ul>';
-        foreach ($event->getRegistrations() as $event_registration) {
+        foreach ($event->getRegistrations(false) as $event_registration) {
+            /* @var $event_registration Registration */
             if ($event_registration->status == 'pending') {
                 $content .= '<li>';
-                if ($event_registration->userID != null) {
-                    $content .= FrontendMember::get_by_id($event_registration->userID)->getMeta('display_name')
-                        . '<p class="note"> (pending)</p>';
+                if ($event_registration->member != null) {
+                    $content .= $event_registration->member->display_name . '<p class="note"> (pending)</p>';
                 } else {
-                    $content .= $event_registration->first_name . " " . $event_registration->last_name
+                    $content .= $event_registration->firstName . " " . $event_registration->lastName
                         . '<p class="note"> (pending)</p>';
                 }
                 $content .= '</li>';
             } else {
                 if ($event_registration->status == 'approved') {
                     $content .= '<li>';
-                    if ($event_registration->userID != null) {
-                        $content .= FrontendMember::get_by_id($event_registration->userID)->getMeta('display_name');
+                    if ($event_registration->member != null) {
+                        $content .= $event_registration->member->display_name;
                     } else {
-                        $content .= $event_registration->first_name . " " . $event_registration->last_name;
+                        $content .= $event_registration->firstName . " " . $event_registration->lastName;
                     }
                     $content .= '</li>';
                 }
             }
-            if ($event_registration->userID == get_current_user_id()) {
+            if ($event_registration->member->ID == get_current_user_id()) {
                 $user_registered = true;
             }
         }

@@ -240,9 +240,19 @@ class Event
     }
 
     /**
+     * @param bool $update set to false if you don't require a new update from the database.
+     *
      * @return array of registrations
      */
-    public function getRegistrations()
+    public function getRegistrations($update = true)
+    {
+        if ($update) {
+            $this->updateRegistrations();
+        }
+        return $this->registrations;
+    }
+
+    public function updateRegistrations()
     {
         global $wpdb;
         $table_name = $wpdb->prefix . "mp_ssv_event_registration";
@@ -252,6 +262,5 @@ class Event
                 $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
             }
         }
-        return $this->registrations;
     }
 }
