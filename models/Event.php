@@ -146,7 +146,7 @@ class Event
     public function getGoogleCalendarURL()
     {
         $URL = 'https://www.google.com/calendar/render?action=TEMPLATE';
-        $URL .= '&text=' . get_the_title($this->post->postId);
+        $URL .= '&text=' . get_the_title($this->post->ID);
         $URL .= '&dates=' . $this->startDate->format('Ymd\\THi00');
         if ($this->endDate != false) {
             $URL .= '/' . $this->endDate->format('Ymd\\THi00');
@@ -164,12 +164,15 @@ class Event
      */
     public function getLiveCalendarURL()
     {
+        /** @noinspection SpellCheckingInspection */
         $URL = 'http://calendar.live.com/calendar/calendar.aspx?rru=addevent';
+        /** @noinspection SpellCheckingInspection */
         $URL .= '&dtstart=' . $this->startDate->format('Ymd\\THi00');
         if ($this->endDate != false) {
+            /** @noinspection SpellCheckingInspection */
             $URL .= '$dtend=' . $this->endDate->format('Ymd\\THi00');
         }
-        $URL .= '&summary=' . get_the_title($this->post->postId);
+        $URL .= '&summary=' . get_the_title($this->post->ID);
         if (!empty($this->location)) {
             $URL .= '&location=' . $this->location;
         }

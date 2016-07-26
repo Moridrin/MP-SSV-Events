@@ -117,8 +117,8 @@ get_header(); ?>
                         // Previous/next page navigation.
                         the_posts_pagination(
                             array(
-                                'prev_text' => __('Previous page', 'mpssv'),
-                                'next_text' => __('Next page', 'mpssv'),
+                                'prev_text'          => __('Previous page', 'mpssv'),
+                                'next_text'          => __('Next page', 'mpssv'),
                                 'before_page_number' => '<span class="meta-nav screen-reader-text">' . __(
                                         'Page', 'mpssv'
                                     ) . ' </span>',
@@ -147,7 +147,7 @@ function mp_ssv_get_event()
         <th style="padding-right:5px;">
             <a href="<?php echo get_permalink(get_the_ID()); ?>"><?php the_title(); ?></a><br/>
         </th>
-        <th style="padding-left: 0px; padding-right:5px; white-space: nowrap;" class="mui--hidden-sm mui--hidden-md">
+        <th style="padding-left: 0; padding-right:5px; white-space: nowrap;" class="mui--hidden-sm mui--hidden-md">
             <?php $event->echoStartDate(); ?>
             <?php $event->echoEndDate(); ?>
             <a target="_blank" href="<?php echo $event->getGoogleCalendarURL(); ?>">Google Calendar</a>
@@ -161,6 +161,7 @@ function mp_ssv_get_event()
                 echo get_the_post_thumbnail(get_the_ID(), 'mp-ssv-banner-m');
                 echo "</a>";
             } else {
+                /** @noinspection SpellCheckingInspection */
                 echo '<a href="' . get_permalink(get_the_ID())
                     . '"><img src="https://placeholdit.imgix.net/~text?txtsize=150&txt=No%20Banner%20Set&w=1920&h=480"/></a>';
             } ?>

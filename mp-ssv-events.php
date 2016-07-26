@@ -29,6 +29,7 @@ function mp_ssv_register_mp_ssv_events()
     }
     /* Database */
     global $wpdb;
+    /** @noinspection PhpIncludeInspection */
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $charset_collate = $wpdb->get_charset_collate();
     $table_name = $wpdb->prefix . "mp_ssv_event_registration";
@@ -69,8 +70,6 @@ register_deactivation_hook(__FILE__, 'mp_ssv_unregister_mp_ssv_events');
 
 function mp_ssv_events_template($archive_template)
 {
-    global $post;
-
     if (is_post_type_archive('events')) {
         $archive_template = dirname(__FILE__) . '/archive-events.php';
     }
@@ -79,8 +78,12 @@ function mp_ssv_events_template($archive_template)
 
 add_filter('archive_template', 'mp_ssv_events_template');
 
-function mp_ssv_save_event($post_ID, $post_after, $post_before)
-{
+function mp_ssv_save_event(
+    $post_ID,
+    $post_after,
+    /** @noinspection PhpUnusedParameterInspection */
+    $post_before
+) {
     if (get_post_type() != 'events') {
         return $post_ID;
     }

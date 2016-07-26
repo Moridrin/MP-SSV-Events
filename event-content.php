@@ -25,7 +25,7 @@ function mp_ssv_add_event_content($content)
         } elseif ($_POST['action'] == 'cancel') {
             Registration::delete(get_the_ID(), new FrontendMember(wp_get_current_user()));
             $registration_message = '<div class="mui-panel notification">' . stripslashes(
-                    get_option('mp_ssv_event_cancelation_message')
+                    get_option('mp_ssv_event_cancellation_message')
                 ) . '</div>';
         }
     }
@@ -111,7 +111,7 @@ function mp_ssv_add_event_content($content)
                 $content .= '<td><input type="email" name="email"></td>';
                 $content .= '</tr>';
                 $content .= '<tr valign="top">';
-                $content .= '<th scope="row"/>';
+                $content .= '<th scope="row"></th>';
                 $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
                 $content .= '</tr>';
                 $content .= '</table>';

@@ -50,7 +50,7 @@ class Registration
      *
      * @param int                 $eventId
      * @param string              $status
-     * @param FrontendMember|null $userID
+     * @param FrontendMember|null $member
      * @param string|null         $first_name
      * @param string|null         $last_name
      * @param string|null         $email
@@ -145,12 +145,13 @@ class Registration
 
         $eventTitle = Event::get_by_id($eventId)->post->post_title;
         $to = FrontendMember::get_by_id(Event::get_by_id(1)->post->post_author)->user_email;
-        $subject = "Cancelation for " . $eventTitle;
+        $subject = "cancellation for " . $eventTitle;
         $message = $member->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
         wp_mail($to, $subject, $message);
     }
 
     /**
+     * @param $eventId
      * @param $event_registration object the database entry
      *
      * @return Registration
