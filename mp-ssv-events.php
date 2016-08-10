@@ -10,6 +10,8 @@
  * License URI: http://www.wtfpl.net/txt/copying/
  */
 
+require_once 'general/general.php';
+
 require_once "models/Event.php";
 require_once "models/Registration.php";
 require_once "profile-content.php";
