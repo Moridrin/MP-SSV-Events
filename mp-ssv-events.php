@@ -23,12 +23,6 @@ require_once "options/options.php";
 
 function mp_ssv_register_mp_ssv_events()
 {
-    if (!is_plugin_active('general/general.php')) {
-        wp_die(
-            'Sorry, but this plugin requires <a href="http://studentensurvival.com/plugins/general">SSV General</a> to be installed and active. <br><a href="'
-            . admin_url('plugins.php') . '">&laquo; Return to Plugins</a>'
-        );
-    }
     /* Database */
     global $wpdb;
     /** @noinspection PhpIncludeInspection */
@@ -47,28 +41,27 @@ function mp_ssv_register_mp_ssv_events()
 			email varchar(30),
 			UNIQUE KEY id (id)
 		) $charset_collate;";
-    dbDelta($sql);
-    $table_name = $wpdb->prefix . "mp_ssv_event_timezone";
-    $sql
-        = "
-		CREATE TABLE $table_name (
-			id bigint(20) NOT NULL,
-			gmt_adjustment varchar(20) NOT NULL,
-			use_daylight_saving_time tinyint(1) NOT NULL,
-			UNIQUE KEY id (id)
-		) $charset_collate;";
-    dbDelta($sql);
+    $wpdb->query($sql);
 }
 
 register_activation_hook(__FILE__, 'mp_ssv_register_mp_ssv_events');
 
 function mp_ssv_unregister_mp_ssv_events()
 {
-    $page = get_page_by_title('Events');
-    wp_delete_post($page->ID, true);
+    //Nothing to do here.
 }
 
 register_deactivation_hook(__FILE__, 'mp_ssv_unregister_mp_ssv_events');
+
+function mp_ssv_uninstall_mp_ssv_events()
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+    $sql = "DROP TABLE IF_EXISTS $table_name;";
+    $wpdb->query($sql);
+}
+
+register_uninstall_hook(__FILE__, 'mp_ssv_uninstall_mp_ssv_events');
 
 function mp_ssv_events_template($archive_template)
 {

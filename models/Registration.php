@@ -119,7 +119,7 @@ class Registration
         $registration = new Registration($eventId, $status, $member, $first_name, $last_name, $email);
 
         $eventTitle = Event::get_by_id($eventId)->post->post_title;
-        $to = FrontendMember::get_by_id(Event::get_by_id(1)->post->post_author)->user_email;
+        $to = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
         $subject = "New Registration for " . $eventTitle;
         if ($member != null) {
             $display_name = $member->display_name;
@@ -144,7 +144,7 @@ class Registration
         $wpdb->delete(Registration::TABLE_NAME, array('userID' => $member->ID, 'eventID' => $eventId));
 
         $eventTitle = Event::get_by_id($eventId)->post->post_title;
-        $to = FrontendMember::get_by_id(Event::get_by_id(1)->post->post_author)->user_email;
+        $to = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
         $subject = "cancellation for " . $eventTitle;
         $message = $member->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
         wp_mail($to, $subject, $message);
