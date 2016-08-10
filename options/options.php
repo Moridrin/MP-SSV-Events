@@ -29,7 +29,7 @@ function mp_ssv_events_settings_page()
             <a href="?page=<?php echo __FILE__; ?>&tab=email" class="nav-tab <?php if ($active_tab == "email") {
                 echo "nav-tab-active";
             } ?>">Email</a>
-            <a href="http://studentensurvival.com/mp-ssv/mp-ssv-events/" target="_blank" class="nav-tab">Help <img src="<?php echo plugin_dir_url('general/images/link-new-tab.png'); ?>link-new-tab.png" width="14px" style="vertical-align:middle"></a>
+            <a href="http://studentensurvival.com/mp-ssv/mp-ssv-events/" target="_blank" class="nav-tab">Help <img src="<?php echo plugin_dir_url(__DIR__); ?>general/images/link-new-tab.png" width="14px" style="vertical-align:middle"></a>
         </h2>
         <?php
         if ($active_tab == "general") {
