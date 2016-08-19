@@ -3,8 +3,8 @@
  * The template for displaying all single posts and attachments
  *
  * @package    Moridrin
- * @subpackage MP-SSV
- * @since      MP-SSV 1.0
+ * @subpackage SSV
+ * @since      SSV 1.0
  */
 
 $hasUpcomingEvents = false;
@@ -53,7 +53,7 @@ get_header(); ?>
                                         the_post();
                                         if (get_post_meta(get_the_ID(), 'start_date', true) >= date("Y-m-d")) {
                                             ob_start();
-                                            mp_ssv_get_event();
+                                            ssv_get_event();
                                             $upcomingEvents[] = ob_get_clean();
                                         }
                                     }
@@ -74,7 +74,7 @@ get_header(); ?>
                                     while (have_posts()) {
                                         the_post();
                                         if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
-                                            mp_ssv_get_event();
+                                            ssv_get_event();
                                         }
                                     }
                                 }
@@ -92,7 +92,7 @@ get_header(); ?>
                                     the_post();
                                     if (get_post_meta(get_the_ID(), 'start_date', true) >= date("Y-m-d")) {
                                         ob_start();
-                                        mp_ssv_get_xs_event();
+                                        ssv_get_xs_event();
                                         $upcomingEvents[] = ob_get_clean();
                                     }
                                 }
@@ -106,7 +106,7 @@ get_header(); ?>
                                 while (have_posts()) {
                                     the_post();
                                     if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
-                                        mp_ssv_get_xs_event();
+                                        ssv_get_xs_event();
                                     }
                                 }
                             }
@@ -117,10 +117,10 @@ get_header(); ?>
                         // Previous/next page navigation.
                         the_posts_pagination(
                             array(
-                                'prev_text'          => __('Previous page', 'mpssv'),
-                                'next_text'          => __('Next page', 'mpssv'),
+                                'prev_text'          => __('Previous page', 'ssv'),
+                                'next_text'          => __('Next page', 'ssv'),
                                 'before_page_number' => '<span class="meta-nav screen-reader-text">' . __(
-                                        'Page', 'mpssv'
+                                        'Page', 'ssv'
                                     ) . ' </span>',
                             )
                         );
@@ -139,7 +139,7 @@ get_header(); ?>
 <?php get_footer(); ?>
 
 <?php
-function mp_ssv_get_event()
+function ssv_get_event()
 {
     $event = Event::get_by_id(get_the_ID());
     ?>
@@ -158,7 +158,7 @@ function mp_ssv_get_event()
             <?php
             if (has_post_thumbnail(get_the_ID())) {
                 echo '<a href="' . get_permalink(get_the_ID()) . '">';
-                echo get_the_post_thumbnail(get_the_ID(), 'mp-ssv-banner-m');
+                echo get_the_post_thumbnail(get_the_ID(), 'ssv-banner-m');
                 echo "</a>";
             } else {
                 /** @noinspection SpellCheckingInspection */
@@ -170,9 +170,9 @@ function mp_ssv_get_event()
     <?php
 }
 
-function mp_ssv_get_xs_event()
+function ssv_get_xs_event()
 {
-    $thumb = wp_get_attachment_image_src(get_post_thumbnail_id(), 'mp-ssv-banner-s');
+    $thumb = wp_get_attachment_image_src(get_post_thumbnail_id(), 'ssv-banner-s');
     $url = $thumb[0];
     ?>
     <a href="<?php echo get_permalink(get_the_ID()); ?>">

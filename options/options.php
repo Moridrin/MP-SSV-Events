@@ -1,10 +1,10 @@
 <?php
-function mp_ssv_add_mp_ssv_events_options()
+function ssv_add_ssv_events_options()
 {
-    add_submenu_page('mp_ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'mp_ssv_events_settings_page');
+    add_submenu_page('ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'ssv_events_settings_page');
 }
 
-function mp_ssv_events_settings_page()
+function ssv_events_settings_page()
 {
     $active_tab = "general";
     if (isset($_GET['tab'])) {
@@ -29,7 +29,7 @@ function mp_ssv_events_settings_page()
             <a href="?page=<?php echo __FILE__; ?>&tab=email" class="nav-tab <?php if ($active_tab == "email") {
                 echo "nav-tab-active";
             } ?>">Email</a>
-            <a href="http://studentensurvival.com/mp-ssv/mp-ssv-events/" target="_blank" class="nav-tab">Help <img src="<?php echo plugin_dir_url(__DIR__); ?>general/images/link-new-tab.png" width="14px" style="vertical-align:middle"></a>
+            <a href="http://studentensurvival.com/ssv/ssv-events/" target="_blank" class="nav-tab">Help <img src="<?php echo plugin_dir_url(__DIR__); ?>general/images/link-new-tab.png" width="14px" style="vertical-align:middle"></a>
         </h2>
         <?php
         if ($active_tab == "general") {
@@ -44,5 +44,5 @@ function mp_ssv_events_settings_page()
     <?php
 }
 
-add_action('admin_menu', 'mp_ssv_add_mp_ssv_events_options');
+add_action('admin_menu', 'ssv_add_ssv_events_options');
 ?>

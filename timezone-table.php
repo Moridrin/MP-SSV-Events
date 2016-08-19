@@ -1,6 +1,6 @@
 <?php
 global $wpdb;
-$table_name = $wpdb->prefix . "mp_ssv_event_timezone";
+$table_name = $wpdb->prefix . "ssv_event_timezone";
 $wpdb->insert(
     $table_name,
     array(

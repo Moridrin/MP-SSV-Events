@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: SSV Events
- * Plugin URI: http://moridrin.com/mp-ssv-events
+ * Plugin URI: http://moridrin.com/ssv-events
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
  * Version: 1.0
  * Author: Jeroen Berkvens
@@ -21,14 +21,14 @@ require_once "post-type.php";
 require_once "event-content.php";
 require_once "options/options.php";
 
-function mp_ssv_register_mp_ssv_events()
+function ssv_register_ssv_events()
 {
     /* Database */
     global $wpdb;
     /** @noinspection PhpIncludeInspection */
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $charset_collate = $wpdb->get_charset_collate();
-    $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+    $table_name = $wpdb->prefix . "ssv_event_registration";
     $sql
         = "
 		CREATE TABLE $table_name (
@@ -44,26 +44,26 @@ function mp_ssv_register_mp_ssv_events()
     $wpdb->query($sql);
 }
 
-register_activation_hook(__FILE__, 'mp_ssv_register_mp_ssv_events');
+register_activation_hook(__FILE__, 'ssv_register_ssv_events');
 
-function mp_ssv_unregister_mp_ssv_events()
+function ssv_unregister_ssv_events()
 {
     //Nothing to do here.
 }
 
-register_deactivation_hook(__FILE__, 'mp_ssv_unregister_mp_ssv_events');
+register_deactivation_hook(__FILE__, 'ssv_unregister_ssv_events');
 
-function mp_ssv_uninstall_mp_ssv_events()
+function ssv_uninstall_ssv_events()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+    $table_name = $wpdb->prefix . "ssv_event_registration";
     $sql = "DROP TABLE IF_EXISTS $table_name;";
     $wpdb->query($sql);
 }
 
-register_uninstall_hook(__FILE__, 'mp_ssv_uninstall_mp_ssv_events');
+register_uninstall_hook(__FILE__, 'ssv_uninstall_ssv_events');
 
-function mp_ssv_events_template($archive_template)
+function ssv_events_template($archive_template)
 {
     if (is_post_type_archive('events')) {
         $archive_template = dirname(__FILE__) . '/archive-events.php';
@@ -71,9 +71,9 @@ function mp_ssv_events_template($archive_template)
     return $archive_template;
 }
 
-add_filter('archive_template', 'mp_ssv_events_template');
+add_filter('archive_template', 'ssv_events_template');
 
-function mp_ssv_save_event(
+function ssv_save_event(
     $post_ID,
     $post_after,
     /** @noinspection PhpUnusedParameterInspection */
@@ -88,44 +88,44 @@ function mp_ssv_save_event(
         $updateArguments['ID'] = $post_ID;
         $updateArguments['post_status'] = 'draft';
         wp_update_post($updateArguments);
-        update_option('mp_ssv_is_publish_error', 1);
+        update_option('ssv_is_publish_error', 1);
     }
     return $post_ID;
 }
 
-add_action('save_post', 'mp_ssv_save_event', 10, 3);
+add_action('save_post', 'ssv_save_event', 10, 3);
 
-function mp_ssv_events_admin_notice()
+function ssv_events_admin_notice()
 {
     $screen = get_current_screen();
     if ('events' != $screen->post_type || 'post' != $screen->base) {
         return;
     }
-    $publish_error = get_option('mp_ssv_is_publish_error', true);
-    $save_notice = get_option('mp_ssv_is_save_warning', true);
+    $publish_error = get_option('ssv_is_publish_error', true);
+    $save_notice = get_option('ssv_is_save_warning', true);
     if ($publish_error) {
         ?>
         <div class="notice notice-error">
-            <p><?php _e('You cannot publish an event without a start date and time!', 'mp-ssv'); ?></p>
+            <p><?php _e('You cannot publish an event without a start date and time!', 'ssv'); ?></p>
         </div>
         <?php
     } elseif ($save_notice) {
         ?>
         <div class="notice notice-warning">
-            <p><?php _e('You cannot publish an event without a start date and time!', 'mp-ssv'); ?></p>
+            <p><?php _e('You cannot publish an event without a start date and time!', 'ssv'); ?></p>
         </div>
         <?php
     }
-    update_option('mp_ssv_is_publish_error', 0);
-    update_option('mp_ssv_is_save_warning', 0);
+    update_option('ssv_is_publish_error', 0);
+    update_option('ssv_is_save_warning', 0);
 }
 
-add_action('admin_notices', 'mp_ssv_events_admin_notice');
+add_action('admin_notices', 'ssv_events_admin_notice');
 
-function mp_ssv_events_updated_messages($messages)
+function ssv_events_updated_messages($messages)
 {
     global $post, $post_ID;
-    $publish_error = get_option('mp_ssv_is_publish_error', true);
+    $publish_error = get_option('ssv_is_publish_error', true);
     if ($publish_error) {
 
         $messages['events'] = array(
@@ -186,4 +186,4 @@ function mp_ssv_events_updated_messages($messages)
     return $messages;
 }
 
-add_filter('post_updated_messages', 'mp_ssv_events_updated_messages');
+add_filter('post_updated_messages', 'ssv_events_updated_messages');

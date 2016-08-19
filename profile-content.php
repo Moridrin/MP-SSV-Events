@@ -1,6 +1,6 @@
 <?php
 
-function mp_ssv_profile_page_registrations_table_content() {
+function ssv_profile_page_registrations_table_content() {
 	global $wpdb;
 	$current_user = wp_get_current_user();
 	ob_start();
@@ -16,7 +16,7 @@ function mp_ssv_profile_page_registrations_table_content() {
 	<?php
 	$content = ob_get_clean();
 	$sql = 'SELECT event_post.post_title, registration.status, event_post.ID
-		FROM wp_mp_ssv_event_registration AS registration
+		FROM wp_ssv_event_registration AS registration
 		INNER JOIN wp_posts AS event_post
 		ON registration.eventID = event_post.ID
 		INNER JOIN wp_postmeta AS event_meta
@@ -46,7 +46,7 @@ function mp_ssv_profile_page_registrations_table_content() {
 	<?php
 	$content .= ob_get_clean();
 	$sql = 'SELECT event_post.post_title, registration.status, event_post.ID
-		FROM wp_mp_ssv_event_registration AS registration
+		FROM wp_ssv_event_registration AS registration
 		INNER JOIN wp_posts AS event_post
 		ON registration.eventID = event_post.ID
 		INNER JOIN wp_postmeta AS event_meta

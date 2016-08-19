@@ -1,6 +1,6 @@
 <?php
 
-class mp_ssv_event_category extends WP_Widget
+class ssv_event_category extends WP_Widget
 {
 
     public function __construct()
@@ -121,4 +121,4 @@ class mp_ssv_event_category extends WP_Widget
 }
 
 // register widget
-add_action('widgets_init', create_function('', 'return register_widget("mp_ssv_event_category");'));
+add_action('widgets_init', create_function('', 'return register_widget("ssv_event_category");'));

@@ -255,7 +255,7 @@ class Event
     public function updateRegistrations()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . "mp_ssv_event_registration";
+        $table_name = $wpdb->prefix . "ssv_event_registration";
         $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE eventID = $this->ID");
         if (!empty($event_registrations)) {
             foreach ($event_registrations as $event_registration) {

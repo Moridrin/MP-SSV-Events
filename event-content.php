@@ -1,8 +1,7 @@
 <?php
-function mp_ssv_add_event_content($content)
+function ssv_add_event_content($content)
 {
     global $post;
-    global $wpdb;
     $user_registered = false;
     $registration_message = "";
     /* Return */
@@ -20,12 +19,12 @@ function mp_ssv_add_event_content($content)
                 Registration::createNew(get_the_ID(), null, $_POST['first_name'], $_POST['last_name'], $_POST['email']);
             }
             $registration_message = '<div class="mui-panel notification">' . stripslashes(
-                    get_option('mp_ssv_event_registration_message')
+                    get_option('ssv_event_registration_message')
                 ) . '</div>';
         } elseif ($_POST['action'] == 'cancel') {
             Registration::delete(get_the_ID(), new FrontendMember(wp_get_current_user()));
             $registration_message = '<div class="mui-panel notification">' . stripslashes(
-                    get_option('mp_ssv_event_cancellation_message')
+                    get_option('ssv_event_cancellation_message')
                 ) . '</div>';
         }
     }
@@ -89,7 +88,7 @@ function mp_ssv_add_event_content($content)
                 $content .= '</form>';
             }
         } else {
-            if (get_option('mp_ssv_event_guest_registration') == 'true') {
+            if (get_option('ssv_event_guest_registration') == 'true') {
                 if (strpos($content, '<h1>') === false) {
                     $content .= '<h1>Registration</h1>';
                 }
@@ -121,16 +120,16 @@ function mp_ssv_add_event_content($content)
     }
     #endregion
 
-    $content = mp_ssv_get_date_and_time($post) . $content;
+    $content = ssv_get_date_and_time($post) . $content;
     #endregion
 
     return $content;
 }
 
-add_filter('the_content', 'mp_ssv_add_event_content');
+add_filter('the_content', 'ssv_add_event_content');
 
 
-function mp_ssv_get_date_and_time($post)
+function ssv_get_date_and_time($post)
 {
     $event = new Event($post);
     ob_start();

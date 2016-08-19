@@ -1,5 +1,5 @@
 <?php
-function mp_ssv_register_events_post_category()
+function ssv_register_events_post_category()
 {
 
     $labels = array(
@@ -41,9 +41,9 @@ function mp_ssv_register_events_post_category()
     register_post_type('events', $args);
 }
 
-add_action('init', 'mp_ssv_register_events_post_category');
+add_action('init', 'ssv_register_events_post_category');
 
-function mp_ssv_register_event_category_taxonomy()
+function ssv_register_event_category_taxonomy()
 {
     register_taxonomy(
         'event_category',
@@ -60,18 +60,18 @@ function mp_ssv_register_event_category_taxonomy()
     );
 }
 
-add_action('init', 'mp_ssv_register_event_category_taxonomy');
+add_action('init', 'ssv_register_event_category_taxonomy');
 
-function mp_ssv_add_events_metaboxes()
+function ssv_add_events_metaboxes()
 {
-    add_meta_box('mp_ssv_events_registration', 'Registration', 'mp_ssv_events_registration', 'events', 'side', 'default');
-    add_meta_box('mp_ssv_events_date', 'Date', 'mp_ssv_events_date', 'events', 'side', 'default');
-    add_meta_box('mp_ssv_events_location', 'Location', 'mp_ssv_events_location', 'events', 'side', 'default');
+    add_meta_box('ssv_events_registration', 'Registration', 'ssv_events_registration', 'events', 'side', 'default');
+    add_meta_box('ssv_events_date', 'Date', 'ssv_events_date', 'events', 'side', 'default');
+    add_meta_box('ssv_events_location', 'Location', 'ssv_events_location', 'events', 'side', 'default');
 }
 
-add_action('add_meta_boxes', 'mp_ssv_add_events_metaboxes');
+add_action('add_meta_boxes', 'ssv_add_events_metaboxes');
 
-function mp_ssv_events_registration()
+function ssv_events_registration()
 {
     global $post;
     ?>
@@ -86,7 +86,7 @@ function mp_ssv_events_registration()
     <?php
 }
 
-function mp_ssv_events_date()
+function ssv_events_date()
 {
     global $post;
     ?>
@@ -100,7 +100,7 @@ function mp_ssv_events_date()
             <?php
             $start_time = get_post_meta($post->ID, 'start_time', true);
             if ($start_time == null) {
-                $start_time = get_option('mp_ssv_event_default_start_time');
+                $start_time = get_option('ssv_event_default_start_time');
             } ?>
             <td><input type="time" name="start_time" value="<?php echo $start_time; ?>" title="Start Time"></td>
         </tr>
@@ -113,7 +113,7 @@ function mp_ssv_events_date()
             <?php
             $end_time = get_post_meta($post->ID, 'end_time', true);
             if ($end_time == null) {
-                $end_time = get_option('mp_ssv_event_default_end_time');
+                $end_time = get_option('ssv_event_default_end_time');
             } ?>
             <td><input type="time" name="end_time" value="<?php echo $end_time; ?>" title="End Time"></td>
         </tr>
@@ -121,7 +121,7 @@ function mp_ssv_events_date()
     <?php
 }
 
-function mp_ssv_events_location()
+function ssv_events_location()
 {
     global $post;
     ?>
@@ -140,7 +140,7 @@ function mp_ssv_events_location()
  *
  * @return int the post_id
  */
-function mp_ssv_save_events_meta($post_id, $post)
+function ssv_save_events_meta($post_id, $post)
 {
     if (!current_user_can('edit_post', $post->ID)) {
         return $post_id;
@@ -166,5 +166,5 @@ function mp_ssv_save_events_meta($post_id, $post)
     return $post_id;
 }
 
-add_action('save_post', 'mp_ssv_save_events_meta', 1, 2);
+add_action('save_post', 'ssv_save_events_meta', 1, 2);
 ?>

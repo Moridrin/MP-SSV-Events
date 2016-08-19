@@ -10,7 +10,7 @@
 global $wpdb;
 define(
     'TABLE_NAME_TMP',
-    $wpdb->prefix . "mp_ssv_event_registration"
+    $wpdb->prefix . "ssv_event_registration"
 );
 
 class Registration
@@ -80,7 +80,7 @@ class Registration
      */
     public static function createNew($eventId, $member = null, $first_name = null, $last_name = null, $email = null)
     {
-        $status = get_option('mp_ssv_event_default_registration_status');
+        $status = get_option('ssv_event_default_registration_status');
         global $wpdb;
         if ($member != null) {
             $wpdb->insert(
