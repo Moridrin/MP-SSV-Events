@@ -10,15 +10,6 @@ function ssv_events_settings_page()
     if (isset($_GET['tab'])) {
         $active_tab = $_GET['tab'];
     }
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if ($active_tab == "general") {
-            require_once "general-tab-save.php";
-        } else {
-            if ($active_tab == "email") {
-                require_once "email-tab-save.php";
-            }
-        }
-    }
     ?>
     <div class="wrap">
         <h1>Events Options</h1>
