@@ -93,7 +93,7 @@ function ssv_events_date()
     <table class="form-table">
         <tr valign="top">
             <th scope="row">Start Date</th>
-            <td><input type="date" name="start_date" value="<?php echo get_post_meta($post->ID, 'start_date', true); ?>" title="Start Date"></td>
+            <td><input type="date" name="start_date" value="<?php echo get_post_meta($post->ID, 'start_date', true); ?>" title="Start Date" required></td>
         </tr>
         <tr valign="top">
             <th scope="row">Start Time</th>
@@ -106,7 +106,7 @@ function ssv_events_date()
         </tr>
         <tr valign="top">
             <th scope="row">End Date</th>
-            <td><input type="date" name="end_date" value="<?php echo get_post_meta($post->ID, 'end_date', true); ?>" title="End Date"></td>
+            <td><input type="date" name="end_date" value="<?php echo get_post_meta($post->ID, 'end_date', true); ?>" title="End Date" required></td>
         </tr>
         <tr valign="top">
             <th scope="row">End Time</th>

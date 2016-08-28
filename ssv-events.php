@@ -20,6 +20,7 @@ require_once "category-widget.php";
 require_once "post-type.php";
 require_once "event-content.php";
 require_once "options/options.php";
+require_once "registrations.php";
 
 function ssv_register_ssv_events()
 {
