@@ -49,8 +49,16 @@ get_header(); ?>
                                     <?php
 
                                     $upcomingEvents = array();
-                                    while (have_posts()) {
-                                        the_post();
+                                    $args = array(
+                                        'posts_per_page' => 10,
+                                        'paged'          => get_query_var('page'),
+                                        'post_type'      => 'events',
+                                        'meta_key'       => 'start_date',
+                                        'orderby'        => 'meta_value'
+                                    );
+                                    $my_query = new WP_Query($args);
+                                    while ($my_query->have_posts()) {
+                                        $my_query->the_post();
                                         if (get_post_meta(get_the_ID(), 'start_date', true) >= date("Y-m-d")) {
                                             ob_start();
                                             ssv_get_event();
