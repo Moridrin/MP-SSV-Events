@@ -1,5 +1,5 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && check_admin_referer('ssv_save_events_email_options')) {
     global $options;
     if (isset($_POST['ssv_event_email_registration_confirmation'])) {
         update_option('ssv_event_email_registration_confirmation', 'true');
@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </tr>
         </table>
 
+        <?php wp_nonce_field('ssv_save_events_email_options'); ?>
         <?php submit_button(); ?>
     </form>
 <?php ?>

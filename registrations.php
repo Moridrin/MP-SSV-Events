@@ -14,7 +14,7 @@ function ssv_events_registration_page()
     $table = EVENTS_REGISTRATION;
 
     if (isset($_GET['registrationID'])) {
-        $tmp = $wpdb->update(
+        $wpdb->update(
             $table,
             array("status" => $_GET['status']),
             array("id" => $_GET['registrationID']),

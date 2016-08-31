@@ -1,12 +1,4 @@
 <?php
-/**
- * The template for displaying all single posts and attachments
- *
- * @package    Moridrin
- * @subpackage SSV
- * @since      SSV 1.0
- */
-
 $hasUpcomingEvents = false;
 $hasPastEvents = false;
 while (have_posts()) {

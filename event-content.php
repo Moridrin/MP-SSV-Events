@@ -11,7 +11,7 @@ function ssv_add_event_content($content)
     $event = Event::get_by_id($post->ID);
 
     #region Save POST
-    if (isset($_POST['submit'])) {
+    if (isset($_POST['submit']) && check_admin_referer('ssv_events_register_for_event')) {
         if ($_POST['action'] == 'register') {
             if (is_user_logged_in()) {
                 Registration::createNew(get_the_ID(), new FrontendMember(wp_get_current_user()));
@@ -109,6 +109,9 @@ function ssv_add_event_content($content)
                 $content .= '</tr>';
                 $content .= '<tr valign="top">';
                 $content .= '<th scope="row"></th>';
+                ob_start();
+                wp_nonce_field('ssv_events_register_for_event');
+                $content .= ob_get_clean();
                 $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
                 $content .= '</tr>';
                 $content .= '</table>';
