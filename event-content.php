@@ -57,7 +57,7 @@ function ssv_add_event_content($content)
                     if ($event_registration->member != null) {
                         $content .= $event_registration->member->display_name;
                     } else {
-                        $content .= $event_registration->first_name . " " . $event_registration->last_name;
+                        $content .= $event_registration->firstName . " " . $event_registration->lastName;
                     }
                     $content .= '</li>';
                 }
