@@ -80,11 +80,17 @@ function ssv_add_event_content($content)
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="cancel">';
                 $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--danger mui-btn--small">Cancel Registration</button>';
+                ob_start();
+                wp_nonce_field('ssv_events_register_for_event');
+                $content .= ob_get_clean();
                 $content .= '</form>';
             } else {
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="register">';
                 $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button>';
+                ob_start();
+                wp_nonce_field('ssv_events_register_for_event');
+                $content .= ob_get_clean();
                 $content .= '</form>';
             }
         } else {
