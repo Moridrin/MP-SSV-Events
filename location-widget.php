@@ -4,7 +4,7 @@ class mp_ssv_location extends WP_Widget
 {
 
     // constructor
-    function mp_ssv_location()
+    function __construct()
     {
         parent::__construct(false, $name = __('Event Location Widget', 'mp_ssv_location'));
     }
