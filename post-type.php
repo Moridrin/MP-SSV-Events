@@ -1,4 +1,5 @@
 <?php
+define('EVENTS_REGISTRATION', $wpdb->prefix . "ssv_event_registration");
 function ssv_register_events_post_category()
 {
 
@@ -35,7 +36,7 @@ function ssv_register_events_post_category()
         'query_var'           => true,
         'can_export'          => true,
         'rewrite'             => true,
-        'capability_type'     => 'post'
+        'capability_type'     => 'post',
     );
 
     register_post_type('events', $args);
@@ -54,8 +55,8 @@ function ssv_register_event_category_taxonomy()
             'query_var'    => true,
             'rewrite'      => array(
                 'slug'       => 'event_category',
-                'with_front' => false
-            )
+                'with_front' => false,
+            ),
         )
     );
 }
@@ -67,6 +68,7 @@ function ssv_add_events_metaboxes()
     add_meta_box('ssv_events_registration', 'Registration', 'ssv_events_registration', 'events', 'side', 'default');
     add_meta_box('ssv_events_date', 'Date', 'ssv_events_date', 'events', 'side', 'default');
     add_meta_box('ssv_events_location', 'Location', 'ssv_events_location', 'events', 'side', 'default');
+    add_meta_box('ssv_events_registrations', 'Registrations', 'ssv_events_registrations', 'events', 'advanced', 'default');
 }
 
 add_action('add_meta_boxes', 'ssv_add_events_metaboxes');
@@ -93,7 +95,7 @@ function ssv_events_date()
     <table class="form-table">
         <tr valign="top">
             <th scope="row">Start Date</th>
-            <td><input type="date" name="start_date" value="<?php echo get_post_meta($post->ID, 'start_date', true); ?>" title="Start Date" required></td>
+            <td><input type="date" name="start_date" placeholder="yyyy-mm-dd" value="<?php echo get_post_meta($post->ID, 'start_date', true); ?>" title="Start Date" required></td>
         </tr>
         <tr valign="top">
             <th scope="row">Start Time</th>
@@ -106,7 +108,7 @@ function ssv_events_date()
         </tr>
         <tr valign="top">
             <th scope="row">End Date</th>
-            <td><input type="date" name="end_date" value="<?php echo get_post_meta($post->ID, 'end_date', true); ?>" title="End Date" required></td>
+            <td><input type="date" name="end_date" placeholder="yyyy-mm-dd" value="<?php echo get_post_meta($post->ID, 'end_date', true); ?>" title="End Date" required></td>
         </tr>
         <tr valign="top">
             <th scope="row">End Time</th>
@@ -130,6 +132,79 @@ function ssv_events_location()
             <th scope="row">Location</th>
             <td><input type="text" name="location" value="<?php echo get_post_meta($post->ID, 'location', true); ?>" title="Location"/></td>
         </tr>
+    </table>
+    <?php
+}
+
+function ssv_events_registrations()
+{
+    global $post;
+    global $wpdb;
+    $table = EVENTS_REGISTRATION;
+
+    if (isset($_GET['registrationID'])) {
+        $wpdb->update(
+            $table,
+            array("status" => $_GET['status']),
+            array("id" => $_GET['registrationID']),
+            array('%s')
+        );
+    }
+
+    $sql  = "SELECT * FROM $table WHERE eventID = $post->ID";
+    $rows = json_decode(json_encode($wpdb->get_results($sql)), true);
+    ?>
+    <table cellspacing="5" border="1">
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Status</th>
+        </tr>
+        <?php
+        foreach ($rows as $row) {
+            $event      = get_post($row['eventID']);
+            $status     = $row['status'];
+            $first_name = $row['first_name'];
+            $last_name  = $row['last_name'];
+            $email      = $row['email'];
+            if (isset($row['userID'])) {
+                $user       = new FrontendMember(get_user_by('ID', $row['userID']));
+                $first_name = $user->first_name;
+                $last_name  = $user->last_name;
+                $email      = $user->user_email;
+            }
+            ?>
+            <tr>
+                <td><?php echo $first_name; ?></td>
+                <td><?php echo $last_name; ?></td>
+                <td><?php echo $email; ?></td>
+                <td>
+                    <form type="GET">
+                        <input type="hidden" name="post" value="<?= $post->ID ?>">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="registrationID" value="<?php echo $row['id']; ?>">
+                        <input type="hidden" name="eventID" value="<?php echo $event->ID; ?>">
+                        <select name="status" onchange="this.form.submit()">
+                            <option value="pending" <?php if ($status == 'pending') {
+                                echo 'selected';
+                            } ?>>pending
+                            </option>
+                            <option value="approved" <?php if ($status == 'approved') {
+                                echo 'selected';
+                            } ?>>approved
+                            </option>
+                            <option value="denied" <?php if ($status == 'denied') {
+                                echo 'selected';
+                            } ?>>denied
+                            </option>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <?php
+        }
+        ?>
     </table>
     <?php
 }

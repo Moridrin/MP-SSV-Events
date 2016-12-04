@@ -129,7 +129,7 @@ function ssv_add_event_content($content)
     }
     #endregion
 
-    $content = ssv_get_date_and_time($post) . $content;
+    $content = ssv_get_date_time_and_location($post) . $content;
     #endregion
 
     return $content;
@@ -138,7 +138,7 @@ function ssv_add_event_content($content)
 add_filter('the_content', 'ssv_add_event_content');
 
 
-function ssv_get_date_and_time($post)
+function ssv_get_date_time_and_location($post)
 {
     $event = new Event($post);
     ob_start();
@@ -164,6 +164,8 @@ function ssv_get_date_and_time($post)
     <a target="_blank" href="<?php echo $event->getGoogleCalendarURL(); ?>">Google Calendar</a>
     <br/>
     <a target="_blank" href="<?php echo $event->getLiveCalendarURL(); ?>">Live Calendar</a>
+    <h1>Where</h1>
+    <?= $event->getLocation() ?>
     <?php
     return ob_get_clean();
 }
