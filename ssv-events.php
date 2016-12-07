@@ -21,6 +21,8 @@ require_once "post-type.php";
 require_once "event-content.php";
 require_once "options/options.php";
 
+define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
+
 function ssv_register_ssv_events()
 {
     /* Database */
@@ -28,9 +30,9 @@ function ssv_register_ssv_events()
     /** @noinspection PhpIncludeInspection */
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $charset_collate = $wpdb->get_charset_collate();
-    $table_name = $wpdb->prefix . "ssv_event_registration";
+    $table_name      = $wpdb->prefix . "ssv_event_registration";
     $sql
-        = "
+                     = "
 		CREATE TABLE $table_name (
 			id bigint(20) NOT NULL AUTO_INCREMENT,
 			userID bigint(20),
@@ -66,7 +68,7 @@ function ssv_uninstall_ssv_events()
 {
     global $wpdb;
     $table_name = $wpdb->prefix . "ssv_event_registration";
-    $sql = "DROP TABLE IF_EXISTS $table_name;";
+    $sql        = "DROP TABLE IF_EXISTS $table_name;";
     $wpdb->query($sql);
 }
 
@@ -93,8 +95,8 @@ function ssv_save_event(
     }
     $event = new Event($post_after);
     if (!$event->isValid() && $event->isPublished()) {
-        $updateArguments = array();
-        $updateArguments['ID'] = $post_ID;
+        $updateArguments                = array();
+        $updateArguments['ID']          = $post_ID;
         $updateArguments['post_status'] = 'draft';
         wp_update_post($updateArguments);
         update_option('ssv_is_publish_error', 1);
@@ -111,7 +113,7 @@ function ssv_events_admin_notice()
         return;
     }
     $publish_error = get_option('ssv_is_publish_error', true);
-    $save_notice = get_option('ssv_is_save_warning', true);
+    $save_notice   = get_option('ssv_is_save_warning', true);
     if ($publish_error) {
         ?>
         <div class="notice notice-error">
@@ -145,7 +147,8 @@ function ssv_events_updated_messages($messages)
             4  => __('Event updated.'),
             /* translators: %s: date and time of the revision */
             5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'), wp_post_revision_title((int)$_GET['revision'], false)
+                __('Event restored to revision from %s'),
+                wp_post_revision_title((int)$_GET['revision'], false)
             ) : false,
             6  => '', //Send a blank string to prevent it from posting that it has been published correctly.
             7  => __('Event saved.'),
@@ -156,7 +159,8 @@ function ssv_events_updated_messages($messages)
             9  => sprintf(
                 __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
                 // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)), esc_url(get_permalink($post_ID))
+                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)),
+                esc_url(get_permalink($post_ID))
             ),
             10 => sprintf(
                 __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),
@@ -172,7 +176,8 @@ function ssv_events_updated_messages($messages)
             4  => __('Event updated.'),
             /* translators: %s: date and time of the revision */
             5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'), wp_post_revision_title((int)$_GET['revision'], false)
+                __('Event restored to revision from %s'),
+                wp_post_revision_title((int)$_GET['revision'], false)
             ) : false,
             6  => sprintf(__('Event published. <a href="%s">View event</a>'), esc_url(get_permalink($post_ID))),
             7  => __('Event saved.'),
@@ -183,7 +188,8 @@ function ssv_events_updated_messages($messages)
             9  => sprintf(
                 __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
                 // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)), esc_url(get_permalink($post_ID))
+                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)),
+                esc_url(get_permalink($post_ID))
             ),
             10 => sprintf(
                 __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),

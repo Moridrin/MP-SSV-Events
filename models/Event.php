@@ -229,6 +229,7 @@
             } else {
                 $userID = get_current_user_id();
             }
+            $this->updateRegistrations();
             if (count($this->registrations) > 0) {
                 foreach ($this->registrations as $registration) {
                     if ($registration->member->ID == $userID) {

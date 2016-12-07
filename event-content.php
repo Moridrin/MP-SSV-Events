@@ -2,7 +2,7 @@
 function ssv_add_event_content($content)
 {
     global $post;
-    $user_registered = false;
+    $user_registered      = false;
     $registration_message = "";
     /* Return */
     if ($post->post_type != 'events') {
@@ -10,7 +10,7 @@ function ssv_add_event_content($content)
     }
     $event = Event::get_by_id($post->ID);
 
-    #region Save POST
+    #region Save POST Request
     if (isset($_POST['submit']) && check_admin_referer('ssv_events_register_for_event')) {
         if ($_POST['action'] == 'register') {
             if (is_user_logged_in()) {
@@ -26,6 +26,19 @@ function ssv_add_event_content($content)
             $registration_message = '<div class="mui-panel notification">' . stripslashes(
                     get_option('ssv_event_cancellation_message')
                 ) . '</div>';
+        }
+    }
+    #endregion
+
+    #region Save AJAX Request
+    if (isset($_GET['register'])) {
+        $member = FrontendMember::get_by_id($_GET['register']);
+        if ($member->goesToEvent(get_the_ID())) {
+            Registration::delete(get_the_ID(), $member);
+            return 'Registered=No';
+        } else {
+            Registration::createNew(get_the_ID(), $member);
+            return 'Registered=Yes';
         }
     }
     #endregion
@@ -48,7 +61,7 @@ function ssv_add_event_content($content)
                     $content .= $event_registration->member->display_name . '<p class="note"> (pending)</p>';
                 } else {
                     $content .= $event_registration->firstName . " " . $event_registration->lastName
-                        . '<p class="note"> (pending)</p>';
+                                . '<p class="note"> (pending)</p>';
                 }
                 $content .= '</li>';
             } else {
@@ -79,7 +92,7 @@ function ssv_add_event_content($content)
             if ($user_registered) {
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="cancel">';
-                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--danger mui-btn--small">Cancel Registration</button>';
+                $content .= '<button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>';
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
@@ -87,7 +100,7 @@ function ssv_add_event_content($content)
             } else {
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="register">';
-                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button>';
+                $content .= '<button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>';
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
@@ -118,7 +131,7 @@ function ssv_add_event_content($content)
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
-                $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
+                $content .= '<td><button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button></td>';
                 $content .= '</tr>';
                 $content .= '</table>';
                 $content .= '</form>';
@@ -136,7 +149,6 @@ function ssv_add_event_content($content)
 }
 
 add_filter('the_content', 'ssv_add_event_content');
-
 
 function ssv_get_date_time_and_location($post)
 {
