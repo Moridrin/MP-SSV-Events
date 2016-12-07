@@ -79,7 +79,7 @@ function ssv_add_event_content($content)
             if ($user_registered) {
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="cancel">';
-                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--danger mui-btn--small">Cancel Registration</button>';
+                $content .= '<button type="submit" name="submit" class="btn btn--danger btn--small">Cancel Registration</button>';
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
@@ -87,7 +87,7 @@ function ssv_add_event_content($content)
             } else {
                 $content .= '<form action="#" method="POST">';
                 $content .= '<input type="hidden" name="action" value="register">';
-                $content .= '<button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button>';
+                $content .= '<button type="submit" name="submit" class="btn btn--primary waves-effect waves-light">Register</button>';
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
@@ -118,7 +118,7 @@ function ssv_add_event_content($content)
                 ob_start();
                 wp_nonce_field('ssv_events_register_for_event');
                 $content .= ob_get_clean();
-                $content .= '<td><button type="submit" name="submit" class="mui-btn mui-btn--primary">Register</button></td>';
+                $content .= '<td><button type="submit" name="submit" class="btn btn--primary waves-effect waves-light">Register</button></td>';
                 $content .= '</tr>';
                 $content .= '</table>';
                 $content .= '</form>';
