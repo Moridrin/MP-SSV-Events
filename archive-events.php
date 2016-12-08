@@ -57,7 +57,7 @@ function mp_ssv_events_content_theme_default($hasUpcomingEvents, $hasPastEvents)
             $my_query = new WP_Query($args);
             while ($my_query->have_posts()) {
                 $my_query->the_post();
-                get_template_part('template-parts/event', get_post_format());
+                require 'template-parts/content-event.php';
             }
             if (!is_user_logged_in()) {
                 ?>

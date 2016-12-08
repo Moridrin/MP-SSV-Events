@@ -148,7 +148,7 @@ function ssv_add_event_content($content)
     return $content;
 }
 
-add_filter('the_content', 'ssv_add_event_content');
+//add_filter('the_content', 'ssv_add_event_content');
 
 function ssv_get_date_time_and_location($post)
 {
@@ -181,3 +181,68 @@ function ssv_get_date_time_and_location($post)
     <?php
     return ob_get_clean();
 }
+
+function mp_ssv_add_registrations_to_content($content)
+{
+    global $post;
+    if ($post->post_type != 'events' || is_archive()) {
+//        ssv_print($content);
+        if (strpos($content, 'class="more-link"') === false) {
+            $content .= '<a href="'.get_permalink($post->ID).'">View Event</a>';
+        }
+        return $content;
+    }
+    $event               = Event::get_by_id($post->ID);
+    $event_registrations = $event->getRegistrations();
+    ob_start();
+    if (count($event_registrations) > 0) {
+        ?>
+        <div class="row">
+            <div class="col s8">
+                <?= $content ?>
+            </div>
+            <div class="col s4">
+                <ul class="collection with-header">
+                    <li class="collection-header"><h3>Registrations</h3></li>
+                    <?php foreach ($event_registrations as $event_registration) : ?>
+                        <?php /* @var $event_registration Registration */ ?>
+                        <li class="collection-item avatar">
+                            <img src="<?= get_avatar_url($event_registration->email); ?>" alt="" class="circle">
+                            <span class="title"><?= $event_registration->firstName . ' ' . $event_registration->lastName ?></span>
+                            <p><?= $event_registration->status ?></p>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <?php
+    } else {
+        echo $content;
+    }
+    return ob_get_clean();
+}
+
+add_filter('the_content', 'mp_ssv_add_registrations_to_content');
+
+function mp_ssv_event_more_tag($more)
+{
+    global $post;
+    if ($post->post_type != 'events') {
+        return $more;
+    }
+    $more = 'ESAC';
+    return $more;
+}
+
+add_filter('excerpt_more', 'mp_ssv_event_more_tag');
+
+function mp_ssv_custom_excerpt_length($length)
+{
+    global $post;
+    if ($post->post_type != 'events') {
+        return $length;
+    }
+    return 200;
+}
+
+add_filter('excerpt_length', 'mp_ssv_custom_excerpt_length', 999);

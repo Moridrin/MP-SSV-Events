@@ -60,6 +60,9 @@ class Registration
         $this->status = $status;
         if ($member != null) {
             $this->member = $member;
+            $this->firstName = $member->first_name;
+            $this->lastName = $member->last_name;
+            $this->email = $member->user_email;
         } else {
             $this->firstName = $first_name;
             $this->lastName = $last_name;
