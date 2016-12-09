@@ -185,8 +185,7 @@ function ssv_get_date_time_and_location($post)
 function mp_ssv_add_registrations_to_content($content)
 {
     global $post;
-    if ($post->post_type != 'events' || is_archive()) {
-//        ssv_print($content);
+    if ($post->post_type == 'events' && is_archive()) {
         if (strpos($content, 'class="more-link"') === false) {
             $content .= '<a href="'.get_permalink($post->ID).'">View Event</a>';
         }

@@ -1,14 +1,22 @@
 <?php
-$hasUpcomingEvents = false;
-$hasPastEvents     = false;
-while (have_posts()) {
-    the_post();
-    if (get_post_meta(get_the_ID(), 'start_date', true) < date("Y-m-d")) {
-        $hasPastEvents = true;
-    } else {
-        $hasUpcomingEvents = true;
-    }
-}
+
+$args = array(
+    'posts_per_page' => 10,
+    'paged'          => get_query_var('paged'),
+    'post_type'      => 'events',
+    'meta_key'       => 'start_date',
+    'meta_value'     => date("Y-m-d", time()),
+    'orderby'        => 'meta_value',
+);
+
+$args['meta_compare'] = '>=';
+$args['order']        = 'ASC';
+$upcomingEvents       = new WP_Query($args);
+
+$args['posts_per_page'] = 10 - $upcomingEvents->post_count;
+$args['meta_compare']   = '<';
+$args['order']          = 'DESC';
+$pastEvents             = new WP_Query($args);
 
 get_header() ?>
     <div id="page" class="container">
@@ -18,9 +26,9 @@ get_header() ?>
                     <main id="main" class="site-main" role="main">
                         <?php
                         if (get_theme_support('materialize')) {
-                            mp_ssv_events_content_theme_default($hasUpcomingEvents, $hasPastEvents);
+                            mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents);
                         } else {
-                            mp_ssv_events_content_custom($hasUpcomingEvents, $hasPastEvents);
+                            mp_ssv_events_content_custom($upcomingEvents, $pastEvents);
                         }
                         ?>
                     </main>
@@ -32,58 +40,30 @@ get_header() ?>
 <?php get_footer(); ?>
 
 <?php
-function mp_ssv_events_content_theme_default($hasUpcomingEvents, $hasPastEvents)
+/**
+ * @param WP_Query $upcomingEvents
+ * @param WP_Query $pastEvents
+ */
+function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
 {
-    if (have_posts()) {
-        if (is_home() && !is_front_page()) {
-            ?>
-            <header>
-                <h1 class="page-title screen-reader-text"><?php single_post_title(); ?></h1>
-            </header>
-            <?php
-        }
+    $hasUpcomingEvents = $upcomingEvents->have_posts();
+    $hasPastEvents     = $pastEvents->have_posts();
+    if ($hasPastEvents || $hasPastEvents) {
         if ($hasUpcomingEvents) {
-
-            $args     = array(
-                'posts_per_page' => 10,
-                'paged'          => get_query_var('page'),
-                'post_type'      => 'events',
-                'meta_key'       => 'start_date',
-                'meta_value'     => date("Y-m-d", time()),
-                'meta_compare'   => '>=',
-                'orderby'        => 'meta_value',
-                'order'          => 'ASC',
-            );
-            $my_query = new WP_Query($args);
-            while ($my_query->have_posts()) {
-                $my_query->the_post();
+            echo '<div class="panel"><h1>Upcoming</h1></div>';
+            while ($upcomingEvents->have_posts()) {
+                $upcomingEvents->the_post();
                 require 'template-parts/content-event.php';
             }
-            if (!is_user_logged_in()) {
-                ?>
-                <div id="modal_confirm_registration" class="modal">
-                    <div class="modal-content">
-                        <h2>Registration Information</h2>
-                        <p>
-                            <label>
-                                Email
-                                <input type="text" name="email">
-                            </label>
-                            <label>
-                                Name
-                                <input type="text" name="first_name" placeholder="First">
-                                <input type="text" name="last_name" placeholder="Last">
-                            </label>
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                    </div>
-                </div>
-                <?php
-            }
-            echo mp_ssv_get_pagination();
         }
+        if ($hasPastEvents) {
+            echo '<div class="panel"><h1>Past</h1></div>';
+            while ($pastEvents->have_posts()) {
+                $pastEvents->the_post();
+                require 'template-parts/content-event.php';
+            }
+        }
+        echo mp_ssv_get_pagination();
     } else {
         get_template_part('template-parts/content', 'none');
     }
