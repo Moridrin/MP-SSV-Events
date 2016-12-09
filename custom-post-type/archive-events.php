@@ -1,0 +1,75 @@
+<?php
+#region setup variables
+$args = array(
+    'posts_per_page' => 10,
+    'paged'          => get_query_var('paged'),
+    'post_type'      => 'events',
+    'meta_key'       => 'start_date',
+    'meta_value'     => date("Y-m-d", time()),
+    'orderby'        => 'meta_value',
+);
+
+$args['meta_compare'] = '>=';
+$args['order']        = 'ASC';
+$upcomingEvents       = new WP_Query($args);
+
+$args['posts_per_page'] = 10 - $upcomingEvents->post_count;
+$args['meta_compare']   = '<';
+$args['order']          = 'DESC';
+$pastEvents             = new WP_Query($args);
+#endregion
+
+#region base layout
+get_header() ?>
+    <div id="page" class="container">
+        <div class="row">
+            <div class="col s12 <?= is_dynamic_sidebar() ? 'col m8 l9' : '' ?>">
+                <div id="primary" class="content-area">
+                    <main id="main" class="site-main" role="main">
+                        <?php
+                        if (get_theme_support('materialize')) {
+                            mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents);
+                        } else {
+                            throw new Exception('This theme currently doesn\'t have support for a theme without "materialize" support.');
+                        }
+                        ?>
+                    </main>
+                </div>
+            </div>
+            <?php get_sidebar(); ?>
+        </div>
+    </div>
+<?php
+get_footer();
+#endregion
+
+/**
+ * This function prints the default event preview lists (only for themes with support for "materialize").
+ *
+ * @param WP_Query $upcomingEvents
+ * @param WP_Query $pastEvents
+ */
+function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
+{
+    $hasUpcomingEvents = $upcomingEvents->have_posts();
+    $hasPastEvents     = $pastEvents->have_posts();
+    if ($hasPastEvents || $hasPastEvents) {
+        if ($hasUpcomingEvents) {
+            echo '<div class="panel"><h1>Upcoming</h1></div>';
+            while ($upcomingEvents->have_posts()) {
+                $upcomingEvents->the_post();
+                require 'event-views/archive-preview.php';
+            }
+        }
+        if ($hasPastEvents) {
+            echo '<div class="panel"><h1>Past</h1></div>';
+            while ($pastEvents->have_posts()) {
+                $pastEvents->the_post();
+                require 'event-views/archive-preview.php';
+            }
+        }
+        echo mp_ssv_get_pagination();
+    } else {
+        get_template_part('template-parts/content', 'none');
+    }
+}
