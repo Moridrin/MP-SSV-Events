@@ -6,6 +6,9 @@
  * @subpackage SSV
  * @since      SSV 1.0
  */
+global $post;
+$event               = Event::get_by_id($post->ID);
+$event_registrations = $event->getRegistrations();
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class('card panel panel-with-header'); ?>>
     <div class="card large">
@@ -24,15 +27,11 @@
                     <?php the_content('View Event'); ?>
                 </div>
                 <div class="col s4">
-                    <div class="row">
-                        <div class="col s6">Start Date:</div>
-                        <div class="col s6">2017-02-05</div>
-                        <div class="col s6">Start Time:</div>
-                        <div class="col s6">20:00</div>
-                        <div class="col s6">End Date:</div>
-                        <div class="col s6">2017-02-05</div>
-                        <div class="col s6">End Time:</div>
-                        <div class="col s6">22:00</div>
+                    <div class="row" style="border-left: solid">
+                        <div class="col s3">From:</div>
+                        <div class="col s9"><?php $event->echoStartDate() ?></div>
+                        <div class="col s3">Till:</div>
+                        <div class="col s9"><?php $event->echoEndDate() ?></div>
                     </div>
                 </div>
             </div>
@@ -46,9 +45,6 @@
                 <h2 class="card-title activator"><?= the_title() ?><i class="material-icons right">close</i></h2>
             </header>
             <?php
-            global $post;
-            $event               = Event::get_by_id($post->ID);
-            $event_registrations = $event->getRegistrations();
             if (count($event_registrations) > 0) : ?>
                 <div class="row" style="max-height: 350px; overflow: auto">
                     <div class="col s8">
