@@ -81,7 +81,7 @@ register_uninstall_hook(__FILE__, 'mp_ssv_uninstall_ssv_events');
 
 function mp_ssv_events_enquire_scripts()
 {
-    wp_enqueue_script('ssv_events_init', plugin_dir_path(__FILE__) . '/js/init.js', array('jquery'));
+//    wp_enqueue_script('ssv_events_init', plugin_dir_path(__FILE__) . '/js/init.js', array('jquery'));
 }
 
 add_action('wp_enqueue_scripts', 'mp_ssv_events_enquire_scripts');
