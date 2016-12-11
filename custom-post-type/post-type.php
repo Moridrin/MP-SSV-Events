@@ -91,35 +91,15 @@ function ssv_events_registration()
 function ssv_events_date()
 {
     global $post;
+    $start = get_post_meta($post->ID, 'start', true);
+    $start = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
+    $end = get_post_meta($post->ID, 'end', true);
+    $end = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
     ?>
-    <table class="form-table">
-        <tr valign="top">
-            <th scope="row">Start Date</th>
-            <td><input type="date" name="start_date" placeholder="yyyy-mm-dd" value="<?php echo get_post_meta($post->ID, 'start_date', true); ?>" title="Start Date" required></td>
-        </tr>
-        <tr valign="top">
-            <th scope="row">Start Time</th>
-            <?php
-            $start_time = get_post_meta($post->ID, 'start_time', true);
-            if ($start_time == null) {
-                $start_time = get_option('ssv_event_default_start_time');
-            } ?>
-            <td><input type="time" name="start_time" value="<?php echo $start_time; ?>" title="Start Time"></td>
-        </tr>
-        <tr valign="top">
-            <th scope="row">End Date</th>
-            <td><input type="date" name="end_date" placeholder="yyyy-mm-dd" value="<?php echo get_post_meta($post->ID, 'end_date', true); ?>" title="End Date" required></td>
-        </tr>
-        <tr valign="top">
-            <th scope="row">End Time</th>
-            <?php
-            $end_time = get_post_meta($post->ID, 'end_time', true);
-            if ($end_time == null) {
-                $end_time = get_option('ssv_event_default_end_time');
-            } ?>
-            <td><input type="time" name="end_time" value="<?php echo $end_time; ?>" title="End Time"></td>
-        </tr>
-    </table>
+            Start Date<br/>
+            <input type="text" class="datetimepicker" name="start" placeholder="yyyy/" value="<?= $start ?>" title="Start Date" required><br/>
+            End Date<br/>
+            <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" title="End Date" required>
     <?php
 }
 
