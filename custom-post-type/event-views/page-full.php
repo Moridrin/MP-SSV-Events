@@ -43,7 +43,7 @@ function mp_ssv_add_registrations_to_content($content)
         <div class="col s4">
             <h3>When</h3>
             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
-                <?php if ($event->getEndDate() != false && $event->getEndDate() != $event->getStartDate()): ?>
+                <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
                     <div class="col s3">From:</div>
                     <div class="col s9"><?php $event->echoStartDate() ?></div>
                     <div class="col s3">Till:</div>
@@ -106,7 +106,7 @@ function ssv_get_date_time_and_location_block($post)
     <div class="row">
         <div class="col s3">From</div>
         <div class="col s9"><?php $event->echoStartDate(); ?></div>
-        <?php if ($event->getEndDate() != false && $event->getEndDate() != $event->getStartDate()): ?>
+        <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
             <div class="col s3">Till</div>
             <div class="col s9"><?php $event->echoStartDate(); ?></div>
         <?php endif; ?>

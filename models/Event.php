@@ -21,12 +21,12 @@
         /**
          * @var DateTime
          */
-        private $startDate;
+        private $start;
 
         /**
          * @var DateTime
          */
-        private $endDate;
+        private $end;
 
         /**
          * @var string
@@ -52,11 +52,11 @@
         {
             $this->post = $post;
             $this->ID = $post->ID;
-            $this->startDate = DateTime::createFromFormat(
-                'Y-m-dH:i', get_post_meta($post->ID, 'start_date', true) . get_post_meta($post->ID, 'start_time', true)
+            $this->start = DateTime::createFromFormat(
+                'Y-m-d H:i', get_post_meta($post->ID, 'start', true)
             );
-            $this->endDate = DateTime::createFromFormat(
-                'Y-m-dH:i', get_post_meta($post->ID, 'end_date', true) . get_post_meta($post->ID, 'end_time', true)
+            $this->end = DateTime::createFromFormat(
+                'Y-m-d H:i', get_post_meta($post->ID, 'end', true)
             );
             $this->location = get_post_meta(get_the_ID(), 'location', true);
             $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
@@ -83,9 +83,9 @@
         /**
          * @return DateTime
          */
-        public function getStartDate()
+        public function getStart()
         {
-            return $this->startDate;
+            return $this->start;
         }
 
         /**
@@ -93,13 +93,13 @@
          */
         public function echoStartDate($newline = true)
         {
-            if (!$this->startDate) {
+            if (!$this->start) {
                 return;
             }
-            if ($this->startDate->format('Hi') != '00:00') {
-                echo $this->startDate->format('Y-m-d H:i');
+            if ($this->start->format('Hi') != '00:00') {
+                echo $this->start->format('Y-m-d H:i');
             } else {
-                echo $this->startDate->format('Y-m-d');
+                echo $this->start->format('Y-m-d');
             }
             if ($newline) {
                 echo '<br/>';
@@ -109,9 +109,9 @@
         /**
          * @return DateTime
          */
-        public function getEndDate()
+        public function getEnd()
         {
-            return $this->endDate;
+            return $this->end;
         }
 
         /**
@@ -119,13 +119,13 @@
          */
         public function echoEndDate($newline = true)
         {
-            if (!$this->endDate) {
+            if (!$this->end) {
                 return;
             }
-            if ($this->endDate->format('Hi') != '00:00') {
-                echo $this->endDate->format('Y-m-d H:i');
+            if ($this->end->format('Hi') != '00:00') {
+                echo $this->end->format('Y-m-d H:i');
             } else {
-                echo $this->endDate->format('Y-m-d');
+                echo $this->end->format('Y-m-d');
             }
             if ($newline) {
                 echo '<br/>';
@@ -147,11 +147,11 @@
         {
             $URL = 'https://www.google.com/calendar/render?action=TEMPLATE';
             $URL .= '&text=' . get_the_title($this->post->ID);
-            $URL .= '&dates=' . $this->startDate->format('Ymd\\THi00');
-            if ($this->endDate != false) {
-                $URL .= '/' . $this->endDate->format('Ymd\\THi00');
+            $URL .= '&dates=' . $this->start->format('Ymd\\THi00');
+            if ($this->end != false) {
+                $URL .= '/' . $this->end->format('Ymd\\THi00');
             } else {
-                $URL .= '/' . $this->startDate->format('Ymd\\THi00');
+                $URL .= '/' . $this->start->format('Ymd\\THi00');
             }
             if (!empty($this->location)) {
                 $URL .= '&location=' . $this->location;
@@ -167,10 +167,10 @@
             /** @noinspection SpellCheckingInspection */
             $URL = 'http://calendar.live.com/calendar/calendar.aspx?rru=addevent';
             /** @noinspection SpellCheckingInspection */
-            $URL .= '&dtstart=' . $this->startDate->format('Ymd\\THi00');
-            if ($this->endDate != false) {
+            $URL .= '&dtstart=' . $this->start->format('Ymd\\THi00');
+            if ($this->end != false) {
                 /** @noinspection SpellCheckingInspection */
-                $URL .= '$dtend=' . $this->endDate->format('Ymd\\THi00');
+                $URL .= '$dtend=' . $this->end->format('Ymd\\THi00');
             }
             $URL .= '&summary=' . get_the_title($this->post->ID);
             if (!empty($this->location)) {
@@ -184,7 +184,7 @@
          */
         public function isValid()
         {
-            if ($this->startDate == false) {
+            if ($this->start == false) {
                 return false;
             }
             return true;
@@ -203,7 +203,7 @@
 
         public function canRegister()
         {
-            return $this->isRegistrationEnabled() && $this->startDate > new DateTime();
+            return $this->isRegistrationEnabled() && $this->start > new DateTime();
         }
 
         /**

@@ -93,13 +93,13 @@ function ssv_events_date()
     global $post;
     $start = get_post_meta($post->ID, 'start', true);
     $start = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
-    $end = get_post_meta($post->ID, 'end', true);
-    $end = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
+    $end   = get_post_meta($post->ID, 'end', true);
+    $end   = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
     ?>
-            Start Date<br/>
-            <input type="text" class="datetimepicker" name="start" placeholder="yyyy/" value="<?= $start ?>" title="Start Date" required><br/>
-            End Date<br/>
-            <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" title="End Date" required>
+    Start Date<br/>
+    <input type="text" class="datetimepicker" name="start" value="<?= $start ?>" title="Start Date" required><br/>
+    End Date<br/>
+    <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" title="End Date" required>
     <?php
 }
 
@@ -203,17 +203,11 @@ function ssv_save_events_meta($post_id, $post)
     if (isset($_POST['registration'])) {
         update_post_meta($post->ID, 'registration', $_POST['registration']);
     }
-    if (isset($_POST['start_date'])) {
-        update_post_meta($post->ID, 'start_date', $_POST['start_date']);
+    if (isset($_POST['start'])) {
+        update_post_meta($post->ID, 'start', $_POST['start']);
     }
-    if (isset($_POST['start_time'])) {
-        update_post_meta($post->ID, 'start_time', $_POST['start_time']);
-    }
-    if (isset($_POST['end_date'])) {
-        update_post_meta($post->ID, 'end_date', $_POST['end_date']);
-    }
-    if (isset($_POST['end_time'])) {
-        update_post_meta($post->ID, 'end_time', $_POST['end_time']);
+    if (isset($_POST['end'])) {
+        update_post_meta($post->ID, 'end', $_POST['end']);
     }
     if (isset($_POST['location'])) {
         update_post_meta($post->ID, 'location', $_POST['location']);
