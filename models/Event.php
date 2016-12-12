@@ -55,8 +55,14 @@
             $this->start = DateTime::createFromFormat(
                 'Y-m-d H:i', get_post_meta($post->ID, 'start', true)
             );
+            $this->start = $this->start ?: DateTime::createFromFormat(
+                'Y-m-d H:i', get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true)
+            );
             $this->end = DateTime::createFromFormat(
                 'Y-m-d H:i', get_post_meta($post->ID, 'end', true)
+            );
+            $this->end = DateTime::createFromFormat(
+                'Y-m-d H:i', get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true)
             );
             $this->location = get_post_meta(get_the_ID(), 'location', true);
             $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
@@ -81,54 +87,32 @@
         }
 
         /**
-         * @return DateTime
+         * @return null|string
          */
         public function getStart()
         {
-            return $this->start;
-        }
-
-        /**
-         * @param bool $newline set false if you don't want to echo <br/> at the end of the line.
-         */
-        public function echoStartDate($newline = true)
-        {
             if (!$this->start) {
-                return;
+                return null;
             }
-            if ($this->start->format('Hi') != '00:00') {
-                echo $this->start->format('Y-m-d H:i');
+            if ($this->start->format('H:i') != '00:00') {
+                return $this->start->format('Y-m-d H:i');
             } else {
-                echo $this->start->format('Y-m-d');
-            }
-            if ($newline) {
-                echo '<br/>';
+                return $this->start->format('Y-m-d');
             }
         }
 
         /**
-         * @return DateTime
+         * @return null|string
          */
         public function getEnd()
         {
-            return $this->end;
-        }
-
-        /**
-         * @param bool $newline set false if you don't want to echo <br/> at the end of the line.
-         */
-        public function echoEndDate($newline = true)
-        {
             if (!$this->end) {
-                return;
+                return null;
             }
-            if ($this->end->format('Hi') != '00:00') {
-                echo $this->end->format('Y-m-d H:i');
+            if ($this->end->format('H:i') != '00:00') {
+                return $this->end->format('Y-m-d H:i');
             } else {
-                echo $this->end->format('Y-m-d');
-            }
-            if ($newline) {
-                echo '<br/>';
+                return $this->end->format('Y-m-d');
             }
         }
 
