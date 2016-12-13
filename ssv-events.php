@@ -21,7 +21,6 @@ require_once 'custom-post-type/functions.php';
 require_once "custom-post-type/post-type.php";
 require_once "custom-post-type/event-views/page-full.php";
 
-require_once "widgets/location-widget.php";
 require_once "widgets/category-widget.php";
 
 require_once "ssv-integration/ssv-frontend-members/profile-page-content.php";
