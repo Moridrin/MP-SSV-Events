@@ -165,7 +165,7 @@ function ssv_events_registrations()
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="registrationID" value="<?php echo $row['id']; ?>">
                         <input type="hidden" name="eventID" value="<?php echo $event->ID; ?>">
-                        <select name="status" onchange="this.form.submit()">
+                        <select name="status" onchange="this.form.submit()" title="<?= $this->title ?>">
                             <option value="pending" <?php if ($status == 'pending') {
                                 echo 'selected';
                             } ?>>pending
