@@ -59,14 +59,14 @@ class Registration
     {
         $this->status = $status;
         if ($member != null) {
-            $this->member = $member;
+            $this->member    = $member;
             $this->firstName = $member->first_name;
-            $this->lastName = $member->last_name;
-            $this->email = $member->user_email;
+            $this->lastName  = $member->last_name;
+            $this->email     = $member->user_email;
         } else {
             $this->firstName = $first_name;
-            $this->lastName = $last_name;
-            $this->email = $email;
+            $this->lastName  = $last_name;
+            $this->email     = $email;
         }
     }
 
@@ -91,12 +91,12 @@ class Registration
                 array(
                     'userID'  => $member->ID,
                     'eventID' => $eventId,
-                    'status'  => $status
+                    'status'  => $status,
                 ),
                 array(
                     '%d',
                     '%d',
-                    '%s'
+                    '%s',
                 )
             );
         } elseif ($first_name != null && $last_name != null && $email != null) {
@@ -107,30 +107,33 @@ class Registration
                     'status'     => $status,
                     'first_name' => $_POST['first_name'],
                     'last_name'  => $_POST['last_name'],
-                    'email'      => $_POST['email']
+                    'email'      => $_POST['email'],
                 ),
                 array(
                     '%d',
                     '%s',
                     '%s',
                     '%s',
-                    '%s'
+                    '%s',
                 )
             );
         }
 
         $registration = new Registration($eventId, $status, $member, $first_name, $last_name, $email);
 
-        $eventTitle = Event::get_by_id($eventId)->post->post_title;
-        $to = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
-        $subject = "New Registration for " . $eventTitle;
-        if ($member != null) {
-            $display_name = $member->display_name;
-        } else {
-            $display_name = $_POST['first_name'] . " " . $_POST['last_name'];
+        if (isset($_POST['ssv_event_email_registration_confirmation'])) {
+            $eventTitle = Event::get_by_id($eventId)->post->post_title;
+            $to         = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
+            $subject    = "New Registration for " . $eventTitle;
+            if ($member != null) {
+                $display_name = $member->display_name;
+            } else {
+                $display_name = $_POST['first_name'] . " " . $_POST['last_name'];
+            }
+            $message = $display_name . ' has just registered for ' . $eventTitle . '.';
+            wp_mail($to, $subject, $message);
         }
-        $message = $display_name . ' has just registered for ' . $eventTitle . '.';
-        wp_mail($to, $subject, $message);
+        do_action('mp_ssv_event_registration', $registration);
 
         return $registration;
     }
@@ -147,9 +150,9 @@ class Registration
         $wpdb->delete(Registration::TABLE_NAME, array('userID' => $member->ID, 'eventID' => $eventId));
 
         $eventTitle = Event::get_by_id($eventId)->post->post_title;
-        $to = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
-        $subject = "cancellation for " . $eventTitle;
-        $message = $member->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
+        $to         = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
+        $subject    = "cancellation for " . $eventTitle;
+        $message    = $member->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
         wp_mail($to, $subject, $message);
     }
 

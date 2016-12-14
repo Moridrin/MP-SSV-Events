@@ -35,12 +35,12 @@ $event_registrations = $event->getRegistrations();
                 <?php #endregion ?>
             </header>
             <div class="row">
-                <div class="col s8">
+                <div class="col s12 m8">
                     <?php #region content_preview ?>
                     <?php the_content('View Event'); ?>
                     <?php #endregion ?>
                 </div>
-                <div class="col s4">
+                <div class="col s12 m4">
                     <?php #region date_time ?>
                     <div class="row" style="border-left: solid">
                         <div class="col s3">From:</div>
@@ -68,13 +68,13 @@ $event_registrations = $event->getRegistrations();
             </header>
             <?php if (count($event_registrations) > 0) : ?>
                 <?php #region with_registrations ?>
-                <div class="row" style="max-height: <?= $event->canRegister() ? '335px' : '413px' ?>; overflow: auto">
-                    <div class="col s8">
+                <div class="row" style="max-height: <?= $event->canRegister() ? '435px' : '413px' ?>; overflow: auto">
+                    <div class="col s12 m8">
                         <?php #region content ?>
                         <?php the_content('View Event'); ?>
                         <?php #endregion ?>
                     </div>
-                    <div class="col s4">
+                    <div class="col s12 m4">
                         <ul class="collection with-header">
                             <li class="collection-header"><h3>Registrations</h3></li>
                             <?php #region registrations ?>
@@ -93,7 +93,7 @@ $event_registrations = $event->getRegistrations();
                 <?php #endregion ?>
             <?php else : ?>
                 <?php #region without_registrations ?>
-                <div class="row" style="max-height: <?= $event->canRegister() ? '335px' : '413px' ?>; overflow: auto">
+                <div class="row" style="max-height: <?= $event->canRegister() ? '435px' : '413px' ?>; overflow: auto">
                     <?php the_content('View Event', true); ?>
                 </div>
                 <?php #endregion ?>
