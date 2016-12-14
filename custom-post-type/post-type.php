@@ -216,4 +216,3 @@ function ssv_save_events_meta($post_id, $post)
 }
 
 add_action('save_post', 'ssv_save_events_meta', 1, 2);
-?>

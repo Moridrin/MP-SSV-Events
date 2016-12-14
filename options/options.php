@@ -36,4 +36,3 @@ function ssv_events_settings_page()
 }
 
 add_action('admin_menu', 'ssv_add_ssv_events_options');
-?>

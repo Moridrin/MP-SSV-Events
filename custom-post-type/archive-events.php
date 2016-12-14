@@ -20,10 +20,11 @@ $pastEvents             = new WP_Query($args);
 #endregion
 
 #region base layout
-get_header() ?>
-    <div id="page" class="container">
+get_header()
+?>
+    <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
         <div class="row">
-            <div class="col s12 <?= is_dynamic_sidebar() ? 'col m8 l9' : '' ?>">
+            <div class="col s12 <?= is_dynamic_sidebar() ? 'm8 l9 xl10' : '' ?>">
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
                         <?php
@@ -55,14 +56,30 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
     $hasPastEvents     = $pastEvents->have_posts();
     if ($hasPastEvents || $hasPastEvents) {
         if ($hasUpcomingEvents) {
-            echo '<div class="panel"><h1>Upcoming</h1></div>';
+            ?>
+            <header class="full-width-entry-header" style="margin: 15px 0;">
+                <div class="parallax-container primary" style="height: 150px;">
+                    <div class="shade darken-1 valign-wrapper" style="height: 100%">
+                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Upcoming</h1>
+                    </div>
+                </div>
+            </header>
+            <?php
             while ($upcomingEvents->have_posts()) {
                 $upcomingEvents->the_post();
                 require 'event-views/archive-preview.php';
             }
         }
         if ($hasPastEvents) {
-            echo '<div class="panel"><h1>Past</h1></div>';
+            ?>
+            <header class="full-width-entry-header" style="margin: 15px 0;">
+                <div class="parallax-container primary" style="height: 150px;">
+                    <div class="shade darken-1 valign-wrapper" style="height: 100%">
+                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Past</h1>
+                    </div>
+                </div>
+            </header>
+            <?php
             while ($pastEvents->have_posts()) {
                 $pastEvents->the_post();
                 require 'event-views/archive-preview.php';

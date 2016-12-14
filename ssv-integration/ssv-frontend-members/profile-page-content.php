@@ -67,4 +67,3 @@ function ssv_profile_page_registrations_table_content() {
 	$content .= "</table>";
 	return $content;
 }
-?>

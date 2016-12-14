@@ -45,12 +45,12 @@ function mp_ssv_add_registrations_to_content($content)
             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                 <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
                     <div class="col s3">From:</div>
-                    <div class="col s9"><?php $event->echoStartDate() ?></div>
+                    <div class="col s9"><?= $event->getStart() ?></div>
                     <div class="col s3">Till:</div>
-                    <div class="col s9"><?php $event->echoEndDate() ?></div>
+                    <div class="col s9"><?= $event->getEnd() ?></div>
                 <?php else : ?>
                     <div class="col s3">Start:</div>
-                    <div class="col s9"><?php $event->echoStartDate() ?></div>
+                    <div class="col s9"><?= $event->getStart() ?></div>
                 <?php endif; ?>
             </div>
             <?php #endregion
