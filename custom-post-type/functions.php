@@ -6,6 +6,11 @@
  * Time: 16:02
  */
 
+/**
+ * @param $archive_template
+ *
+ * @return string
+ */
 function mp_ssv_events_template($archive_template)
 {
     if (is_post_type_archive('events')) {
