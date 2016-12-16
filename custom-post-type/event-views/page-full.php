@@ -74,23 +74,31 @@ function mp_ssv_add_registrations_to_content($content)
     #endregion
 
     #region Add registration button
-    ?>
-    <form action="<?= get_permalink() ?>" method="POST">
-        <?php if ($event->isRegistered(FrontendMember::get_current_user())) : ?>
-            <?php #region 'Cancel Registration' button ?>
-            <input type="hidden" name="action" value="cancel">
-            <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
-            <?php wp_nonce_field('ssv_events_register_for_event'); ?>
-            <?php #endregion ?>
-        <?php else : ?>
-            <?php #region 'Register' button ?>
-            <input type="hidden" name="action" value="register">
-            <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
-            <?php wp_nonce_field('ssv_events_register_for_event'); ?>
-            <?php #endregion ?>
-        <?php endif; ?>
-    </form>
-    <?php
+    if ($event->canRegister()) {
+        if (is_user_logged_in()) {
+            ?>
+            <form action="<?= get_permalink() ?>" method="POST">
+                <?php if ($event->isRegistered(FrontendMember::get_current_user())) : ?>
+                    <?php #region 'Cancel Registration' button ?>
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
+                    <?php wp_nonce_field('ssv_events_register_for_event'); ?>
+                    <?php #endregion ?>
+                <?php else : ?>
+                    <?php #region 'Register' button ?>
+                    <input type="hidden" name="action" value="register">
+                    <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+                    <?php wp_nonce_field('ssv_events_register_for_event'); ?>
+                    <?php #endregion ?>
+                <?php endif; ?>
+            </form>
+            <?php
+        } else {
+            ?>
+            <a href="/login" class="btn waves-effect waves-light">Login to Register</a>
+            <?php
+        }
+    }
     $content = ob_get_clean();
     #endregion
 
