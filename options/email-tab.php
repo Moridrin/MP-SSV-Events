@@ -1,21 +1,9 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && check_admin_referer('ssv_save_events_email_options')) {
     global $options;
-    if (isset($_POST['ssv_event_email_registration_confirmation'])) {
-        update_option('ssv_event_email_registration_confirmation', 'true');
-    } else {
-        update_option('ssv_event_email_registration_confirmation', 'false');
-    }
-    if (isset($_POST['ssv_event_email_registration_status_changed'])) {
-        update_option('ssv_event_email_registration_status_changed', 'true');
-    } else {
-        update_option('ssv_event_email_registration_status_changed', 'false');
-    }
-    if (isset($_POST['ssv_event_email_registration_verify'])) {
-        update_option('ssv_event_email_registration_verify', 'true');
-    } else {
-        update_option('ssv_event_email_registration_verify', 'false');
-    }
+    update_option('ssv_event_email_registration_confirmation', filter_var($_POST['ssv_event_email_registration_confirmation'], FILTER_VALIDATE_BOOLEAN));
+    update_option('ssv_event_email_registration_status_changed', filter_var($_POST['ssv_event_email_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
+    update_option('ssv_event_email_registration_verify', filter_var($_POST['ssv_event_email_registration_verify'], FILTER_VALIDATE_BOOLEAN));
 }
 ?>
     <form method="post" action="#">

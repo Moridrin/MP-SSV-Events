@@ -36,7 +36,7 @@ function mp_ssv_save_event(
         $updateArguments['ID']          = $post_ID;
         $updateArguments['post_status'] = 'draft';
         wp_update_post($updateArguments);
-        update_option('ssv_is_publish_error', 1);
+        update_option('ssv_is_publish_error', true);
     }
     return $post_ID;
 }
@@ -64,8 +64,8 @@ function mp_ssv_events_admin_notice()
         </div>
         <?php
     }
-    update_option('ssv_is_publish_error', 0);
-    update_option('ssv_is_save_warning', 0);
+    update_option('ssv_is_publish_error', false);
+    update_option('ssv_is_save_warning', false);
 }
 
 add_action('admin_notices', 'mp_ssv_events_admin_notice');

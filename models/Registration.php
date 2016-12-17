@@ -121,7 +121,7 @@ class Registration
 
         $registration = new Registration($eventId, $status, $member, $first_name, $last_name, $email);
 
-        if (isset($_POST['ssv_event_email_registration_confirmation'])) {
+        if (get_option('ssv_event_email_registration_confirmation', false)) {
             $eventTitle = Event::get_by_id($eventId)->post->post_title;
             $to         = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
             $subject    = "New Registration for " . $eventTitle;

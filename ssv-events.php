@@ -50,13 +50,13 @@ function mp_ssv_register_ssv_events()
     $wpdb->query($sql);
 
     /* Options */
-    update_option('ssv_event_guest_registration', 'false');
+    update_option('ssv_event_guest_registration', false);
     update_option('ssv_event_default_registration_status', 'pending');
     update_option('ssv_event_registration_message', 'Your registration is pending.');
     update_option('ssv_event_cancellation_message', 'Your registration is canceled.');
-    update_option('ssv_event_email_registration_confirmation', 'true');
-    update_option('ssv_event_email_registration_status_changed', 'true');
-    update_option('ssv_event_email_registration_verify', 'true');
+    update_option('ssv_event_email_registration_confirmation', true);
+    update_option('ssv_event_email_registration_status_changed', true);
+    update_option('ssv_event_email_registration_verify', true);
 }
 
 register_activation_hook(__FILE__, 'mp_ssv_register_ssv_events');

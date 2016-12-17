@@ -1,11 +1,7 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && check_admin_referer('ssv_save_events_general_options')) {
     global $options;
-    if (isset($_POST['ssv_event_guest_registration'])) {
-        update_option('ssv_event_guest_registration', 'true');
-    } else {
-        update_option('ssv_event_guest_registration', 'false');
-    }
+    update_option('ssv_event_guest_registration', filter_var($_POST['ssv_event_guest_registration'], FILTER_VALIDATE_BOOLEAN));
     update_option('ssv_event_default_registration_status', $_POST['ssv_event_default_registration_status']);
     update_option('ssv_event_registration_message', $_POST['ssv_event_registration_message']);
     update_option('ssv_event_cancellation_message', $_POST['ssv_event_cancellation_message']);
