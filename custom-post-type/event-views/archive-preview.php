@@ -106,13 +106,13 @@ $event_registrations = $event->getRegistrations();
                             <?php if ($event->isRegistered(FrontendMember::get_current_user())) : ?>
                                 <?php #region 'Cancel Registration' button ?>
                                 <input type="hidden" name="action" value="cancel">
-                                <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
+                                <button type="submit" name="submit" class="btn waves-effect waves-light">Cancel Registration</button>
                                 <?php wp_nonce_field('ssv_events_register_for_event'); ?>
                                 <?php #endregion ?>
                             <?php else : ?>
                                 <?php #region 'Register' button ?>
                                 <input type="hidden" name="action" value="register">
-                                <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+                                <button type="submit" name="submit" class="btn waves-effect waves-light">Register</button>
                                 <?php wp_nonce_field('ssv_events_register_for_event'); ?>
                                 <?php #endregion ?>
                             <?php endif; ?>

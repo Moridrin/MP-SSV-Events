@@ -102,7 +102,7 @@ function mp_ssv_add_registrations_to_content($content)
     $content = ob_get_clean();
     #endregion
 
-    return $content . '<hr/>';
+    return $content;
 }
 
 function ssv_get_date_time_and_location_block($post)
