@@ -11,6 +11,7 @@
 global $post;
 $event               = Event::get_by_id($post->ID);
 $event_registrations = $event->getRegistrations();
+$content             = get_the_content('');
 #endregion
 ?>
 <article id="post-<?php the_ID(); ?>">
@@ -37,7 +38,7 @@ $event_registrations = $event->getRegistrations();
             <div class="row">
                 <div class="col s12 m8">
                     <?php #region content_preview ?>
-                    <?php the_content('View Event'); ?>
+                    <?= $content ?>
                     <?php #endregion ?>
                 </div>
                 <div class="col s12 m4">
@@ -71,7 +72,7 @@ $event_registrations = $event->getRegistrations();
                 <div class="row" style="max-height: <?= $event->canRegister() ? '435px' : '413px' ?>; overflow: auto">
                     <div class="col s12 m8">
                         <?php #region content ?>
-                        <?php the_content('View Event'); ?>
+                        <?= $content ?>
                         <?php #endregion ?>
                     </div>
                     <div class="col s12 m4">
@@ -93,8 +94,8 @@ $event_registrations = $event->getRegistrations();
                 <?php #endregion ?>
             <?php else : ?>
                 <?php #region without_registrations ?>
-                <div class="row" style="max-height: <?= $event->canRegister() ? '435px' : '413px' ?>; overflow: auto">
-                    <?php the_content('View Event', true); ?>
+                <div class="row" style="max-height: <?= $event->canRegister() ? '435px' : '515px' ?>; overflow: auto">
+                    <?= $content ?>
                 </div>
                 <?php #endregion ?>
             <?php endif; ?>
