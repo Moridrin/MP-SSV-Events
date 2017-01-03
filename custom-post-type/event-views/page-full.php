@@ -20,11 +20,21 @@ function mp_ssv_events_add_registrations_to_content($content)
     }
     #endregion
 
-    #region Save POST Request
+    #region Confirm email
+    if ($_SERVER['REQUEST_METHOD'] != 'GET' && isset($_GET['verification'])) {
+        //TODO VERIFY!
+    }
+
+        #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
             if (get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL)) {
-                //TODO send email to confirm registration
+                $eventTitle = Event::getByID($event->getID())->post->post_title;
+                $subject    = "New Registration for " . $eventTitle;
+                $url        = get_permalink($event->getID()) . '?verification=' . $_POST['email'];
+                ob_start();
+                ?>Dear <?= $_POST['first_name'] . ' ' . $_POST['first_name'] ?>lick <a href="<?= $url ?>">here</a> to verify your registration for <?= $eventTitle ?>.<?php
+                wp_mail($_POST['email'], $subject, ob_get_clean());
             } else {
                 if (is_user_logged_in()) {
                     Registration::createNew($event, new User(wp_get_current_user()));
