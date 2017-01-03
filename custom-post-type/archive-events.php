@@ -4,14 +4,16 @@ $args = array(
     'posts_per_page' => 10,
     'paged'          => get_query_var('paged'),
     'post_type'      => 'events',
-    'meta_key'       => 'start_date',
+    'meta_key'       => 'start',
     'meta_value'     => date("Y-m-d", time()),
     'orderby'        => 'meta_value',
+    'groupby'        => 'meta_value',
 );
 
 $args['meta_compare'] = '>=';
 $args['order']        = 'ASC';
 $upcomingEvents       = new WP_Query($args);
+//SSV_General::var_export($upcomingEvents->request, 1);
 
 $args['posts_per_page'] = 10 - $upcomingEvents->post_count;
 $args['meta_compare']   = '<';
@@ -20,7 +22,7 @@ $pastEvents             = new WP_Query($args);
 #endregion
 
 #region base layout
-get_header()
+get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
         <div class="row">
@@ -54,7 +56,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
 {
     $hasUpcomingEvents = $upcomingEvents->have_posts();
     $hasPastEvents     = $pastEvents->have_posts();
-    if ($hasPastEvents || $hasPastEvents) {
+    if ($hasUpcomingEvents || $hasPastEvents) {
         if ($hasUpcomingEvents) {
             ?>
             <header class="full-width-entry-header" style="margin: 15px 0;">

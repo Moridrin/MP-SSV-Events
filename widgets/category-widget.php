@@ -3,6 +3,7 @@
 class ssv_event_category extends WP_Widget
 {
 
+    #region Construct
     public function __construct()
     {
         $widget_ops = array(
@@ -12,7 +13,9 @@ class ssv_event_category extends WP_Widget
         );
         parent::__construct('event_categories', __('Event Categories'), $widget_ops);
     }
+    #endregion
 
+    #region Widget
     public function widget($args, $instance)
     {
         static $first_dropdown = true;
@@ -83,7 +86,9 @@ class ssv_event_category extends WP_Widget
 
         echo $args['after_widget'];
     }
+    #endregion
 
+    #region Update
     public function update($new_instance, $old_instance)
     {
         $instance = $old_instance;
@@ -94,7 +99,9 @@ class ssv_event_category extends WP_Widget
 
         return $instance;
     }
+    #endregion
 
+    #region Form
     public function form($instance)
     {
         //Defaults
@@ -117,8 +124,8 @@ class ssv_event_category extends WP_Widget
             <label for="<?php echo $this->get_field_id('hierarchical'); ?>"><?php _e('Show hierarchy'); ?></label></p>
         <?php
     }
+    #endregion
 
 }
 
-// register widget
 add_action('widgets_init', create_function('', 'return register_widget("ssv_event_category");'));

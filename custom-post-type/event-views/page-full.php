@@ -1,16 +1,17 @@
 <?php
-function mp_ssv_add_registrations_to_content($content)
+#region Add Registrations to Content
+function mp_ssv_events_add_registrations_to_content($content)
 {
-    #region set variables or return
+    #region Init
     global $post;
     if ($post->post_type != 'events') {
         return $content;
     }
-    $event               = Event::get_by_id($post->ID);
+    $event               = Event::getByID($post->ID);
     $event_registrations = $event->getRegistrations();
     #endregion
 
-    #region add 'View Event' link when no "<!--more-->" tag is added
+    #region Add 'View Event' Link to Archive
     if ($post->post_type == 'events' && is_archive()) {
         if (strpos($content, 'class="more-link"') === false) {
             $content .= '<a href="' . get_permalink($post->ID) . '">View Event</a>';
@@ -20,20 +21,33 @@ function mp_ssv_add_registrations_to_content($content)
     #endregion
 
     #region Save POST Request
-    if (isset($_POST['submit']) && check_admin_referer('ssv_events_register_for_event')) {
+    if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            Registration::createNew(get_the_ID(), new FrontendMember(wp_get_current_user()));
-            $content = '<div class="card-panel primary">' . stripslashes(get_option('ssv_event_registration_message')) . '</div>' . $content;
+            if (get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL)) {
+                //TODO send email to confirm registration
+            } else {
+                if (is_user_logged_in()) {
+                    Registration::createNew($event, new User(wp_get_current_user()));
+                    $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+                } else {
+                    $args = array(
+                        'first_name' => $_POST['first_name'],
+                        'last_name'  => $_POST['last_name'],
+                        'email'      => $_POST['email'],
+                    );
+                    Registration::createNew($event, null, $args);
+                    $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+                }
+            }
         } elseif ($_POST['action'] == 'cancel') {
-            Registration::delete(get_the_ID(), new FrontendMember(wp_get_current_user()));
-            $content = '<div class="card-panel primary">' . stripslashes(get_option('ssv_event_cancellation_message')) . '</div>' . $content;
+            Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
+            $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
         }
-        $event               = Event::get_by_id($post->ID);
         $event_registrations = $event->getRegistrations();
     }
     #endregion
 
-    #region Add event registrations to content (if any)
+    #region Page Content
     ob_start();
     ?>
     <div class="row">
@@ -53,16 +67,16 @@ function mp_ssv_add_registrations_to_content($content)
                     <div class="col s9"><?= $event->getStart() ?></div>
                 <?php endif; ?>
             </div>
-            <?php #endregion
+            <?php
             ?>
             <?php if (count($event_registrations) > 0): ?>
                 <h3>Registrations</h3>
                 <ul class="collection with-header">
                     <?php foreach ($event_registrations as $event_registration) : ?>
-                        <?php /* @var $event_registration Registration */ ?>
+                        <?php /* @var Registration $event_registration */ ?>
                         <li class="collection-item avatar">
-                            <img src="<?= get_avatar_url($event_registration->email); ?>" alt="" class="circle">
-                            <span class="title"><?= $event_registration->firstName . ' ' . $event_registration->lastName ?></span>
+                            <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
+                            <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
                             <p><?= $event_registration->status ?></p>
                         </li>
                     <?php endforeach; ?>
@@ -74,25 +88,43 @@ function mp_ssv_add_registrations_to_content($content)
     #endregion
 
     #region Add registration button
-    if ($event->canRegister()) {
-        if (is_user_logged_in()) {
-            ?>
-            <form action="<?= get_permalink() ?>" method="POST">
-                <?php if ($event->isRegistered(FrontendMember::get_current_user())) : ?>
-                    <?php #region 'Cancel Registration' button ?>
-                    <input type="hidden" name="action" value="cancel">
-                    <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
-                    <?php wp_nonce_field('ssv_events_register_for_event'); ?>
-                    <?php #endregion ?>
-                <?php else : ?>
-                    <?php #region 'Register' button ?>
+    if ($event->isRegistrationPossible()) {
+        if ($event->canRegister()) {
+            if (is_user_logged_in()) {
+                ?>
+                <form action="<?= get_permalink() ?>" method="POST">
+                    <?php if (!$event->isRegistered()) : ?>
+                        <input type="hidden" name="action" value="register">
+                        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+                        <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                    <?php else : ?>
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
+                        <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                    <?php endif; ?>
+                </form>
+                <?php
+            } else {
+                ?>
+                <form action="<?= get_permalink() ?>" method="POST">
                     <input type="hidden" name="action" value="register">
+                    <div class="input-field">
+                        <input type="text" id="first_name" name="first_name" class="validate" required>
+                        <label for="first_name">First Name <span class="required">*</span></label>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" id="last_name" name="last_name" class="validate" required>
+                        <label for="last_name">Last Name <span class="required">*</span></label>
+                    </div>
+                    <div class="input-field">
+                        <input type="email" id="email" name="email" class="validate" required>
+                        <label for="email">Email <span class="required">*</span></label>
+                    </div>
                     <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
-                    <?php wp_nonce_field('ssv_events_register_for_event'); ?>
-                    <?php #endregion ?>
-                <?php endif; ?>
-            </form>
-            <?php
+                    <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                </form>
+                <?php
+            }
         } else {
             ?>
             <a href="/login" class="btn waves-effect waves-light">Login to Register</a>
@@ -105,45 +137,10 @@ function mp_ssv_add_registrations_to_content($content)
     return $content;
 }
 
-function ssv_get_date_time_and_location_block($post)
-{
-    $event = new Event($post);
-    ob_start();
-    ?>
-    <h1>When</h1>
-    <div class="row">
-        <div class="col s3">From</div>
-        <div class="col s9"><?php $event->echoStartDate(); ?></div>
-        <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
-            <div class="col s3">Till</div>
-            <div class="col s9"><?php $event->echoStartDate(); ?></div>
-        <?php endif; ?>
-    </div>
-    <a target="_blank" href="<?= $event->getGoogleCalendarURL(); ?>">Google Calendar</a>
-    <br/>
-    <a target="_blank" href="<?= $event->getLiveCalendarURL(); ?>">Live Calendar</a>
-    <?php if (!empty($event->getLocation())): ?>
-    <h1>Where</h1>
-    <?= $event->getLocation() ?>
-<?php endif; ?>
-    <?php
-    return ob_get_clean();
-}
+add_filter('the_content', 'mp_ssv_events_add_registrations_to_content');
+#endregion
 
-add_filter('the_content', 'mp_ssv_add_registrations_to_content');
-
-function mp_ssv_event_more_tag($more)
-{
-    global $post;
-    if ($post->post_type != 'events') {
-        return $more;
-    }
-    $more = 'ESAC';
-    return $more;
-}
-
-add_filter('excerpt_more', 'mp_ssv_event_more_tag');
-
+#region Custom Expert Length (disabled)
 function mp_ssv_custom_excerpt_length($length)
 {
     global $post;
@@ -153,4 +150,5 @@ function mp_ssv_custom_excerpt_length($length)
     return 200;
 }
 
-add_filter('excerpt_length', 'mp_ssv_custom_excerpt_length', 999);
+//add_filter('excerpt_length', 'mp_ssv_custom_excerpt_length', 999);
+#endregion

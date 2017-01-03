@@ -6,171 +6,196 @@
  * Date: 25-7-16
  * Time: 0:08
  */
-
-global $wpdb;
-define(
-    'TABLE_NAME_TMP',
-    $wpdb->prefix . "ssv_event_registration"
-);
-
 class Registration
 {
+    #region Constants
     const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
-    const STATUS_REJECTED = 'denied';
-    const TABLE_NAME = TABLE_NAME_TMP;
+    const STATUS_DENIED = 'denied';
 
-    /**
-     * @var string One of the STATUS_ constants.
-     */
+    const MODE_DISABLED = 'disabled';
+    const MODE_MEMBERS_ONLY = 'members_only';
+    const MODE_EVERYONE = 'everyone';
+    #endregion
+
+    #region Variables
+    /** @var int */
+    public $registrationID;
+
+    /** @var Event */
+    public $event;
+
+    /** @var string One of the STATUS_ constants. */
     public $status;
 
-    /**
-     * @var FrontendMember
-     */
-    public $member;
+    /** @var User */
+    public $user;
+    #endregion
 
-    /**
-     * @var null|string
-     */
-    public $firstName;
-
-    /**
-     * @var null|string
-     */
-    public $lastName;
-
-    /**
-     * @var null|string
-     */
-    public $email;
-
+    #region Construct
     /**
      * Registration constructor.
      *
-     * @param int                 $eventId
-     * @param string              $status
-     * @param FrontendMember|null $member
-     * @param string|null         $first_name
-     * @param string|null         $last_name
-     * @param string|null         $email
+     * @param int       $registrationID
+     * @param Event     $event
+     * @param string    $status
+     * @param User|null $user
      */
-    public function __construct($eventId, $status, $member = null, $first_name = null, $last_name = null, $email = null)
+    private function __construct($registrationID, $event = null, $status = null, $user = null)
     {
-        $this->status = $status;
-        if ($member != null) {
-            $this->member    = $member;
-            $this->firstName = $member->first_name;
-            $this->lastName  = $member->last_name;
-            $this->email     = $member->user_email;
+        global $wpdb;
+        $tableName = SSV_Events::TABLE_REGISTRATION;
+
+        $this->registrationID = $registrationID;
+
+        if ($event == null) {
+            $this->event = Event::getByID($wpdb->get_var("SELECT eventID FROM $tableName WHERE ID = $registrationID"));
         } else {
-            $this->firstName = $first_name;
-            $this->lastName  = $last_name;
-            $this->email     = $email;
+            $this->event = $event;
+        }
+
+        if ($status == null) {
+            $this->status = $wpdb->get_var("SELECT registration_status FROM $tableName WHERE ID = $registrationID");
+        } else {
+            $this->status = $status;
+        }
+
+        if ($status == null) {
+            $this->user = User::getByID($wpdb->get_var("SELECT userID FROM $tableName WHERE ID = $registrationID"));
+        } else {
+            $this->user = $user;
         }
     }
 
+    /**
+     * @param Event $event
+     * @param User  $user
+     *
+     * @return Registration
+     */
+    public static function getByEventAndUser($event, $user)
+    {
+        global $wpdb;
+        $tableName      = SSV_Events::TABLE_REGISTRATION;
+        $eventID        = $event->getID();
+        $registrationID = $wpdb->get_var("SELECT ID FROM $tableName WHERE eventID = $eventID AND userID = $user->ID");
+        return new Registration($registrationID);
+    }
+
+    /**
+     * @param int $registrationID
+     *
+     * @return Registration
+     */
+    public static function getByID($registrationID)
+    {
+        return new Registration($registrationID);
+    }
+    #endregion
+
+    #region createNew($event, $user, $args)
     /**
      * This function creates the database entries, sends an email to the event author and returns the newly created Registration object.
      *
-     * @param int                 $eventId
-     * @param FrontendMember|null $member
-     * @param string|null         $first_name
-     * @param string|null         $last_name
-     * @param string|null         $email
+     * @param Event     $event
+     * @param User|null $user
+     * @param string[]  $args
      *
      * @return Registration
      */
-    public static function createNew($eventId, $member = null, $first_name = null, $last_name = null, $email = null)
+    public static function createNew($event, $user = null, $args = array())
     {
-        $status = get_option('ssv_event_default_registration_status');
+        $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
         global $wpdb;
-        if ($member != null) {
+        $wpdb->insert(
+            SSV_Events::TABLE_REGISTRATION,
+            array(
+                'userID'              => $user ? $user->ID : null,
+                'eventID'             => $event->getID(),
+                'registration_status' => $status,
+            ),
+            array(
+                '%d',
+                '%d',
+                '%s',
+            )
+        );
+        $registrationID = $wpdb->insert_id;
+        foreach ($args as $key => $value) {
             $wpdb->insert(
-                Registration::TABLE_NAME,
+                SSV_Events::TABLE_REGISTRATION_META,
                 array(
-                    'userID'  => $member->ID,
-                    'eventID' => $eventId,
-                    'status'  => $status,
+                    'registrationID' => $registrationID,
+                    'meta_key'       => $key,
+                    'meta_value'     => $value,
                 ),
                 array(
                     '%d',
-                    '%d',
-                    '%s',
-                )
-            );
-        } elseif ($first_name != null && $last_name != null && $email != null) {
-            $wpdb->insert(
-                Registration::TABLE_NAME,
-                array(
-                    'eventID'    => $eventId,
-                    'status'     => $status,
-                    'first_name' => $_POST['first_name'],
-                    'last_name'  => $_POST['last_name'],
-                    'email'      => $_POST['email'],
-                ),
-                array(
-                    '%d',
-                    '%s',
-                    '%s',
                     '%s',
                     '%s',
                 )
             );
         }
 
-        $registration = new Registration($eventId, $status, $member, $first_name, $last_name, $email);
-
-        if (get_option('ssv_event_email_registration_confirmation', false)) {
-            $eventTitle = Event::get_by_id($eventId)->post->post_title;
-            $to         = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
+        $registration = new Registration($registrationID, $event, $status, $user);
+        if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
+            $eventTitle = Event::getByID($event->getID())->post->post_title;
+            $to         = User::getByID(Event::getByID($event->getID())->post->post_author)->user_email;
             $subject    = "New Registration for " . $eventTitle;
-            if ($member != null) {
-                $display_name = $member->display_name;
+            if ($user != null) {
+                $message = 'User ' . $user->display_name . ' has registered for ' . $eventTitle . '.';
             } else {
-                $display_name = $_POST['first_name'] . " " . $_POST['last_name'];
+                $message = 'Someone has registered for ' . $eventTitle . ' with the following information:<br/>';
+                foreach ($args as $key => $value) {
+                    $message .= $key . ': ' . $value;
+                }
             }
-            $message = $display_name . ' has just registered for ' . $eventTitle . '.';
             wp_mail($to, $subject, $message);
         }
-        do_action('mp_ssv_event_registration', $registration);
+        do_action(SSV_Events::HOOK_REGISTRATION, $registration);
 
         return $registration;
     }
+    #endregion
 
+    #region cancel()
     /**
-     * This function removes the database entries and sends an email to the event author.
-     *
-     * @param int            $eventId
-     * @param FrontendMember $member
+     * This function removes the database entries and sends an email to the event author (if needed).
      */
-    public static function delete($eventId, $member)
+    public function cancel()
     {
         global $wpdb;
-        $wpdb->delete(Registration::TABLE_NAME, array('userID' => $member->ID, 'eventID' => $eventId));
+        $userID  = $this->user->ID;
+        $eventID = $this->event->getID();
+        $wpdb->delete(SSV_Events::TABLE_REGISTRATION, array('userID' => $userID, 'eventID' => $eventID));
+        $wpdb->delete(SSV_Events::TABLE_REGISTRATION_META, array('registrationID' => $this->registrationID));
 
-        $eventTitle = Event::get_by_id($eventId)->post->post_title;
-        $to         = FrontendMember::get_by_id(Event::get_by_id($eventId)->post->post_author)->user_email;
-        $subject    = "cancellation for " . $eventTitle;
-        $message    = $member->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
-        wp_mail($to, $subject, $message);
+        if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
+            $eventTitle = $this->event->post->post_title;
+            $to         = User::getByID($this->event->post->post_author)->ID;
+            $subject    = "cancellation for " . $eventTitle;
+            $message    = $this->user->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
+            wp_mail($to, $subject, $message);
+        }
     }
+    #endregion
 
+    #region getMeta($key, $userMeta)
     /**
-     * @param $eventId
-     * @param $event_registration object the database entry
+     * @param      $key
+     * @param bool $userMeta true if the meta is user_meta (name, email, etc.).
      *
-     * @return Registration
+     * @return null|string with the value matched by the key.
      */
-    public static function fromDatabase($eventId, $event_registration)
+    public function getMeta($key, $userMeta = true)
     {
-        return new Registration(
-            $eventId,
-            $event_registration->status,
-            FrontendMember::get_by_id($event_registration->userID),
-            $event_registration->first_name,
-            $event_registration->last_name,
-            $event_registration->email
-        );
+        if ($userMeta && $this->user !== null) {
+            return $this->user->getMeta($key);
+        } else {
+            global $wpdb;
+            $tableName = SSV_Events::TABLE_REGISTRATION_META;
+            return $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
+        }
     }
+    #endregion
 }

@@ -3,13 +3,20 @@
  * Plugin Name: SSV Events
  * Plugin URI: http://moridrin.com/ssv-events
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
- * Version: 1.0
+ * Version: 1.3.0
  * Author: Jeroen Berkvens
  * Author URI: http://nl.linkedin.com/in/jberkvens/
  * License: WTFPL
  * License URI: http://www.wtfpl.net/txt/copying/
  */
+if (!defined('ABSPATH')) {
+    exit;
+}
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1);
 
+#region Require Once
 require_once 'general/general.php';
 
 require_once "options/options.php";
@@ -17,70 +24,144 @@ require_once "options/options.php";
 require_once "models/Event.php";
 require_once "models/Registration.php";
 
-require_once 'custom-post-type/functions.php';
 require_once "custom-post-type/post-type.php";
 require_once "custom-post-type/event-views/page-full.php";
 
 require_once "widgets/category-widget.php";
+#endregion
 
-require_once "ssv-integration/ssv-frontend-members/profile-page-content.php";
-
+#region SSV_Events class
+global $wpdb;
 define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
+define('SSV_EVENTS_REGISTRATION_TABLE', $wpdb->prefix . "ssv_event_registration");
+define('SSV_EVENTS_REGISTRATION_META_TABLE', $wpdb->prefix . "ssv_event_registration_meta");
 
-function mp_ssv_register_ssv_events()
+class SSV_Events
 {
-    /* Database */
-    global $wpdb;
-    /** @noinspection PhpIncludeInspection */
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    $charset_collate = $wpdb->get_charset_collate();
-    $table_name      = $wpdb->prefix . "ssv_event_registration";
-    $sql
-                     = "
-		CREATE TABLE $table_name (
-			id bigint(20) NOT NULL AUTO_INCREMENT,
-			userID bigint(20),
-			eventID bigint(20) NOT NULL,
-			status text NOT NULL,
-			first_name varchar(30),
-			last_name varchar(30),
-			email varchar(30),
-			UNIQUE KEY id (id)
-		) $charset_collate;";
-    $wpdb->query($sql);
+    #region Constants
+    const PATH = SSV_EVENTS_PATH;
 
-    /* Options */
-    update_option('ssv_event_guest_registration', false);
-    update_option('ssv_event_default_registration_status', 'pending');
-    update_option('ssv_event_registration_message', 'Your registration is pending.');
-    update_option('ssv_event_cancellation_message', 'Your registration is canceled.');
-    update_option('ssv_event_email_registration_confirmation', true);
-    update_option('ssv_event_email_registration_status_changed', true);
-    update_option('ssv_event_email_registration_verify', true);
+    const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
+    const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
+
+    const HOOK_REGISTRATION = 'mp_ssv_event__hook_registration';
+
+    const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
+    const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
+    const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
+    const OPTION_EMAIL_AUTHOR = 'ssv_events__email_author';
+    const OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED = 'ssv_events__email_on_registration_status_changed';
+    const OPTION_VERIFY_REGISTRATION_BY_EMAIL = 'ssv_events__verify_registration_by_email';
+    const OPTION_PUBLISH_ERROR = 'ssv_events__publish_error';
+
+    const ADMIN_REFERER_OPTIONS = 'ssv_events__admin_referer_options';
+    const ADMIN_REFERER_REGISTRATION = 'ssv_events__admin_referer_registration';
+    #endregion
+
+    #region resetOptions()
+    /**
+     * This function sets all the options for this plugin back to their default value
+     */
+    public static function resetOptions()
+    {
+        update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
+        update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
+        update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
+        update_option(self::OPTION_EMAIL_AUTHOR, true);
+        update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
+        update_option(self::OPTION_VERIFY_REGISTRATION_BY_EMAIL, false);
+        update_option(self::OPTION_PUBLISH_ERROR, false);
+    }
+
+    #endregion
+
+    public static function CLEAN_INSTALL() {
+        mp_ssv_uninstall_ssv_events();
+        mp_ssv_events_register_plugin();
+    }
 }
 
-register_activation_hook(__FILE__, 'mp_ssv_register_ssv_events');
+#endregion
 
+#region Register
+function mp_ssv_events_register_plugin()
+{
+    global $wpdb;
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    $charset_collate = $wpdb->get_charset_collate();
+
+    #region Registration Table
+    $table_name = SSV_Events::TABLE_REGISTRATION;
+    $sql
+                = "
+		CREATE TABLE $table_name (
+			ID bigint(20) NOT NULL AUTO_INCREMENT,
+			eventID bigint(20) NOT NULL,
+			userID bigint(20),
+			registration_status VARCHAR(15) NOT NULL DEFAULT 'pending',
+			PRIMARY KEY (ID)
+		) $charset_collate;";
+    $wpdb->query($sql);
+    #endregion
+
+    #region Registration Meta Table
+    $table_name = SSV_Events::TABLE_REGISTRATION_META;
+    $sql
+                = "
+		CREATE TABLE $table_name (
+			ID bigint(20) NOT NULL AUTO_INCREMENT,
+			registrationID bigint(20) NOT NULL,
+			meta_key VARCHAR(255) NOT NULL,
+			meta_value VARCHAR(255),
+			PRIMARY KEY (ID)
+		) $charset_collate;";
+    $wpdb->query($sql);
+    #endregion
+
+    SSV_Events::resetOptions();
+}
+
+register_activation_hook(__FILE__, 'mp_ssv_events_register_plugin');
+#endregion
+
+#region Unregister
 function mp_ssv_unregister_ssv_events()
 {
     //Nothing to do here.
 }
 
 register_deactivation_hook(__FILE__, 'mp_ssv_unregister_ssv_events');
+#endregion
 
+#region UnInstall
 function mp_ssv_uninstall_ssv_events()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . "ssv_event_registration";
-    $sql        = "DROP TABLE IF_EXISTS $table_name;";
+    $wpdb->show_errors();
+    $table_name = SSV_Events::TABLE_REGISTRATION;
+    $sql        = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
+    $table_name = SSV_Events::TABLE_REGISTRATION_META;
+    $sql        = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
 }
 
 register_uninstall_hook(__FILE__, 'mp_ssv_uninstall_ssv_events');
+#endregion
 
-function mp_ssv_events_enquire_scripts()
+#region Reset Options
+/**
+ * This function will reset the events options if the admin referer originates from the SSV Events plugin.
+ *
+ * @param $admin_referer
+ */
+function mp_ssv_events_reset_options($admin_referer)
 {
-//    wp_enqueue_script('ssv_events_init', plugin_dir_path(__FILE__) . '/js/init.js', array('jquery'));
+    if (!starts_with($admin_referer, 'ssv_events__')) {
+        return;
+    }
+    SSV_Events::resetOptions();
 }
 
-add_action('wp_enqueue_scripts', 'mp_ssv_events_enquire_scripts');
+add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
+#endregion

@@ -8,41 +8,27 @@
  */
 class Event
 {
-    /**
-     * @var WP_Post
-     */
+    #region Variables
+    /** @var WP_Post */
     public $post;
 
-    /**
-     * @var int the ID of the WP_Post
-     */
-    public $ID;
-
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     private $start;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     private $end;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $location;
 
-    /**
-     * @var bool
-     */
-    private $registration_enabled;
+    /** @var string */
+    private $registration;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $registrations;
+    #endregion
 
+    #region Construct
     /**
      * Event constructor.
      *
@@ -50,27 +36,11 @@ class Event
      */
     public function __construct($post)
     {
-        $this->post                 = $post;
-        $this->ID                   = $post->ID;
-        $this->start                = DateTime::createFromFormat(
-            'Y-m-d H:i',
-            get_post_meta($post->ID, 'start', true)
-        );
-        $this->start                = $this->start
-            ?: DateTime::createFromFormat(
-                'Y-m-d H:i',
-                get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true)
-            );
-        $this->end                  = DateTime::createFromFormat(
-            'Y-m-d H:i',
-            get_post_meta($post->ID, 'end', true)
-        );
-        $this->end                  = DateTime::createFromFormat(
-            'Y-m-d H:i',
-            get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true)
-        );
-        $this->location             = get_post_meta(get_the_ID(), 'location', true);
-        $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
+        $this->post         = $post;
+        $this->start        = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
+        $this->end          = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
+        $this->location     = get_post_meta($post->ID, 'location', true);
+        $this->registration = get_post_meta($post->ID, 'registration', true);
     }
 
     /**
@@ -78,49 +48,63 @@ class Event
      *
      * @return Event
      */
-    public static function get_by_id($id)
+    public static function getByID($id)
     {
         return new Event(get_post($id));
     }
+    #endregion
 
+    #region getID()
     /**
      * @return int
      */
-    public function getPostId()
+    public function getID()
     {
         return $this->post->ID;
     }
+    #endregion
 
+    #region getStart($format)
     /**
+     * @param null|string $format
+     *
      * @return null|string
      */
-    public function getStart()
+    public function getStart($format = null)
     {
         if (!$this->start) {
             return null;
         }
         if ($this->start->format('H:i') != '00:00') {
-            return $this->start->format('Y-m-d H:i');
+            $format = $format ?: 'Y-m-d H:i';
         } else {
-            return $this->start->format('Y-m-d');
+            $format = $format ?: 'Y-m-d';
         }
+        return $this->start->format($format);
     }
+    #endregion
 
+    #region getEnd($format)
     /**
+     * @param null|string $format
+     *
      * @return null|string
      */
-    public function getEnd()
+    public function getEnd($format = null)
     {
         if (!$this->end) {
             return null;
         }
-        if ($this->end->format('H:i') != '00:00') {
-            return $this->end->format('Y-m-d H:i');
+        if ($this->start->format('H:i') != '00:00') {
+            $format = $format ?: 'Y-m-d H:i';
         } else {
-            return $this->end->format('Y-m-d');
+            $format = $format ?: 'Y-m-d';
         }
+        return $this->end->format($format);
     }
+    #endregion
 
+    #region getLocation()
     /**
      * @return string
      */
@@ -128,7 +112,9 @@ class Event
     {
         return $this->location;
     }
+    #endregion
 
+    #region getGoogleCalendarURL()
     /**
      * @return string URL to create Google Calendar Event.
      */
@@ -147,7 +133,9 @@ class Event
         }
         return $URL;
     }
+    #endregion
 
+    #region getLiveCalendarURL()
     /**
      * @return string URL to create Live (Hotmail) Event.
      */
@@ -167,7 +155,9 @@ class Event
         }
         return $URL;
     }
+    #endregion
 
+    #region isValid()
     /**
      * @return bool true if the Event is valid (all mandatory fields are filled).
      */
@@ -178,42 +168,97 @@ class Event
         }
         return true;
     }
+    #endregion
 
+    #region isPublished()
     /**
      * @return bool true if the event is published
      */
     public function isPublished()
     {
-        if ($this->post->post_status == 'publish') {
-            return true;
-        }
-        return false;
+        return $this->post->post_status == 'publish';
     }
+    #endregion
 
-    public function canRegister()
-    {
-        return $this->isRegistrationEnabled() && $this->start > new DateTime();
-    }
-
+    #region isRegistrationEnabled()
     /**
      * @return bool
      */
     public function isRegistrationEnabled()
     {
-        return $this->registration_enabled;
+        return $this->registration != Registration::MODE_DISABLED;
     }
+    #endregion
 
+    #region isRegistrationMembersOnly()
     /**
-     * @param int|WP_User|FrontendMember|null $user use null to test with the current user.
+     * @return bool
+     */
+    public function isRegistrationMembersOnly()
+    {
+        return $this->registration == Registration::MODE_MEMBERS_ONLY;
+    }
+    #endregion
+
+    #region isRegistrationPossible()
+    /**
+     * This function returns if it is currently possible for someone to register.
+     *
+     * @return bool
+     */
+    public function isRegistrationPossible()
+    {
+        switch ($this->registration) {
+            case Registration::MODE_EVERYONE:
+            case Registration::MODE_MEMBERS_ONLY:
+                return $this->start > new DateTime();
+                break;
+            case Registration::MODE_DISABLED:
+            default:
+                return false;
+                break;
+        }
+    }
+    #endregion
+
+    #region canRegister()
+    /**
+     * This method returns if you can currently register (or unregister).
+     *
+     * @return bool true if you currently can register or unregister.
+     */
+    public function canRegister()
+    {
+        switch ($this->registration) {
+            case Registration::MODE_EVERYONE:
+                return $this->start > new DateTime();
+                break;
+            case Registration::MODE_MEMBERS_ONLY:
+                return is_user_logged_in() && $this->start > new DateTime();
+                break;
+            case Registration::MODE_DISABLED:
+            default:
+                return false;
+                break;
+        }
+    }
+    #endregion
+
+    #region isRegistered($user)
+    /**
+     * @param int|WP_User|null $user use null to test with the current user.
      *
      * @return bool
      */
     public function isRegistered($user = null)
     {
+        if ($user == null && !is_user_logged_in()) {
+            return false;
+        }
         $userID = null;
         if (is_int($user)) {
             $userID = $user;
-        } elseif ($user instanceof WP_User || $user instanceof FrontendMember) {
+        } elseif ($user instanceof WP_User) {
             $userID = $user->ID;
         } else {
             $userID = get_current_user_id();
@@ -221,14 +266,16 @@ class Event
         $this->updateRegistrations();
         if (count($this->registrations) > 0) {
             foreach ($this->registrations as $registration) {
-                if ($registration->member->ID == $userID) {
+                if ($registration->user->ID == $userID) {
                     return true;
                 }
             }
         }
         return false;
     }
+    #endregion
 
+    #region getRegistrations()
     /**
      * @param bool $update set to false if you don't require a new update from the database.
      *
@@ -245,12 +292,13 @@ class Event
     public function updateRegistrations()
     {
         global $wpdb;
-        $table_name          = $wpdb->prefix . "ssv_event_registration";
-        $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE eventID = $this->ID");
-        if (!empty($event_registrations)) {
-            foreach ($event_registrations as $event_registration) {
-                $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
-            }
+        $eventID             = $this->getID();
+        $tableName           = SSV_Events::TABLE_REGISTRATION;
+        $eventRegistrations  = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
+        $this->registrations = array();
+        foreach ($eventRegistrations as $eventRegistration) {
+            $this->registrations[] = Registration::getByID($eventRegistration->ID);
         }
     }
+    #endregion
 }
