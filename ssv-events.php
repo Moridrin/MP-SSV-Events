@@ -33,6 +33,7 @@ require_once "widgets/category-widget.php";
 #region SSV_Events class
 global $wpdb;
 define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
+define('SSV_EVENTS_URL', plugins_url() . '/ssv-events/');
 define('SSV_EVENTS_REGISTRATION_TABLE', $wpdb->prefix . "ssv_event_registration");
 define('SSV_EVENTS_REGISTRATION_META_TABLE', $wpdb->prefix . "ssv_event_registration_meta");
 
@@ -40,6 +41,7 @@ class SSV_Events
 {
     #region Constants
     const PATH = SSV_EVENTS_PATH;
+    const URL = SSV_EVENTS_URL;
 
     const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
     const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
@@ -48,6 +50,7 @@ class SSV_Events
 
     const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
     const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
+    const OPTION_REGISTRATION_VERIFICATION_MESSAGE = 'ssv_events__registration_verification_message';
     const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
     const OPTION_EMAIL_AUTHOR = 'ssv_events__email_author';
     const OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED = 'ssv_events__email_on_registration_status_changed';
@@ -66,6 +69,7 @@ class SSV_Events
     {
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
+        update_option(self::OPTION_REGISTRATION_VERIFICATION_MESSAGE, 'An email has been send to verify your registration.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);

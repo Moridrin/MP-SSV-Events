@@ -13,10 +13,11 @@ function ssv_events_options_page_content()
         } else {
             update_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS, $_POST['default_registration_status']);
             update_option(SSV_Events::OPTION_REGISTRATION_MESSAGE, $_POST['registration_message']);
+            update_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE, $_POST['registration_verification_message']);
             update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, $_POST['cancellation_message']);
             update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
-            update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
             update_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL, filter_var($_POST['verify_registration_by_email'], FILTER_VALIDATE_BOOLEAN));
+            update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
         }
     }
     ?>
@@ -40,6 +41,10 @@ function ssv_events_options_page_content()
                     <td><textarea name="registration_message" class="large-text" title="Registration Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE))); ?></textarea></td>
                 </tr>
                 <tr valign="top">
+                    <th scope="row">Registration Message</th>
+                    <td><textarea name="registration_verification_message" class="large-text" title="Registration Verification Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE))); ?></textarea></td>
+                </tr>
+                <tr valign="top">
                     <th scope="row">Cancellation Message</th>
                     <td><textarea name="cancellation_message" class="large-text" title="cancellation Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE))); ?></textarea></td>
                 </tr>
@@ -57,8 +62,8 @@ function ssv_events_options_page_content()
                     <th scope="row">Verify Email</th>
                     <td>
                         <label>
-                            <input type="hidden" name="email_on_registration_status_changed" value="false"/>
-                            <input type="checkbox" name="email_on_registration_status_changed" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED) ? 'checked' : '' ?>/>
+                            <input type="hidden" name="verify_registration_by_email" value="false"/>
+                            <input type="checkbox" name="verify_registration_by_email" value="true" <?= get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL) ? 'checked' : '' ?>/>
                             The registrant gets an email with an unique link. The registrant needs to follow this link to finish his/her registration.
                         </label>
                     </td>
@@ -67,8 +72,8 @@ function ssv_events_options_page_content()
                     <th scope="row">Registration Status Changed</th>
                     <td>
                         <label>
-                            <input type="hidden" name="verify_registration_by_email" value="false"/>
-                            <input type="checkbox" name="verify_registration_by_email" value="true" <?= get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL) ? 'checked' : '' ?>/>
+                            <input type="hidden" name="email_on_registration_status_changed" value="false"/>
+                            <input type="checkbox" name="email_on_registration_status_changed" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED) ? 'checked' : '' ?>/>
                             When an event admin changes someones registration, the registrant will receive and email on the status change.
                         </label>
                     </td>

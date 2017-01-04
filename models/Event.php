@@ -266,7 +266,7 @@ class Event
         $this->updateRegistrations();
         if (count($this->registrations) > 0) {
             foreach ($this->registrations as $registration) {
-                if ($registration->user->ID == $userID) {
+                if ($registration->user != null && $registration->user->ID == $userID) {
                     return true;
                 }
             }

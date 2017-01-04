@@ -233,6 +233,7 @@ function mp_ssv_events_meta_boxes()
     add_meta_box('ssv_events_registration', 'Registration', 'ssv_events_registration', 'events', 'side', 'default');
     add_meta_box('ssv_events_date', 'Date', 'ssv_events_date', 'events', 'side', 'default');
     add_meta_box('ssv_events_location', 'Location', 'ssv_events_location', 'events', 'side', 'default');
+//    add_meta_box('ssv_events_registration_fields', 'Registration Fields', 'ssv_events_registration_fields', 'events', 'advanced', 'default');
     add_meta_box('ssv_events_registrations', 'Registrations', 'ssv_events_registrations', 'events', 'advanced', 'default');
 }
 
@@ -357,6 +358,12 @@ function ssv_events_registrations()
     </table>
     <?php
 }
+
+function ssv_events_registration_fields()
+{
+    wp_enqueue_script('input-field-selector', SSV_Events::URL . 'general/js/input-field-selector.js', array('jquery'));
+}
+add_action('admin_enqueue_scripts', 'ssv_events_registration_fields', 12);
 
 #endregion
 

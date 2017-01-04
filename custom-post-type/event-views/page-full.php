@@ -21,33 +21,42 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Confirm email
-    if ($_SERVER['REQUEST_METHOD'] != 'GET' && isset($_GET['verification'])) {
-        //TODO VERIFY!
+    if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['verification'])) {
+        $args = array(
+            'email'      => $_GET['email'],
+            'first_name' => $_GET['first_name'],
+            'last_name'  => $_GET['last_name'],
+        );
+        Registration::createNew($event, null, $args);
+        $content             = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+        $event_registrations = $event->getRegistrations();
     }
 
-        #region Save POST Request
+    #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            if (get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL)) {
+            if (is_user_logged_in()) {
+                Registration::createNew($event, new User(wp_get_current_user()));
+                $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+            } elseif (get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL)) {
                 $eventTitle = Event::getByID($event->getID())->post->post_title;
                 $subject    = "New Registration for " . $eventTitle;
-                $url        = get_permalink($event->getID()) . '?verification=' . $_POST['email'];
+                $email      = $_POST['email'];
+                $firstName  = $_POST['first_name'];
+                $lastName   = $_POST['last_name'];
+                $url        = get_permalink($event->getID()) . '?verification=' . $email . '&first_name=' . $firstName . '&last_name=' . $lastName;
                 ob_start();
-                ?>Dear <?= $_POST['first_name'] . ' ' . $_POST['first_name'] ?>lick <a href="<?= $url ?>">here</a> to verify your registration for <?= $eventTitle ?>.<?php
-                wp_mail($_POST['email'], $subject, ob_get_clean());
+                ?>Dear <?= $firstName . ' ' . $lastName ?>lick <a href="<?= $url ?>">here</a> to verify your registration for <?= $eventTitle ?>.<?php
+                wp_mail($email, $subject, ob_get_clean());
+                $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE)) . '</div>' . $content;
             } else {
-                if (is_user_logged_in()) {
-                    Registration::createNew($event, new User(wp_get_current_user()));
-                    $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
-                } else {
-                    $args = array(
-                        'first_name' => $_POST['first_name'],
-                        'last_name'  => $_POST['last_name'],
-                        'email'      => $_POST['email'],
-                    );
-                    Registration::createNew($event, null, $args);
-                    $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
-                }
+                $args = array(
+                    'first_name' => $_POST['first_name'],
+                    'last_name'  => $_POST['last_name'],
+                    'email'      => $_POST['email'],
+                );
+                Registration::createNew($event, null, $args);
+                $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
             }
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
