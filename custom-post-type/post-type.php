@@ -233,7 +233,7 @@ function mp_ssv_events_meta_boxes()
     add_meta_box('ssv_events_registration', 'Registration', 'ssv_events_registration', 'events', 'side', 'default');
     add_meta_box('ssv_events_date', 'Date', 'ssv_events_date', 'events', 'side', 'default');
     add_meta_box('ssv_events_location', 'Location', 'ssv_events_location', 'events', 'side', 'default');
-//    add_meta_box('ssv_events_registration_fields', 'Registration Fields', 'ssv_events_registration_fields', 'events', 'advanced', 'default');
+    add_meta_box('ssv_events_registration_fields', 'Registration Fields', 'ssv_events_registration_fields', 'events', 'advanced', 'default');
     add_meta_box('ssv_events_registrations', 'Registrations', 'ssv_events_registrations', 'events', 'advanced', 'default');
 }
 
@@ -361,9 +361,23 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
+    ?>
+    <table id="custom-fields-placeholder"></table>
+    <button type="button" onclick="mp_ssv_add_new_field()">Add Field</button>
+    <script>
+        i = 0;
+        function mp_ssv_add_new_field() {
+            mp_ssv_add_field('custom-fields-placeholder', i);
+            i++;
+        }
+    </script>
+    <?php
+}
+
+function testy() {
     wp_enqueue_script('input-field-selector', SSV_Events::URL . 'general/js/input-field-selector.js', array('jquery'));
 }
-add_action('admin_enqueue_scripts', 'ssv_events_registration_fields', 12);
+add_action('admin_enqueue_scripts', 'testy', 12);
 
 #endregion
 
