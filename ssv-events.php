@@ -79,7 +79,8 @@ class SSV_Events
 
     #endregion
 
-    public static function CLEAN_INSTALL() {
+    public static function CLEAN_INSTALL()
+    {
         mp_ssv_uninstall_ssv_events();
         mp_ssv_events_register_plugin();
     }

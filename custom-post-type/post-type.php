@@ -361,25 +361,8 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    ?>
-    <table id="custom-fields-placeholder" class="sortable"></table>
-    <button type="button" onclick="mp_ssv_add_new_field()">Add Field</button>
-    <script>
-        mp_ssv_sortable_table('custom-fields-placeholder');
-        i = 0;
-        function mp_ssv_add_new_field() {
-            mp_ssv_add_field('custom-fields-placeholder', i);
-            i++;
-        }
-    </script>
-    <?php
+    SSV_General::getCustomFieldsContainer('event_registration_fields');
 }
-
-function testy() {
-    wp_enqueue_script('mp-ssv-input-field-selector', SSV_Events::URL . 'general/js/mp-ssv-input-field-selector.js', array('jquery'));
-    wp_enqueue_script('mp-ssv-sortable-tables', SSV_Events::URL . 'general/js/mp-ssv-sortable-tables.js', array('jquery', 'jquery-ui-sortable'));
-}
-add_action('admin_enqueue_scripts', 'testy', 12);
 
 #endregion
 
@@ -407,6 +390,8 @@ function mp_ssv_events_save_meta($post_id)
     if (isset($_POST['location'])) {
         update_post_meta($post_id, 'location', $_POST['location']);
     }
+
+    $registrationFields = SSV_General::getCustomFieldsFromPost('event_registration_fields');
     return $post_id;
 }
 
