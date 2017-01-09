@@ -303,6 +303,7 @@ function ssv_events_registrations()
 
     $sql  = "SELECT * FROM $table WHERE eventID = $post->ID";
     $rows = json_decode(json_encode($wpdb->get_results($sql)), true);
+    /*
     ?>
     <table cellspacing="5" border="1">
         <tr>
@@ -357,11 +358,24 @@ function ssv_events_registrations()
         ?>
     </table>
     <?php
+    */
 }
 
 function ssv_events_registration_fields()
 {
+    global $post;
     SSV_General::getCustomFieldsContainer('event_registration_fields');
+    $fieldIDs = get_post_meta($post->ID, 'event_registration_field_ids', true);
+    if (is_array($fieldIDs)) {
+        ?>
+        <script>
+            <?php foreach($fieldIDs as $id): ?>
+            <?php $field = get_post_meta($post->ID, 'event_registration_fields_' . $id, true); ?>
+            mp_ssv_add_new_text_input_field('custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $field ?>);
+            <?php endforeach; ?>
+        </script>
+        <?php
+    }
 }
 
 #endregion
@@ -369,7 +383,6 @@ function ssv_events_registration_fields()
 #region Save Meta
 /**
  * @param $post_id
- * @param $post
  *
  * @return int the post_id
  */
@@ -392,8 +405,15 @@ function mp_ssv_events_save_meta($post_id)
     }
 
     $registrationFields = SSV_General::getCustomFieldsFromPost('event_registration_fields');
+    $registrationIDs    = array();
+    foreach ($registrationFields as $id => $field) {
+        /** @var Field $field */
+        update_post_meta($post_id, 'event_registration_fields_' . $id, $field->toJSON());
+        $registrationIDs[] = $id;
+    }
+    update_post_meta($post_id, 'event_registration_field_ids', $registrationIDs);
     return $post_id;
 }
 
-add_action('save_post', 'mp_ssv_events_save_meta', 1, 1);
+add_action('save_post_events', 'mp_ssv_events_save_meta');
 #endregion
