@@ -371,7 +371,7 @@ function ssv_events_registration_fields()
         <script>
             <?php foreach($fieldIDs as $id): ?>
             <?php $field = get_post_meta($post->ID, 'event_registration_fields_' . $id, true); ?>
-            mp_ssv_add_new_text_input_field('custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $field ?>);
+            mp_ssv_add_new_text_input_field('custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $field ?>, false);
             <?php endforeach; ?>
         </script>
         <?php
@@ -408,8 +408,12 @@ function mp_ssv_events_save_meta($post_id)
     $registrationIDs    = array();
     foreach ($registrationFields as $id => $field) {
         /** @var Field $field */
-        update_post_meta($post_id, 'event_registration_fields_' . $id, $field->toJSON());
-        $registrationIDs[] = $id;
+        if (!empty($field->title)) {
+            update_post_meta($post_id, 'event_registration_fields_' . $id, $field->toJSON());
+            $registrationIDs[] = $id;
+        } else {
+            delete_post_meta($post_id, 'event_registration_fields_' . $id);
+        }
     }
     update_post_meta($post_id, 'event_registration_field_ids', $registrationIDs);
     return $post_id;
