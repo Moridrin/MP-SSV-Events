@@ -13,7 +13,6 @@ $args = array(
 $args['meta_compare'] = '>=';
 $args['order']        = 'ASC';
 $upcomingEvents       = new WP_Query($args);
-//SSV_General::var_export($upcomingEvents->request, 1);
 
 $args['posts_per_page'] = 10 - $upcomingEvents->post_count;
 $args['meta_compare']   = '<';

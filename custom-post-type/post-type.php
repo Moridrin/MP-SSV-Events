@@ -370,8 +370,11 @@ function ssv_events_registration_fields()
         ?>
         <script>
             <?php foreach($fieldIDs as $id): ?>
-            <?php $field = get_post_meta($post->ID, 'event_registration_fields_' . $id, true); ?>
-            mp_ssv_add_new_text_input_field('custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $field ?>, false);
+            <?php $json = get_post_meta($post->ID, 'event_registration_fields_' . $id, true); ?>
+            <?php $field = json_decode($json); ?>
+            <?php $fieldType = $field->field_type; ?>
+            <?php $inputType = isset($field->input_type) ? $field->input_type : ''; ?>
+            mp_ssv_add_new_field('<?= $fieldType ?>', '<?= $inputType ?>', 'custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $json ?>, false);
             <?php endforeach; ?>
         </script>
         <?php
