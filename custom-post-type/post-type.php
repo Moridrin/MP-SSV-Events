@@ -365,7 +365,7 @@ function ssv_events_registration_fields()
 {
     global $post;
     $fieldIDs = get_post_meta($post->ID, 'event_registration_field_ids', true);
-    SSV_General::getCustomFieldsContainer('event_registration_fields', count($fieldIDs));
+    SSV_General::getCustomFieldsContainer('event_registration_fields', max($fieldIDs) + 1);
     if (is_array($fieldIDs)) {
         ?>
         <script>

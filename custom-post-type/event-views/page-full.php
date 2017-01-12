@@ -31,12 +31,17 @@ function mp_ssv_events_add_registrations_to_content($content)
         $content             = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
         $event_registrations = $event->getRegistrations();
     }
+    #endregion
 
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
             if (is_user_logged_in()) {
-                Registration::createNew($event, new User(wp_get_current_user()));
+                $args = array();
+                foreach ($event->getInputFieldNames() as $fieldName) {
+                    $args[$fieldName] = $_POST[$fieldName];
+                }
+                Registration::createNew($event, User::getCurrent(), $args);
                 $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
             } elseif (get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL)) {
                 $eventTitle = Event::getByID($event->getID())->post->post_title;
@@ -93,11 +98,19 @@ function mp_ssv_events_add_registrations_to_content($content)
                 <ul class="collection with-header">
                     <?php foreach ($event_registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
-                        <li class="collection-item avatar">
-                            <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
-                            <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                            <p><?= $event_registration->status ?></p>
-                        </li>
+                        <a href="#modal_<?= $event_registration->registrationID ?>">
+                            <li class="collection-item avatar">
+                                <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
+                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                                <p><?= $event_registration->status ?></p>
+                            </li>
+                        </a>
+                        <div id="modal_<?= $event_registration->registrationID ?>" class="modal">
+                            <div class="modal-content">
+                                <h4><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></h4>
+                                <p>A bunch of text</p>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
@@ -113,12 +126,11 @@ function mp_ssv_events_add_registrations_to_content($content)
                 ?>
                 <form action="<?= get_permalink() ?>" method="POST">
                     <?php if (!$event->isRegistered()) : ?>
-                        <input type="hidden" name="action" value="register">
-                        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+                        <?= $event->getRegistrationFields(); ?>
                         <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                     <?php else : ?>
                         <input type="hidden" name="action" value="cancel">
-                        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
+                        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Cancel Registration</button>
                         <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                     <?php endif; ?>
                 </form>

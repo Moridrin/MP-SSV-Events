@@ -300,5 +300,36 @@ class Event
             $this->registrations[] = Registration::getByID($eventRegistration->ID);
         }
     }
+
+    public function getInputFieldNames() {
+        $fieldNames = array();
+        $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
+        foreach ($fieldIDs as $id) {
+            $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
+            $field = Field::fromJSON($field);
+            if ($field instanceof InputField) {
+                /** @var InputField $field */
+                $fieldNames[] = $field->name;
+            }
+        }
+        return $fieldNames;
+    }
+
+    public function getRegistrationFields()
+    {
+        $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
+        ob_start();
+        ?><h1>Register</h1><?php
+        foreach ($fieldIDs as $id) {
+            $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
+            $field = Field::fromJSON($field);
+            echo $field->getHTML();
+        }
+        ?>
+        <input type="hidden" name="action" value="register">
+        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+        <?php
+        return ob_get_clean();
+    }
     #endregion
 }
