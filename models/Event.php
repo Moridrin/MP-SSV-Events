@@ -301,8 +301,17 @@ class Event
         }
     }
 
-    public function getInputFieldNames() {
-        $fieldNames = array();
+    /**
+     * @param bool $includeBase
+     *
+     * @return array
+     */
+    public function getRegistrationFieldNames($includeBase = true) {
+        if ($includeBase) {
+            $fieldNames = array('first_name', 'last_name', 'email');
+        } else {
+            $fieldNames = array();
+        }
         $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
         foreach ($fieldIDs as $id) {
             $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
@@ -315,6 +324,9 @@ class Event
         return $fieldNames;
     }
 
+    /**
+     * @return string
+     */
     public function getRegistrationFields()
     {
         $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);

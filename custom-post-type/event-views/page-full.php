@@ -38,7 +38,7 @@ function mp_ssv_events_add_registrations_to_content($content)
         if ($_POST['action'] == 'register') {
             if (is_user_logged_in()) {
                 $args = array();
-                foreach ($event->getInputFieldNames() as $fieldName) {
+                foreach ($event->getRegistrationFieldNames(false) as $fieldName) {
                     $args[$fieldName] = $_POST[$fieldName];
                 }
                 Registration::createNew($event, User::getCurrent(), $args);
@@ -95,22 +95,28 @@ function mp_ssv_events_add_registrations_to_content($content)
             ?>
             <?php if (count($event_registrations) > 0): ?>
                 <h3>Registrations</h3>
-                <ul class="collection with-header">
+                <ul class="collection with-header collapsible popout" data-collapsible="accordion">
                     <?php foreach ($event_registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
-                        <a href="#modal_<?= $event_registration->registrationID ?>">
-                            <li class="collection-item avatar">
+                        <li>
+                            <div class="collapsible-header collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
                                 <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
                                 <p><?= $event_registration->status ?></p>
-                            </li>
-                        </a>
-                        <div id="modal_<?= $event_registration->registrationID ?>" class="modal">
-                            <div class="modal-content">
-                                <h4><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></h4>
-                                <p>A bunch of text</p>
                             </div>
-                        </div>
+                            <div class="collapsible-body row" style="padding: 5px 10px;">
+                                <table class="striped">
+                                    <?php foreach ($event->getRegistrationFieldNames() as $name): ?>
+                                        <?php $value = $event_registration->getMeta($name); ?>
+                                        <?php $value = empty($value) ? '< empty >' : $value; ?>
+                                        <tr>
+                                            <th><?= $name ?></th>
+                                            <td><?= $value ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                            </div>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>

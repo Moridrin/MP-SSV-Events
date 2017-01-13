@@ -183,19 +183,18 @@ class Registration
     #region getMeta($key, $userMeta)
     /**
      * @param      $key
-     * @param bool $userMeta true if the meta is user_meta (name, email, etc.).
      *
      * @return null|string with the value matched by the key.
      */
-    public function getMeta($key, $userMeta = true)
+    public function getMeta($key)
     {
-        if ($userMeta && $this->user !== null) {
-            return $this->user->getMeta($key);
-        } else {
+        $value = isset($this->user) ? $this->user->getMeta($key) : null;
+        if (empty($value)) {
             global $wpdb;
             $tableName = SSV_Events::TABLE_REGISTRATION_META;
-            return $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
+            $value = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
         }
+        return $value;
     }
     #endregion
 }
