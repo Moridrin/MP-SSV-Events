@@ -64,6 +64,16 @@ class Event
     }
     #endregion
 
+    #region getTitle()
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->post->post_title;
+    }
+    #endregion
+
     #region getStart($format)
     /**
      * @param null|string $format
@@ -398,6 +408,7 @@ class Event
                         <?php if ($event_registration->status == Registration::STATUS_PENDING
                                   && is_user_logged_in()
                                   && User::getCurrent()->isBoard()
+                                  && !is_archive()
                         ): ?>
                             <div class="card-action">
                                 <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>

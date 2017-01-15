@@ -291,19 +291,8 @@ function ssv_events_registrations()
     global $post;
     global $wpdb;
     $table = SSV_Events::TABLE_REGISTRATION;
-
-    if (isset($_GET['registrationID'])) {
-        $wpdb->update(
-            $table,
-            array("status" => $_GET['status']),
-            array("id" => $_GET['registrationID']),
-            array('%s')
-        );
-    }
-
-    $sql  = "SELECT * FROM $table WHERE eventID = $post->ID";
-    $rows = json_decode(json_encode($wpdb->get_results($sql)), true);
-    /*
+    $sql   = "SELECT * FROM $table WHERE eventID = $post->ID";
+    $rows  = $wpdb->get_results($sql);
     ?>
     <table cellspacing="5" border="1">
         <tr>
@@ -313,59 +302,39 @@ function ssv_events_registrations()
             <th>Status</th>
         </tr>
         <?php
+        $i = 0;
         foreach ($rows as $row) {
-            $event      = get_post($row['eventID']);
-            $status     = $row['status'];
-            $first_name = $row['first_name'];
-            $last_name  = $row['last_name'];
-            $email      = $row['email'];
-            if (isset($row['userID'])) {
-                $user       = User::getByID($row['userID']);
-                $first_name = $user->first_name;
-                $last_name  = $user->last_name;
-                $email      = $user->user_email;
-            }
+            /** @var Registration $registration */
+            $registration = Registration::getByID($row->ID);
             ?>
             <tr>
-                <td><?php echo $first_name; ?></td>
-                <td><?php echo $last_name; ?></td>
-                <td><?php echo $email; ?></td>
+                <td><?= $registration->getMeta('first_name') ?></td>
+                <td><?= $registration->getMeta('last_name') ?></td>
+                <td><?= $registration->getMeta('email') ?></td>
                 <td>
-                    <form type="GET">
-                        <input type="hidden" name="post" value="<?= $post->ID ?>">
-                        <input type="hidden" name="action" value="edit">
-                        <input type="hidden" name="registrationID" value="<?php echo $row['id']; ?>">
-                        <input type="hidden" name="eventID" value="<?php echo $event->ID; ?>">
-                        <select name="status" onchange="this.form.submit()" title="<?= $this->title ?>">
-                            <option value="pending" <?php if ($status == 'pending') {
-                                echo 'selected';
-                            } ?>>pending
-                            </option>
-                            <option value="approved" <?php if ($status == 'approved') {
-                                echo 'selected';
-                            } ?>>approved
-                            </option>
-                            <option value="denied" <?php if ($status == 'denied') {
-                                echo 'selected';
-                            } ?>>denied
-                            </option>
-                        </select>
-                    </form>
+                    <input type="hidden" name="<?= $i ?>_post" value="<?= $post->ID ?>">
+                    <input type="hidden" name="<?= $i ?>_action" value="edit">
+                    <input type="hidden" name="<?= $i ?>_registrationID" value="<?= $registration->registrationID ?>">
+                    <select name="<?= $i ?>_status">
+                        <option value="pending" <?= $registration->status == 'pending' ? 'selected' : '' ?>>pending</option>
+                        <option value="approved" <?= $registration->status == 'approved' ? 'selected' : '' ?>>approved</option>
+                        <option value="denied" <?= $registration->status == 'denied' ? 'selected' : '' ?>>denied</option>
+                    </select>
                 </td>
             </tr>
             <?php
+            $i++;
         }
         ?>
     </table>
     <?php
-    */
 }
 
 function ssv_events_registration_fields()
 {
     global $post;
     $fieldIDs = get_post_meta($post->ID, 'event_registration_field_ids', true);
-    $id = is_array($fieldIDs) ? max($fieldIDs) + 1 : 0;
+    $id       = is_array($fieldIDs) ? max($fieldIDs) + 1 : 0;
     SSV_General::getCustomFieldsContainer('event_registration_fields', $id);
     if (is_array($fieldIDs)) {
         ?>
@@ -394,6 +363,17 @@ function mp_ssv_events_save_meta($post_id)
 {
     if (!current_user_can('edit_post', $post_id)) {
         return $post_id;
+    }
+    $i = 0;
+    while (isset($_POST[$i . '_post'])) {
+        global $wpdb;
+        $wpdb->update(
+            $table = SSV_Events::TABLE_REGISTRATION,
+            array("registration_status" => $_POST[$i . '_status']),
+            array("ID" => $_POST[$i . '_registrationID']),
+            array('%s')
+        );
+        $i++;
     }
     if (isset($_POST['registration'])) {
         update_post_meta($post_id, 'registration', $_POST['registration']);
