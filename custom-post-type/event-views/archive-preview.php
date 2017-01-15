@@ -47,9 +47,9 @@ $content             = get_the_content('');
                 </div>
             </div>
         </div>
-        <div class="card-action">
-            <a href="<?= get_permalink() ?>">View Event</a>
-        </div>
+        <footer class="card-action" style="background-color: #E6E6E6;">
+            <a href="<?= get_permalink() ?>" class="btn waves-effect waves-light">Full Post</a>
+        </footer>
         <div class="card-reveal" style="overflow: hidden;">
             <header class="entry-header">
                 <?php if (is_sticky() && is_home() && !is_paged()) : ?>
@@ -63,17 +63,7 @@ $content             = get_the_content('');
                         <?= $content ?>
                     </div>
                     <div class="col s12 m4">
-                        <ul class="collection with-header">
-                            <li class="collection-header"><h3>Registrations</h3></li>
-                            <?php foreach ($event_registrations as $event_registration) : ?>
-                                <?php /* @var $event_registration Registration */ ?>
-                                <li class="collection-item avatar">
-                                    <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
-                                    <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                    <p><?= $event_registration->status ?></p>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <?php $event->showRegistrations(); ?>
                     </div>
                 </div>
             <?php else : ?>

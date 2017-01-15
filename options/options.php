@@ -16,7 +16,6 @@ function ssv_events_options_page_content()
             update_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE, $_POST['registration_verification_message']);
             update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, $_POST['cancellation_message']);
             update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
-            update_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL, filter_var($_POST['verify_registration_by_email'], FILTER_VALIDATE_BOOLEAN));
             update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
         }
     }
@@ -55,16 +54,6 @@ function ssv_events_options_page_content()
                             <input type="hidden" name="email_on_registration" value="false"/>
                             <input type="checkbox" name="email_on_registration" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_AUTHOR) ? 'checked' : '' ?> />
                             When someone registers or cancels the event author will receive an email.
-                        </label>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Verify Email</th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="verify_registration_by_email" value="false"/>
-                            <input type="checkbox" name="verify_registration_by_email" value="true" <?= get_option(SSV_Events::OPTION_VERIFY_REGISTRATION_BY_EMAIL) ? 'checked' : '' ?>/>
-                            The registrant gets an email with an unique link. The registrant needs to follow this link to finish his/her registration.
                         </label>
                     </td>
                 </tr>

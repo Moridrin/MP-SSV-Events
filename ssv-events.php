@@ -54,7 +54,6 @@ class SSV_Events
     const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
     const OPTION_EMAIL_AUTHOR = 'ssv_events__email_author';
     const OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED = 'ssv_events__email_on_registration_status_changed';
-    const OPTION_VERIFY_REGISTRATION_BY_EMAIL = 'ssv_events__verify_registration_by_email';
     const OPTION_PUBLISH_ERROR = 'ssv_events__publish_error';
 
     const ADMIN_REFERER_OPTIONS = 'ssv_events__admin_referer_options';
@@ -73,7 +72,6 @@ class SSV_Events
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
-        update_option(self::OPTION_VERIFY_REGISTRATION_BY_EMAIL, false);
         update_option(self::OPTION_PUBLISH_ERROR, false);
     }
 

@@ -172,8 +172,8 @@ class Registration
 
         if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
             $eventTitle = $this->event->post->post_title;
-            $to         = User::getByID($this->event->post->post_author)->ID;
-            $subject    = "cancellation for " . $eventTitle;
+            $to         = User::getByID($this->event->post->post_author)->user_email;
+            $subject    = "Cancellation for " . $eventTitle;
             $message    = $this->user->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
             wp_mail($to, $subject, $message);
         }
@@ -192,9 +192,69 @@ class Registration
         if (empty($value)) {
             global $wpdb;
             $tableName = SSV_Events::TABLE_REGISTRATION_META;
-            $value = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
+            $value     = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
         }
         return $value;
+    }
+    #endregion
+
+    #region approve()
+    public function approve()
+    {
+        global $wpdb;
+        $table = SSV_Events::TABLE_REGISTRATION;
+        $wpdb->replace(
+            $table,
+            array(
+                "ID"                  => $this->registrationID,
+                "eventID"             => $this->event->getID(),
+                "userID"              => $this->user->ID,
+                "registration_status" => self::STATUS_APPROVED,
+            ),
+            array(
+                '%d',
+                '%d',
+                '%d',
+                '%s',
+            )
+        );
+        if (get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED)) {
+            $eventTitle = $this->event->post->post_title;
+            $to         = $this->getMeta('email');
+            $subject    = "Registration Approved";
+            $message    = 'Your registration for ' . $eventTitle . ' has been approved.';
+            wp_mail($to, $subject, $message);
+        }
+    }
+    #endregion
+
+    #region deny()
+    public function deny()
+    {
+        global $wpdb;
+        $table = SSV_Events::TABLE_REGISTRATION;
+        $wpdb->replace(
+            $table,
+            array(
+                "ID"                  => $this->registrationID,
+                "eventID"             => $this->event->getID(),
+                "userID"              => $this->user->ID,
+                "registration_status" => self::STATUS_DENIED,
+            ),
+            array(
+                '%d',
+                '%d',
+                '%d',
+                '%s',
+            )
+        );
+        if (get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED)) {
+            $eventTitle = $this->event->post->post_title;
+            $to         = $this->getMeta('email');
+            $subject    = "Registration Denied";
+            $message    = 'Your registration for ' . $eventTitle . ' has been denied.';
+            wp_mail($to, $subject, $message);
+        }
     }
     #endregion
 }

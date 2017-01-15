@@ -289,12 +289,18 @@ class Event
         return $this->registrations;
     }
 
+    #endregion
+
     public function updateRegistrations()
     {
         global $wpdb;
-        $eventID             = $this->getID();
-        $tableName           = SSV_Events::TABLE_REGISTRATION;
-        $eventRegistrations  = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
+        $eventID   = $this->getID();
+        $tableName = SSV_Events::TABLE_REGISTRATION;
+        if (is_user_logged_in() && User::getCurrent()->isBoard()) {
+            $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
+        } else {
+            $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
+        }
         $this->registrations = array();
         foreach ($eventRegistrations as $eventRegistration) {
             $this->registrations[] = Registration::getByID($eventRegistration->ID);
@@ -306,7 +312,8 @@ class Event
      *
      * @return array
      */
-    public function getRegistrationFieldNames($includeBase = true) {
+    public function getRegistrationFieldNames($includeBase = true)
+    {
         if ($includeBase) {
             $fieldNames = array('first_name', 'last_name', 'email');
         } else {
@@ -324,24 +331,83 @@ class Event
         return $fieldNames;
     }
 
-    /**
-     * @return string
-     */
-    public function getRegistrationFields()
+    public function showRegistrationForm()
     {
         $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
-        ob_start();
-        ?><h1>Register</h1><?php
-        foreach ($fieldIDs as $id) {
-            $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
-            $field = Field::fromJSON($field);
-            echo $field->getHTML();
+        ?>
+        <form action="<?= get_permalink() ?>" method="POST">
+            <h1>Register</h1>
+            <?php
+            if (!is_user_logged_in()) {
+                ?>
+                <input type="hidden" name="action" value="register">
+                <div class="input-field">
+                    <input type="text" id="first_name" name="first_name" class="validate" required>
+                    <label for="first_name">First Name <span class="required">*</span></label>
+                </div>
+                <div class="input-field">
+                    <input type="text" id="last_name" name="last_name" class="validate" required>
+                    <label for="last_name">Last Name <span class="required">*</span></label>
+                </div>
+                <div class="input-field">
+                    <input type="email" id="email" name="email" class="validate" required>
+                    <label for="email">Email <span class="required">*</span></label>
+                </div>
+                <?php
+            }
+            foreach ($fieldIDs as $id) {
+                $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
+                $field = Field::fromJSON($field);
+                echo $field->getHTML();
+            }
+            ?>
+            <input type="hidden" name="action" value="register">
+            <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button
+            <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+        </form>
+        <?php
+    }
+
+    public function showRegistrations($update = true)
+    {
+        if ($update) {
+            $this->updateRegistrations();
         }
         ?>
-        <input type="hidden" name="action" value="register">
-        <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+        <h3>Registrations</h3>
+        <ul class="collection with-header collapsible popout" data-collapsible="expandable">
+            <?php foreach ($this->registrations as $event_registration) : ?>
+                <?php /* @var Registration $event_registration */ ?>
+                <li>
+                    <div class="collapsible-header collection-item avatar">
+                        <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
+                        <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                        <p><?= $event_registration->status ?></p>
+                    </div>
+                    <div class="collapsible-body row" style="padding: 5px 10px;">
+                        <table class="striped">
+                            <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                <?php $value = $event_registration->getMeta($name); ?>
+                                <?php $value = empty($value) ? '' : $value; ?>
+                                <tr>
+                                    <th><?= $name ?></th>
+                                    <td><?= $value ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                        <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                  && is_user_logged_in()
+                                  && User::getCurrent()->isBoard()
+                        ): ?>
+                            <div class="card-action">
+                                <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
         <?php
-        return ob_get_clean();
     }
-    #endregion
 }
