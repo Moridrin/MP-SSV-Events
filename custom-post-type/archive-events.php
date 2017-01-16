@@ -28,13 +28,7 @@ get_header();
             <div class="col s12 <?= is_dynamic_sidebar() ? 'm8 l9 xxl10' : '' ?>">
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
-                        <?php
-                        if (get_theme_support('materialize')) {
-                            mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents);
-                        } else {
-                            throw new Exception('This theme currently doesn\'t have support for a theme without "materialize" support.');
-                        }
-                        ?>
+                        <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
                     </main>
                 </div>
             </div>

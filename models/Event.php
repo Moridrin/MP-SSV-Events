@@ -383,42 +383,54 @@ class Event
         if ($update) {
             $this->updateRegistrations();
         }
-        ?>
-        <h3>Registrations</h3>
-        <ul class="collection with-header collapsible popout" data-collapsible="expandable">
-            <?php foreach ($this->registrations as $event_registration) : ?>
-                <?php /* @var Registration $event_registration */ ?>
-                <li>
-                    <div class="collapsible-header collection-item avatar">
-                        <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
-                        <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                        <p><?= $event_registration->status ?></p>
-                    </div>
-                    <div class="collapsible-body row" style="padding: 5px 10px;">
-                        <table class="striped">
-                            <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
-                                <?php $value = $event_registration->getMeta($name); ?>
-                                <?php $value = empty($value) ? '' : $value; ?>
-                                <tr>
-                                    <th><?= $name ?></th>
-                                    <td><?= $value ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </table>
-                        <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                  && is_user_logged_in()
-                                  && User::getCurrent()->isBoard()
-                                  && !is_archive()
-                        ): ?>
-                            <div class="card-action">
-                                <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-        <?php
+        if (!get_theme_support('materialize')) {
+            ?>
+            <h3>Registrations</h3>
+            <ul>
+                <?php foreach ($this->registrations as $event_registration) : ?>
+                    <?php /* @var Registration $event_registration */ ?>
+                    <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
+        } else {
+            ?>
+            <h3>Registrations</h3>
+            <ul class="collection with-header collapsible popout" data-collapsible="expandable">
+                <?php foreach ($this->registrations as $event_registration) : ?>
+                    <?php /* @var Registration $event_registration */ ?>
+                    <li>
+                        <div class="collapsible-header collection-item avatar">
+                            <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
+                            <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                            <p><?= $event_registration->status ?></p>
+                        </div>
+                        <div class="collapsible-body row" style="padding: 5px 10px;">
+                            <table class="striped">
+                                <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                    <?php $value = $event_registration->getMeta($name); ?>
+                                    <?php $value = empty($value) ? '' : $value; ?>
+                                    <tr>
+                                        <th><?= $name ?></th>
+                                        <td><?= $value ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </table>
+                            <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                      && is_user_logged_in()
+                                      && User::getCurrent()->isBoard()
+                                      && !is_archive()
+                            ): ?>
+                                <div class="card-action">
+                                    <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                    <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
+        }
     }
 }

@@ -15,7 +15,7 @@
  */
 function mp_ssv_events_template($archive_template)
 {
-    if (is_post_type_archive('events')) {
+    if (is_post_type_archive('events') && get_theme_support('materialize')) {
         $archive_template = plugin_dir_path(__FILE__) . 'archive-events.php';
     }
     return $archive_template;
