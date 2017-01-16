@@ -261,15 +261,16 @@ function ssv_events_registration()
 function ssv_events_date()
 {
     global $post;
-    $start = get_post_meta($post->ID, 'start', true);
-    $start = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
-    $end   = get_post_meta($post->ID, 'end', true);
-    $end   = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
+    $start       = get_post_meta($post->ID, 'start', true);
+    $start       = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
+    $end         = get_post_meta($post->ID, 'end', true);
+    $end         = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
+    $placeholder = (new DateTime('now'))->format('Y-m-d H:i');
     ?>
     Start Date<br/>
-    <input type="text" class="datetimepicker" name="start" value="<?= $start ?>" title="Start Date" required><br/>
+    <input type="text" class="datetimepicker" name="start" value="<?= $start ?>" placeholder="<?= $placeholder ?>" title="Start Date" required><br/>
     End Date<br/>
-    <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" title="End Date" required>
+    <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" placeholder="<?= $placeholder ?>" title="End Date" required>
     <?php
 }
 
