@@ -290,15 +290,17 @@ function ssv_events_registrations()
 {
     global $post;
     global $wpdb;
-    $table = SSV_Events::TABLE_REGISTRATION;
-    $sql   = "SELECT * FROM $table WHERE eventID = $post->ID";
-    $rows  = $wpdb->get_results($sql);
+    $event      = new Event($post);
+    $table      = SSV_Events::TABLE_REGISTRATION;
+    $sql        = "SELECT * FROM $table WHERE eventID = $post->ID";
+    $rows       = $wpdb->get_results($sql);
+    $fieldNames = $event->getRegistrationFieldNames();
     ?>
     <table cellspacing="5" border="1">
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
+            <?php foreach ($fieldNames as $fieldName): ?>
+                <td><?= $fieldName ?></td>
+            <?php endforeach; ?>
             <th>Status</th>
         </tr>
         <?php
@@ -308,9 +310,9 @@ function ssv_events_registrations()
             $registration = Registration::getByID($row->ID);
             ?>
             <tr>
-                <td><?= $registration->getMeta('first_name') ?></td>
-                <td><?= $registration->getMeta('last_name') ?></td>
-                <td><?= $registration->getMeta('email') ?></td>
+                <?php foreach ($fieldNames as $fieldName): ?>
+                    <td><?= $registration->getMeta($fieldName) ?></td>
+                <?php endforeach; ?>
                 <td>
                     <input type="hidden" name="<?= $i ?>_post" value="<?= $post->ID ?>">
                     <input type="hidden" name="<?= $i ?>_action" value="edit">
