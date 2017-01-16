@@ -27,8 +27,11 @@ function mp_ssv_events_add_registrations_to_content($content)
             'first_name' => $_GET['first_name'],
             'last_name'  => $_GET['last_name'],
         );
-        Registration::createNew($event, null, $args);
-        $content             = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+        if (Registration::createNew($event, null, $args) != null) {
+            $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+        } else {
+            $content = '<div class="card-panel warning">Already registered.</div>' . $content;
+        }
         $event_registrations = $event->getRegistrations();
     }
     #endregion

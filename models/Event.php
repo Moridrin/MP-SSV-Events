@@ -330,6 +330,7 @@ class Event
             $fieldNames = array();
         }
         $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
+        $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
         foreach ($fieldIDs as $id) {
             $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
             $field = Field::fromJSON($field);

@@ -105,8 +105,20 @@ class Registration
      */
     public static function createNew($event, $user = null, $args = array())
     {
-        $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
         global $wpdb;
+        if ($user !== null) {
+            $table = SSV_Events::TABLE_REGISTRATION;
+            $sql   = "SELECT * FROM $table WHERE userID = '$user->ID'";
+        } else {
+            $table = SSV_Events::TABLE_REGISTRATION_META;
+            $email = $args['email'];
+            $sql   = "SELECT * FROM $table WHERE meta_key = 'email' AND meta_value = '$email'";
+        }
+        if ($wpdb->get_row($sql) !== null) {
+            return null;
+        }
+
+        $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
         $wpdb->insert(
             SSV_Events::TABLE_REGISTRATION,
             array(
