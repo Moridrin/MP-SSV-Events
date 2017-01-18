@@ -402,7 +402,7 @@ class Event
                     <?php /* @var Registration $event_registration */ ?>
                     <li>
                         <div class="collapsible-header collection-item avatar">
-                            <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt="" class="circle">
+                            <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
                             <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
                             <p><?= $event_registration->status ?></p>
                         </div>
