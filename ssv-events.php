@@ -46,7 +46,7 @@ class SSV_Events
     const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
     const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
 
-    const HOOK_REGISTRATION = 'mp_ssv_event__hook_registration';
+    const HOOK_NEW_REGISTRATION = 'mp_ssv_event__hook_new_registration';
 
     const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
     const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';

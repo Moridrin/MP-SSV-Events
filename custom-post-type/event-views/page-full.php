@@ -51,11 +51,17 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $args = array();
-            foreach ($event->getRegistrationFieldNames(!is_user_logged_in()) as $fieldName) {
-                $args[$fieldName] = $_POST[$fieldName];
+            $customFields = is_user_logged_in() ? array() : Registration::getDefaultFields($_POST);
+            $fieldIDs     = get_post_meta($post->ID, 'event_registration_field_ids', true);
+            foreach ($fieldIDs as $fieldID) {
+                $field = Field::fromJSON(get_post_meta($post->ID, 'event_registration_fields_' . $fieldID, true));
+                if ($field instanceof InputField) {
+                    /** @var InputField $field */
+                    $field->value               = $_POST[$field->name];
+                    $customFields[$field->name] = $field;
+                }
             }
-            Registration::createNew($event, User::getCurrent(), $args);
+            Registration::createNew($event, User::getCurrent(), $customFields);
             $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();

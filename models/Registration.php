@@ -96,28 +96,42 @@ class Registration
     #region createNew($event, $user, $args)
     /**
      * This function creates the database entries, sends an email to the event author and returns the newly created Registration object.
+
+*
+*@param Event              $event
+     * @param User|null    $user
+     * @param InputField[] $inputFields
      *
-     * @param Event     $event
-     * @param User|null $user
-     * @param string[]  $args
-     *
-     * @return Registration
+     * @return Message[]|Registration
      */
-    public static function createNew($event, $user = null, $args = array())
+    public static function createNew($event, $user = null, $inputFields = array())
     {
+        #region Validate
+        $errors    = array();
+        foreach ($inputFields as $field) {
+            if ($field->isValid() !== true) {
+                $errors[] = $field->isValid();
+            }
+        }
+        if (!empty($errors)) {
+            return $errors;
+        }
+
         global $wpdb;
         if ($user !== null) {
             $table = SSV_Events::TABLE_REGISTRATION;
             $sql   = "SELECT * FROM $table WHERE userID = '$user->ID'";
         } else {
             $table = SSV_Events::TABLE_REGISTRATION_META;
-            $email = $args['email'];
+            $email = $inputFields['email']->value;
             $sql   = "SELECT * FROM $table WHERE meta_key = 'email' AND meta_value = '$email'";
         }
         if ($wpdb->get_row($sql) !== null) {
-            return null;
+            return array(new Message('Already registered.', Message::ERROR_MESSAGE));
         }
+        #endregion
 
+        #region Create Base
         $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
         $wpdb->insert(
             SSV_Events::TABLE_REGISTRATION,
@@ -132,14 +146,17 @@ class Registration
                 '%s',
             )
         );
+        #endregion
+
+        #region Save Meta Data
         $registrationID = $wpdb->insert_id;
-        foreach ($args as $key => $value) {
+        foreach ($inputFields as $field) {
             $wpdb->insert(
                 SSV_Events::TABLE_REGISTRATION_META,
                 array(
                     'registrationID' => $registrationID,
-                    'meta_key'       => $key,
-                    'meta_value'     => $value,
+                    'meta_key'       => $field->name,
+                    'meta_value'     => $field->value,
                 ),
                 array(
                     '%d',
@@ -148,8 +165,11 @@ class Registration
                 )
             );
         }
+        #endregion
 
         $registration = new Registration($registrationID, $event, $status, $user);
+
+        #region Email
         if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
             $eventTitle = Event::getByID($event->getID())->post->post_title;
             $to         = User::getByID(Event::getByID($event->getID())->post->post_author)->user_email;
@@ -158,15 +178,103 @@ class Registration
                 $message = 'User ' . $user->display_name . ' has registered for ' . $eventTitle . '.';
             } else {
                 $message = 'Someone has registered for ' . $eventTitle . ' with the following information:<br/>';
-                foreach ($args as $key => $value) {
-                    $message .= $key . ': ' . $value;
+                foreach ($inputFields as $field) {
+                    $message .= $field->title . ': ' . $field->value;
                 }
             }
             wp_mail($to, $subject, $message);
         }
-        do_action(SSV_Events::HOOK_REGISTRATION, $registration);
+        #endregion
+
+        do_action(SSV_Events::HOOK_NEW_REGISTRATION, $registration);
 
         return $registration;
+    }
+
+    /**
+     * @param array $values
+     *
+     * @return InputField[]
+     */
+    public static function getDefaultFields($values)
+    {
+        #region First Name
+        /** @var TextInputField $firstNameField */
+        $firstNameField = Field::fromJSON(
+            json_encode(
+                array(
+                    'id'            => -1,
+                    'title'         => 'First Name',
+                    'field_type'    => 'input',
+                    'input_type'    => 'text',
+                    'name'          => 'first_name',
+                    'disabled'      => false,
+                    'required'      => true,
+                    'default_value' => '',
+                    'placeholder'   => '',
+                    'class'         => '',
+                    'style'         => '',
+                )
+            )
+        );
+        if (isset($values[$firstNameField->name])) {
+            $firstNameField->value = $values[$firstNameField->name];
+        }
+        #endregion
+
+        #region Last Name
+        /** @var TextInputField $lastNameField */
+        $lastNameField = Field::fromJSON(
+            json_encode(
+                array(
+                    'id'            => -1,
+                    'title'         => 'Last Name',
+                    'field_type'    => 'input',
+                    'input_type'    => 'text',
+                    'name'          => 'last_name',
+                    'disabled'      => false,
+                    'required'      => true,
+                    'default_value' => '',
+                    'placeholder'   => '',
+                    'class'         => '',
+                    'style'         => '',
+                )
+            )
+        );
+        if (isset($values[$lastNameField->name])) {
+            $lastNameField->value = $values[$lastNameField->name];
+        }
+        #endregion
+
+        #region Email
+        /** @var CustomInputField $emailField */
+        $emailField = Field::fromJSON(
+            json_encode(
+                array(
+                    'id'            => -1,
+                    'title'         => 'Email',
+                    'field_type'    => 'input',
+                    'input_type'    => 'email',
+                    'name'          => 'email',
+                    'disabled'      => false,
+                    'required'      => true,
+                    'default_value' => '',
+                    'placeholder'   => '',
+                    'class'         => '',
+                    'style'         => '',
+                )
+            )
+        );
+        if (isset($values[$emailField->name])) {
+            $emailField->value = $values[$emailField->name];
+        }
+        #endregion
+
+        return array(
+            $firstNameField->name => $firstNameField,
+            $lastNameField->name  => $lastNameField,
+            $emailField->name     => $emailField,
+        );
     }
     #endregion
 
