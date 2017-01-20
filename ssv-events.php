@@ -12,9 +12,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-ini_set('display_startup_errors', 1);
-ini_set('display_errors', 1);
-error_reporting(-1);
 
 #region Require Once
 require_once 'general/general.php';
@@ -50,7 +47,6 @@ class SSV_Events
 
     const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
     const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
-    const OPTION_REGISTRATION_VERIFICATION_MESSAGE = 'ssv_events__registration_verification_message';
     const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
     const OPTION_EMAIL_AUTHOR = 'ssv_events__email_author';
     const OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED = 'ssv_events__email_on_registration_status_changed';
@@ -68,7 +64,6 @@ class SSV_Events
     {
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
-        update_option(self::OPTION_REGISTRATION_VERIFICATION_MESSAGE, 'An email has been send to verify your registration.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
@@ -79,7 +74,7 @@ class SSV_Events
 
     public static function CLEAN_INSTALL()
     {
-        mp_ssv_uninstall_ssv_events();
+        mp_ssv_events_uninstall();
         mp_ssv_events_register_plugin();
     }
 }
@@ -128,16 +123,16 @@ register_activation_hook(__FILE__, 'mp_ssv_events_register_plugin');
 #endregion
 
 #region Unregister
-function mp_ssv_unregister_ssv_events()
+function mp_ssv_events_unregister()
 {
     //Nothing to do here.
 }
 
-register_deactivation_hook(__FILE__, 'mp_ssv_unregister_ssv_events');
+register_deactivation_hook(__FILE__, 'mp_ssv_events_unregister');
 #endregion
 
 #region UnInstall
-function mp_ssv_uninstall_ssv_events()
+function mp_ssv_events_uninstall()
 {
     global $wpdb;
     $wpdb->show_errors();
@@ -149,7 +144,7 @@ function mp_ssv_uninstall_ssv_events()
     $wpdb->query($sql);
 }
 
-register_uninstall_hook(__FILE__, 'mp_ssv_uninstall_ssv_events');
+register_uninstall_hook(__FILE__, 'mp_ssv_events_uninstall');
 #endregion
 
 #region Reset Options

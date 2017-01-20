@@ -13,7 +13,6 @@ function ssv_events_options_page_content()
         } else {
             update_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS, $_POST['default_registration_status']);
             update_option(SSV_Events::OPTION_REGISTRATION_MESSAGE, $_POST['registration_message']);
-            update_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE, $_POST['registration_verification_message']);
             update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, $_POST['cancellation_message']);
             update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
             update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
@@ -38,10 +37,6 @@ function ssv_events_options_page_content()
                 <tr valign="top">
                     <th scope="row">Registration Message</th>
                     <td><textarea name="registration_message" class="large-text" title="Registration Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE))); ?></textarea></td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Registration Message</th>
-                    <td><textarea name="registration_verification_message" class="large-text" title="Registration Verification Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_VERIFICATION_MESSAGE))); ?></textarea></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row">Cancellation Message</th>
