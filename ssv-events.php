@@ -62,13 +62,33 @@ class SSV_Events
      */
     public static function resetOptions()
     {
+        self::resetGeneralOptions();
+        self::resetEmailOptions();
+        update_option(self::OPTION_PUBLISH_ERROR, false);
+    }
+
+    #region resetGeneralOptions()
+    /**
+     * This function sets all the options on the General Tab back to their default value
+     */
+    public static function resetGeneralOptions()
+    {
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
+    }
+    #endregion
+
+    #region resetEmailOptions()
+    /**
+     * This function sets all the options on the Email Tab back to their default value
+     */
+    public static function resetEmailOptions()
+    {
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
-        update_option(self::OPTION_PUBLISH_ERROR, false);
     }
+    #endregion
 
     #endregion
 

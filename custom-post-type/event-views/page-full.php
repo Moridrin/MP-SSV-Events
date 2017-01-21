@@ -28,7 +28,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             'last_name'  => $_GET['last_name'],
         );
         if (Registration::createNew($event, null, $args) != null) {
-            $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
         } else {
             $content = '<div class="card-panel warning">Already registered.</div>' . $content;
         }
@@ -57,15 +57,15 @@ function mp_ssv_events_add_registrations_to_content($content)
                 $field = Field::fromJSON(get_post_meta($post->ID, 'event_registration_fields_' . $fieldID, true));
                 if ($field instanceof InputField) {
                     /** @var InputField $field */
-                    $field->value               = $_POST[$field->name];
+                    $field->value               = SSV_General::sanitize($_POST[$field->name]);
                     $customFields[$field->name] = $field;
                 }
             }
             Registration::createNew($event, User::getCurrent(), $customFields);
-            $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
+            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
-            $content = '<div class="card-panel primary">' . stripslashes(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
+            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
         }
         SSV_General::redirect(get_permalink());
     }

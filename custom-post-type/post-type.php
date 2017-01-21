@@ -372,23 +372,23 @@ function mp_ssv_events_save_meta($post_id)
         global $wpdb;
         $wpdb->update(
             $table = SSV_Events::TABLE_REGISTRATION,
-            array("registration_status" => $_POST[$i . '_status']),
-            array("ID" => $_POST[$i . '_registrationID']),
+            array("registration_status" => SSV_General::sanitize($_POST[$i . '_status'])),
+            array("ID" => SSV_General::sanitize($_POST[$i . '_registrationID'])),
             array('%s')
         );
         $i++;
     }
     if (isset($_POST['registration'])) {
-        update_post_meta($post_id, 'registration', $_POST['registration']);
+        update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration']));
     }
     if (isset($_POST['start'])) {
-        update_post_meta($post_id, 'start', $_POST['start']);
+        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start']));
     }
     if (isset($_POST['end'])) {
-        update_post_meta($post_id, 'end', $_POST['end']);
+        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end']));
     }
     if (isset($_POST['location'])) {
-        update_post_meta($post_id, 'location', $_POST['location']);
+        update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
     }
 
     $registrationFields = SSV_General::getCustomFieldsFromPost('event_registration_fields');

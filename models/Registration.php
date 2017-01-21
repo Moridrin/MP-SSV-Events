@@ -218,7 +218,7 @@ class Registration
             )
         );
         if (isset($values[$firstNameField->name])) {
-            $firstNameField->value = $values[$firstNameField->name];
+            $firstNameField->value = SSV_General::sanitize($values[$firstNameField->name]);
         }
         #endregion
 
@@ -242,7 +242,7 @@ class Registration
             )
         );
         if (isset($values[$lastNameField->name])) {
-            $lastNameField->value = $values[$lastNameField->name];
+            $lastNameField->value = SSV_General::sanitize($values[$lastNameField->name]);
         }
         #endregion
 
@@ -266,7 +266,7 @@ class Registration
             )
         );
         if (isset($values[$emailField->name])) {
-            $emailField->value = $values[$emailField->name];
+            $emailField->value = SSV_General::sanitize($values[$emailField->name]);
         }
         #endregion
 

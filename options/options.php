@@ -6,65 +6,30 @@ function ssv_add_ssv_events_options()
 
 function ssv_events_options_page_content()
 {
-    if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
-        if (isset($_POST['reset'])) {
-            SSV_Events::CLEAN_INSTALL();
-//            SSV_Events::resetOptions();
-        } else {
-            update_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS, $_POST['default_registration_status']);
-            update_option(SSV_Events::OPTION_REGISTRATION_MESSAGE, $_POST['registration_message']);
-            update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, $_POST['cancellation_message']);
-            update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
-            update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
-        }
+    $active_tab = "general";
+    if (isset($_GET['tab'])) {
+        $active_tab = $_GET['tab'];
     }
     ?>
     <div class="wrap">
         <h1>Events Options</h1>
-        <form method="post" action="#">
-            <table class="form-table">
-                <tr valign="top">
-                    <th scope="row">Default Registration Status</th>
-                    <td>
-                        <?php $defaultRegistrationStatus = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS); ?>
-                        <select name="default_registration_status" title="Default Registration Status">
-                            <option value="pending" <?= $defaultRegistrationStatus == Registration::STATUS_PENDING ? 'selected' : '' ?>>Pending</option>
-                            <option value="approved" <?= $defaultRegistrationStatus == Registration::STATUS_APPROVED ? 'selected' : '' ?>>Approved</option>
-                            <option value="denied" <?= $defaultRegistrationStatus == Registration::STATUS_DENIED ? 'selected' : '' ?>>Denied</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Registration Message</th>
-                    <td><textarea name="registration_message" class="large-text" title="Registration Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE))); ?></textarea></td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Cancellation Message</th>
-                    <td><textarea name="cancellation_message" class="large-text" title="cancellation Message"><?= esc_attr(stripslashes(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE))); ?></textarea></td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Email Author</th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="email_on_registration" value="false"/>
-                            <input type="checkbox" name="email_on_registration" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_AUTHOR) ? 'checked' : '' ?> />
-                            When someone registers or cancels the event author will receive an email.
-                        </label>
-                    </td>
-                </tr>
-                <tr valign="top">
-                    <th scope="row">Registration Status Changed</th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="email_on_registration_status_changed" value="false"/>
-                            <input type="checkbox" name="email_on_registration_status_changed" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED) ? 'checked' : '' ?>/>
-                            When an event admin changes someones registration, the registrant will receive and email on the status change.
-                        </label>
-                    </td>
-                </tr>
-            </table>
-            <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_OPTIONS); ?>
-        </form>
+        <h2 class="nav-tab-wrapper">
+            <a href="?page=<?= $_GET['page'] ?>&tab=general" class="nav-tab <?= $active_tab == 'general' ? 'nav-tab-active' : '' ?>">General</a>
+            <a href="?page=<?= $_GET['page'] ?>&tab=email" class="nav-tab <?= $active_tab == 'email' ? 'nav-tab-active' : '' ?>">Email</a>
+            <a href="http://2016.bosso.nl/ssv-events/" target="_blank" class="nav-tab">
+                Help <img src="<?= SSV_Users::URL ?>general/images/link-new-tab.png" width="14px" style="vertical-align:middle">
+            </a>
+        </h2>
+        <?php
+        switch ($active_tab) {
+            case "general":
+                require_once "general.php";
+                break;
+            case "email":
+                require_once "email.php";
+                break;
+        }
+        ?>
     </div>
     <?php
 }
