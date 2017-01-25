@@ -335,23 +335,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    global $post;
-    $fieldIDs = get_post_meta($post->ID, 'event_registration_field_ids', true);
-    $id = is_array($fieldIDs) && count($fieldIDs) > 0 ? max($fieldIDs) + 1 : 0;
-    SSV_General::getCustomFieldsContainer('event_registration_fields', $id);
-    if (is_array($fieldIDs)) {
-        ?>
-        <script>
-            <?php foreach($fieldIDs as $id): ?>
-            <?php $json = get_post_meta($post->ID, 'event_registration_fields_' . $id, true); ?>
-            <?php $field = json_decode($json); ?>
-            <?php $fieldType = $field->field_type; ?>
-            <?php $inputType = isset($field->input_type) ? $field->input_type : ''; ?>
-            mp_ssv_add_new_field('<?= $fieldType ?>', '<?= $inputType ?>', 'custom-fields-placeholder', <?= $id ?>, 'event_registration_fields', <?= $json ?>, false);
-            <?php endforeach; ?>
-        </script>
-        <?php
-    }
+    SSV_General::getCustomFieldsContainer(false);
 }
 
 #endregion
@@ -391,18 +375,18 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
     }
 
-    $registrationFields = SSV_General::getCustomFieldsFromPost('event_registration_fields');
+    $registrationFields = SSV_General::getCustomFieldsFromPost();
     $registrationIDs    = array();
     foreach ($registrationFields as $id => $field) {
         /** @var Field $field */
         if (!empty($field->title)) {
-            update_post_meta($post_id, 'event_registration_fields_' . $id, $field->toJSON());
+            update_post_meta($post_id, Field::PREFIX . $id, $field->toJSON());
             $registrationIDs[] = $id;
         } else {
-            delete_post_meta($post_id, 'event_registration_fields_' . $id);
+            delete_post_meta($post_id, Field::PREFIX . $id);
         }
     }
-    update_post_meta($post_id, 'event_registration_field_ids', $registrationIDs);
+    update_post_meta($post_id, Field::ID_TAG, $registrationIDs);
     return $post_id;
 }
 

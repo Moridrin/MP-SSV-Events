@@ -329,10 +329,10 @@ class Event
         } else {
             $fieldNames = array();
         }
-        $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
+        $fieldIDs = get_post_meta($this->post->ID, Field::ID_TAG, true);
         $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
         foreach ($fieldIDs as $id) {
-            $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
+            $field = get_post_meta($this->post->ID, Field::PREFIX . $id, true);
             $field = Field::fromJSON($field);
             if ($field instanceof InputField) {
                 /** @var InputField $field */
