@@ -347,30 +347,25 @@ class Event
         ?>
         <h1>Register</h1>
         <?php
-        $fields = Field::fromMeta();
+        /** @var InputField $actionField */
+        $actionField = Field::fromJSON(
+            json_encode(
+                array(
+                    'id'         => '-1',
+                    'title'      => '',
+                    'field_type' => 'input',
+                    'input_type' => 'hidden',
+                    'name'       => 'action',
+                    'class'      => '',
+                    'style'      => '',
+                )
+            )
+        );
+        $actionField->setValue('register');
+        $fields = array_merge(array($actionField), Field::fromMeta());
         $values = User::getCurrent();
         if (!is_user_logged_in()) {
-            /** @var InputField $actionField */
-            $actionField        = Field::fromJSON(
-                json_encode(
-                    array(
-                        'id'            => '-1',
-                        'title'         => '',
-                        'field_type'    => 'input',
-                        'input_type'    => 'hidden',
-                        'name'          => 'action',
-                        'disabled'      => false,
-                        'required'      => false,
-                        'default_value' => '',
-                        'placeholder'   => '',
-                        'class'         => '',
-                        'style'         => '',
-                    )
-                )
-            );
-            $actionField->value = 'register';
-            $fields[]           = $actionField;
-            $fields             = array_merge(Registration::getDefaultFields(), $fields);
+            $fields = array_merge(Registration::getDefaultFields(), $fields);
         }
         foreach ($fields as $field) {
             if ($field instanceof InputField) {

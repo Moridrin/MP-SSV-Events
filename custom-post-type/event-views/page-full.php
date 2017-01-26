@@ -40,10 +40,10 @@ function mp_ssv_events_add_registrations_to_content($content)
     if (is_user_logged_in() && User::getCurrent()->isBoard()) {
         if (isset($_GET['approve'])) {
             Registration::getByID($_GET['approve'])->approve();
-            SSV_General::redirect(get_permalink());
+//            SSV_General::redirect(get_permalink());
         } elseif (isset($_GET['deny'])) {
             Registration::getByID($_GET['deny'])->deny();
-            SSV_General::redirect(get_permalink());
+//            SSV_General::redirect(get_permalink());
         }
     }
     #endregion
@@ -67,7 +67,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
             $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
         }
-        SSV_General::redirect(get_permalink());
+//        SSV_General::redirect(get_permalink());
     }
     #endregion
 
