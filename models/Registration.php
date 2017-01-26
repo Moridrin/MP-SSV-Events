@@ -192,11 +192,9 @@ class Registration
     }
 
     /**
-     * @param array $values
-     *
      * @return InputField[]
      */
-    public static function getDefaultFields($values)
+    public static function getDefaultFields()
     {
         #region First Name
         /** @var TextInputField $firstNameField */
@@ -217,9 +215,6 @@ class Registration
                 )
             )
         );
-        if (isset($values[$firstNameField->name])) {
-            $firstNameField->value = SSV_General::sanitize($values[$firstNameField->name]);
-        }
         #endregion
 
         #region Last Name
@@ -241,9 +236,6 @@ class Registration
                 )
             )
         );
-        if (isset($values[$lastNameField->name])) {
-            $lastNameField->value = SSV_General::sanitize($values[$lastNameField->name]);
-        }
         #endregion
 
         #region Email
@@ -265,9 +257,6 @@ class Registration
                 )
             )
         );
-        if (isset($values[$emailField->name])) {
-            $emailField->value = SSV_General::sanitize($values[$emailField->name]);
-        }
         #endregion
 
         return array(

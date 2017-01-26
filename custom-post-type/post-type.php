@@ -335,7 +335,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    SSV_General::getCustomFieldsContainer(false);
+    echo SSV_General::getCustomFieldsEditor(false);
 }
 
 #endregion

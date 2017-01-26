@@ -38,5 +38,5 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
             <td><textarea name="cancellation_message" class="large-text" title="cancellation Message"><?= get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE); ?></textarea></td>
         </tr>
     </table>
-    <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_OPTIONS); ?>
+    <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_OPTIONS); ?>
 </form>

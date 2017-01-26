@@ -344,39 +344,40 @@ class Event
 
     public function showRegistrationForm()
     {
-        $fieldIDs = get_post_meta($this->post->ID, 'event_registration_field_ids', true);
         ?>
-        <form action="<?= get_permalink() ?>" method="POST">
-            <h1>Register</h1>
-            <?php
-            if (!is_user_logged_in()) {
-                ?>
-                <input type="hidden" name="action" value="register">
-                <div class="input-field">
-                    <input type="text" id="first_name" name="first_name" class="validate" required>
-                    <label for="first_name">First Name <span class="required">*</span></label>
-                </div>
-                <div class="input-field">
-                    <input type="text" id="last_name" name="last_name" class="validate" required>
-                    <label for="last_name">Last Name <span class="required">*</span></label>
-                </div>
-                <div class="input-field">
-                    <input type="email" id="email" name="email" class="validate" required>
-                    <label for="email">Email <span class="required">*</span></label>
-                </div>
-                <?php
-            }
-            foreach ($fieldIDs as $id) {
-                $field = get_post_meta($this->post->ID, 'event_registration_fields_' . $id, true);
-                $field = Field::fromJSON($field);
-                echo $field->getHTML();
-            }
-            ?>
-            <input type="hidden" name="action" value="register">
-            <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button
-            <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
-        </form>
+        <h1>Register</h1>
         <?php
+        $fields = Field::fromMeta();
+        $values = User::getCurrent();
+        if (!is_user_logged_in()) {
+            /** @var InputField $actionField */
+            $actionField        = Field::fromJSON(
+                json_encode(
+                    array(
+                        'id'            => '-1',
+                        'title'         => '',
+                        'field_type'    => 'input',
+                        'input_type'    => 'hidden',
+                        'name'          => 'action',
+                        'disabled'      => false,
+                        'required'      => false,
+                        'default_value' => '',
+                        'placeholder'   => '',
+                        'class'         => '',
+                        'style'         => '',
+                    )
+                )
+            );
+            $actionField->value = 'register';
+            $fields[]           = $actionField;
+            $fields             = array_merge(Registration::getDefaultFields(), $fields);
+        }
+        foreach ($fields as $field) {
+            if ($field instanceof InputField) {
+                $field->setValue($values);
+            }
+        }
+        echo SSV_General::getCustomFieldsHTML($fields, SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 
     public function showRegistrations($update = true)

@@ -109,7 +109,7 @@ function mp_ssv_events_add_registrations_to_content($content)
                 <form action="<?= get_permalink() ?>" method="POST">
                     <input type="hidden" name="action" value="cancel">
                     <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Cancel Registration</button>
-                    <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                    <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                 </form>
                 <?php
             } else {

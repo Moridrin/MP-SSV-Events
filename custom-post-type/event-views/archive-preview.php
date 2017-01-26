@@ -78,11 +78,11 @@ $content             = get_the_content('');
                             <?php if ($event->isRegistered(User::getCurrent())) : ?>
                                 <input type="hidden" name="action" value="cancel">
                                 <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
-                                <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                                <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                             <?php else : ?>
                                 <input type="hidden" name="action" value="register">
                                 <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
-                                <?php SSV_General::formSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                                <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                             <?php endif; ?>
                         </form>
                     <?php elseif ($event->isRegistrationMembersOnly() && !is_user_logged_in()) : ?>
