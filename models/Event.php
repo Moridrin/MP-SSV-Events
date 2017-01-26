@@ -362,11 +362,12 @@ class Event
             )
         );
         $actionField->setValue('register');
-        $fields = array_merge(array($actionField), Field::fromMeta());
+        $fields = Field::fromMeta();
         $values = User::getCurrent();
         if (!is_user_logged_in()) {
             $fields = array_merge(Registration::getDefaultFields(), $fields);
         }
+        $fields = array_merge(array($actionField), $fields);
         foreach ($fields as $field) {
             if ($field instanceof InputField) {
                 $field->setValue($values);

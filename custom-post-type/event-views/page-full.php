@@ -40,10 +40,8 @@ function mp_ssv_events_add_registrations_to_content($content)
     if (is_user_logged_in() && User::getCurrent()->isBoard()) {
         if (isset($_GET['approve'])) {
             Registration::getByID($_GET['approve'])->approve();
-//            SSV_General::redirect(get_permalink());
         } elseif (isset($_GET['deny'])) {
             Registration::getByID($_GET['deny'])->deny();
-//            SSV_General::redirect(get_permalink());
         }
     }
     #endregion
@@ -51,23 +49,26 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $customFields = is_user_logged_in() ? array() : Registration::getDefaultFields($_POST);
-            $fieldIDs     = get_post_meta($post->ID, 'event_registration_field_ids', true);
-            foreach ($fieldIDs as $fieldID) {
-                $field = Field::fromJSON(get_post_meta($post->ID, 'event_registration_fields_' . $fieldID, true));
+            $fields = is_user_logged_in() ? array() : Registration::getDefaultFields();
+            $fields = array_merge($fields, Field::fromMeta());
+            foreach ($fields as $field) {
                 if ($field instanceof InputField) {
-                    /** @var InputField $field */
-                    $field->value               = SSV_General::sanitize($_POST[$field->name]);
-                    $customFields[$field->name] = $field;
+                    $field->setValue($_POST);
                 }
             }
-            Registration::createNew($event, User::getCurrent(), $customFields);
-            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
+            $response = Registration::createNew($event, User::getCurrent(), $fields);
+            if (is_array($response)) {
+                /** @var Message $error */
+                foreach ($response as $error) {
+                    $content = $error->getHTML() . $content;
+                }
+            } else {
+                $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
+            }
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
             $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
         }
-//        SSV_General::redirect(get_permalink());
     }
     #endregion
 
