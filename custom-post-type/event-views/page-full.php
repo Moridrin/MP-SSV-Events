@@ -20,22 +20,6 @@ function mp_ssv_events_add_registrations_to_content($content)
     }
     #endregion
 
-    #region Confirm email
-    if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['verification'])) {
-        $args = array(
-            'email'      => $_GET['email'],
-            'first_name' => $_GET['first_name'],
-            'last_name'  => $_GET['last_name'],
-        );
-        if (Registration::createNew($event, null, $args) != null) {
-            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
-        } else {
-            $content = '<div class="card-panel warning">Already registered.</div>' . $content;
-        }
-        $event_registrations = $event->getRegistrations();
-    }
-    #endregion
-
     #region Update Registration Status
     if (is_user_logged_in() && User::getCurrent()->isBoard()) {
         if (isset($_GET['approve'])) {
@@ -51,12 +35,14 @@ function mp_ssv_events_add_registrations_to_content($content)
         if ($_POST['action'] == 'register') {
             $fields = is_user_logged_in() ? array() : Registration::getDefaultFields();
             $fields = array_merge($fields, Field::fromMeta());
+            $inputFields = array();
             foreach ($fields as $field) {
                 if ($field instanceof InputField) {
                     $field->setValue($_POST);
+                    $inputFields[] = $field;
                 }
             }
-            $response = Registration::createNew($event, User::getCurrent(), $fields);
+            $response = Registration::createNew($event, User::getCurrent(), $inputFields);
             if (is_array($response)) {
                 /** @var Message $error */
                 foreach ($response as $error) {

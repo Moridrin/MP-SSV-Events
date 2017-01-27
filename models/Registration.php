@@ -96,21 +96,21 @@ class Registration
     #region createNew($event, $user, $args)
     /**
      * This function creates the database entries, sends an email to the event author and returns the newly created Registration object.
-
-*
-*@param Event              $event
+     *
+     * @param Event        $event
      * @param User|null    $user
      * @param InputField[] $inputFields
+
      *
-     * @return Message[]|Registration
+*@return Message[]|Registration
      */
     public static function createNew($event, $user = null, $inputFields = array())
     {
         #region Validate
-        $errors    = array();
+        $errors = array();
         foreach ($inputFields as $field) {
             if ($field->isValid() !== true) {
-                $errors[] = $field->isValid();
+                $errors[] = array_merge($errors, $field->isValid());
             }
         }
         if (!empty($errors)) {
