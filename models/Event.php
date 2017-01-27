@@ -351,19 +351,19 @@ class Event
         $actionField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'         => '-1',
-                    'title'      => '',
-                    'field_type' => 'input',
-                    'input_type' => 'hidden',
-                    'name'       => 'action',
-                    'class'      => '',
-                    'style'      => '',
+                    'id'            => '-1',
+                    'title'         => '',
+                    'field_type'    => 'input',
+                    'input_type'    => 'hidden',
+                    'name'          => 'action',
+                    'default_value' => 'register',
+                    'class'         => '',
+                    'style'         => '',
                 )
             )
         );
-        $actionField->setValue('register');
-        $fields = Field::fromMeta();
-        $values = User::getCurrent();
+        $fields      = Field::fromMeta();
+        $values      = User::getCurrent();
         if (!is_user_logged_in()) {
             $fields = array_merge(Registration::getDefaultFields(), $fields);
         }
