@@ -34,7 +34,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
             $fields = is_user_logged_in() ? array() : Registration::getDefaultFields();
-            $fields = array_merge($fields, Field::fromMeta());
+            $fields = array_merge($fields, Form::fromMeta());
             $inputFields = array();
             foreach ($fields as $field) {
                 if ($field instanceof InputField) {

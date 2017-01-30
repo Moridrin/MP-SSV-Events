@@ -362,7 +362,7 @@ class Event
                 )
             )
         );
-        $fields      = Field::fromMeta();
+        $fields      = Form::fromMeta();
         $values      = User::getCurrent();
         if (!is_user_logged_in()) {
             $fields = array_merge(Registration::getDefaultFields(), $fields);
