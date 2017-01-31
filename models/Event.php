@@ -306,7 +306,7 @@ class Event
         global $wpdb;
         $eventID   = $this->getID();
         $tableName = SSV_Events::TABLE_REGISTRATION;
-        if (is_user_logged_in() && User::getCurrent()->isBoard()) {
+        if (is_user_logged_in() && User::isBoard()) {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
         } else {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
@@ -362,18 +362,14 @@ class Event
                 )
             )
         );
-        $fields      = Form::fromMeta();
-        $values      = User::getCurrent();
+        $form        = Form::fromMeta();
+        $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
-            $fields = array_merge(Registration::getDefaultFields(), $fields);
+            $form->addFields(Registration::getDefaultFields());
+        } else {
+            $form->setValues();
         }
-        $fields = array_merge(array($actionField), $fields);
-        foreach ($fields as $field) {
-            if ($field instanceof InputField) {
-                $field->setValue($values);
-            }
-        }
-        echo SSV_General::getCustomFieldsHTML($fields, SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
+        echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 
     public function showRegistrations($update = true)
@@ -416,7 +412,7 @@ class Event
                             </table>
                             <?php if ($event_registration->status == Registration::STATUS_PENDING
                                       && is_user_logged_in()
-                                      && User::getCurrent()->isBoard()
+                                      && User::isBoard()
                                       && !is_archive()
                             ): ?>
                                 <div class="card-action">

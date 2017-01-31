@@ -21,7 +21,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Update Registration Status
-    if (is_user_logged_in() && User::getCurrent()->isBoard()) {
+    if (is_user_logged_in() && User::isBoard()) {
         if (isset($_GET['approve'])) {
             Registration::getByID($_GET['approve'])->approve();
         } elseif (isset($_GET['deny'])) {
