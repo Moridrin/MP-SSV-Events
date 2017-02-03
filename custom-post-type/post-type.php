@@ -386,7 +386,7 @@ function mp_ssv_events_save_meta($post_id)
             delete_post_meta($post_id, Field::PREFIX . $id);
         }
     }
-    update_post_meta($post_id, Field::ID_TAG, $registrationIDs);
+    update_post_meta($post_id, Field::CUSTOM_FIELD_IDS_META, $registrationIDs);
     return $post_id;
 }
 

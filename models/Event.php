@@ -329,7 +329,7 @@ class Event
         } else {
             $fieldNames = array();
         }
-        $fieldIDs = get_post_meta($this->post->ID, Field::ID_TAG, true);
+        $fieldIDs = get_post_meta($this->post->ID, Field::CUSTOM_FIELD_IDS_META, true);
         $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
         foreach ($fieldIDs as $id) {
             $field = get_post_meta($this->post->ID, Field::PREFIX . $id, true);
