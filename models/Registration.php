@@ -186,7 +186,7 @@ class Registration
         }
         #endregion
 
-        do_action(SSV_Events::HOOK_NEW_REGISTRATION, $registration);
+        do_action(SSV_General::HOOK_EVENTS_NEW_REGISTRATION, $registration);
 
         return $registration;
     }
