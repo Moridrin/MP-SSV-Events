@@ -335,7 +335,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    echo SSV_General::getCustomFieldsEditor(false);
+    echo Form::fromMeta(false)->getEditor(false);
 }
 
 #endregion
@@ -375,7 +375,7 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
     }
 
-    $registrationFields = SSV_General::getCustomFieldsFromPost();
+    $registrationFields = Form::fromMeta();
     $registrationIDs    = array();
     foreach ($registrationFields as $id => $field) {
         /** @var Field $field */
