@@ -366,8 +366,6 @@ class Event
         $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields());
-        } else {
-            $form->setValues();
         }
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
@@ -403,6 +401,8 @@ class Event
                             <table class="striped">
                                 <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
                                     <?php $value = $event_registration->getMeta($name); ?>
+                                    <?php SSV_General::var_export($name); ?>
+                                    <?php SSV_General::var_export($value); ?>
                                     <?php $value = empty($value) ? '' : $value; ?>
                                     <tr>
                                         <th><?= $name ?></th>

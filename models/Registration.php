@@ -100,23 +100,12 @@ class Registration
      * @param Event        $event
      * @param User|null    $user
      * @param InputField[] $inputFields
-
      *
-*@return Message[]|Registration
+     * @return Message[]|Registration
      */
     public static function createNew($event, $user = null, $inputFields = array())
     {
         #region Validate
-        $errors = array();
-        foreach ($inputFields as $field) {
-            if ($field->isValid() !== true) {
-                $errors[] = array_merge($errors, $field->isValid());
-            }
-        }
-        if (!empty($errors)) {
-            return $errors;
-        }
-
         global $wpdb;
         if ($user !== null) {
             $table = SSV_Events::TABLE_REGISTRATION;
@@ -151,6 +140,9 @@ class Registration
         #region Save Meta Data
         $registrationID = $wpdb->insert_id;
         foreach ($inputFields as $field) {
+            if (is_bool($field->value)) {
+                $field->value = $field->value ? 'true' : 'false';
+            }
             $wpdb->insert(
                 SSV_Events::TABLE_REGISTRATION_META,
                 array(
@@ -273,6 +265,9 @@ class Registration
      */
     public function cancel()
     {
+        if (!$this->user) {
+            return;
+        }
         global $wpdb;
         $userID  = $this->user->ID;
         $eventID = $this->event->getID();

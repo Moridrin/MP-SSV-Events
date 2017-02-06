@@ -21,11 +21,13 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Update Registration Status
-    if (is_user_logged_in() && User::isBoard()) {
+    if (User::isBoard()) {
         if (isset($_GET['approve'])) {
             Registration::getByID($_GET['approve'])->approve();
+            SSV_General::redirect(get_permalink());
         } elseif (isset($_GET['deny'])) {
             Registration::getByID($_GET['deny'])->deny();
+            SSV_General::redirect(get_permalink());
         }
     }
     #endregion
@@ -33,16 +35,15 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $fields = is_user_logged_in() ? array() : Registration::getDefaultFields();
-            $fields = array_merge($fields, Form::fromMeta());
-            $inputFields = array();
-            foreach ($fields as $field) {
-                if ($field instanceof InputField) {
-                    $field->setValue($_POST);
-                    $inputFields[] = $field;
-                }
+            $form = Form::fromMeta();
+            if (!is_user_logged_in()) {
+                $form->addFields(Registration::getDefaultFields(), false);
             }
-            $response = Registration::createNew($event, User::getCurrent(), $inputFields);
+            $form->setValues($_POST);
+            $response = $form->isValid();
+            if ($response === true) {
+                $response = Registration::createNew($event, User::getCurrent(), $form->getInputFields());
+            }
             if (is_array($response)) {
                 /** @var Message $error */
                 foreach ($response as $error) {
@@ -55,6 +56,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
             $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
         }
+        $event_registrations = $event->getRegistrations();
     }
     #endregion
 
@@ -95,7 +97,7 @@ function mp_ssv_events_add_registrations_to_content($content)
                 ?>
                 <form action="<?= get_permalink() ?>" method="POST">
                     <input type="hidden" name="action" value="cancel">
-                    <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Cancel Registration</button>
+                    <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
                     <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                 </form>
                 <?php

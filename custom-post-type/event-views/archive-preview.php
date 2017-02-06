@@ -77,16 +77,16 @@ $content             = get_the_content('');
                         <form action="<?= get_permalink() ?>" method="POST" style="margin: 0">
                             <?php if ($event->isRegistered(User::getCurrent())) : ?>
                                 <input type="hidden" name="action" value="cancel">
-                                <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--danger btn waves-effect waves-light--small">Cancel Registration</button>
+                                <button type="submit" name="submit" class="btn waves-effect waves-light">Cancel Registration</button>
                                 <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                             <?php else : ?>
                                 <input type="hidden" name="action" value="register">
-                                <button type="submit" name="submit" class="btn waves-effect waves-light btn waves-effect waves-light--primary">Register</button>
+                                <button type="submit" name="submit" class="btn waves-effect waves-light">Register</button>
                                 <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
                             <?php endif; ?>
                         </form>
                     <?php elseif ($event->isRegistrationMembersOnly() && !is_user_logged_in()) : ?>
-                        <a href="/login">Login</a>
+                        <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login</a>
                     <?php else : ?>
                         <a href="<?= get_permalink() ?>">Open Event to Register</a>
                     <?php endif; ?>
