@@ -35,7 +35,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $form = Form::fromMeta();
+            $form = Form::fromDatabase();
             if (!is_user_logged_in()) {
                 $form->addFields(Registration::getDefaultFields(), false);
             }

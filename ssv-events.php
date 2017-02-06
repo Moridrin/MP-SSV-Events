@@ -138,6 +138,7 @@ function mp_ssv_events_register_plugin()
 }
 
 register_activation_hook(__FILE__, 'mp_ssv_events_register_plugin');
+register_activation_hook(__FILE__, 'mp_ssv_general_register_plugin');
 #endregion
 
 #region Unregister

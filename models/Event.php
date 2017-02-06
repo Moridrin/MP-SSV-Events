@@ -362,7 +362,7 @@ class Event
                 )
             )
         );
-        $form        = Form::fromMeta();
+        $form        = Form::fromDatabase();
         $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields());
