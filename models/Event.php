@@ -401,8 +401,6 @@ class Event
                             <table class="striped">
                                 <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
                                     <?php $value = $event_registration->getMeta($name); ?>
-                                    <?php SSV_General::var_export($name); ?>
-                                    <?php SSV_General::var_export($value); ?>
                                     <?php $value = empty($value) ? '' : $value; ?>
                                     <tr>
                                         <th><?= $name ?></th>
