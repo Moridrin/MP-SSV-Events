@@ -292,7 +292,7 @@ class Registration
      */
     public function getMeta($key)
     {
-        $value = isset($this->user) ? $this->user->getMeta($key) : null;
+        $value = $this->user ? $this->user->getMeta($key) : null;
         if (empty($value)) {
             global $wpdb;
             $tableName = SSV_Events::TABLE_REGISTRATION_META;
