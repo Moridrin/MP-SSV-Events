@@ -109,11 +109,13 @@ class Registration
         global $wpdb;
         if ($user !== null) {
             $table = SSV_Events::TABLE_REGISTRATION;
-            $sql   = "SELECT * FROM $table WHERE userID = '$user->ID'";
+            $eventID = $event->getID();
+            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND userID = '$user->ID'";
         } else {
             $table = SSV_Events::TABLE_REGISTRATION_META;
             $email = $inputFields['email']->value;
-            $sql   = "SELECT * FROM $table WHERE meta_key = 'email' AND meta_value = '$email'";
+            $eventID = $event->getID();
+            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND meta_key = 'email' AND meta_value = '$email'";
         }
         if ($wpdb->get_row($sql) !== null) {
             return array(new Message('Already registered.', Message::ERROR_MESSAGE));
