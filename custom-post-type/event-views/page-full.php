@@ -64,10 +64,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     ob_start();
     ?>
     <div class="row">
-        <div class="col s8">
-            <?= $content ?>
-        </div>
-        <div class="col s4">
+        <div class="col s12 <?= count($event_registrations) > 0 ? 'xl3' : 'xl4' ?>">
             <h3>When</h3>
             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                 <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
@@ -80,12 +77,15 @@ function mp_ssv_events_add_registrations_to_content($content)
                     <div class="col s9"><?= $event->getStart() ?></div>
                 <?php endif; ?>
             </div>
-            <?php
-            if (count($event_registrations) > 0) {
-                $event->showRegistrations();
-            }
-            ?>
         </div>
+        <div class="col s12 <?= count($event_registrations) > 0 ? 'xl6' : 'xl8' ?>">
+            <?= $content ?>
+        </div>
+        <?php if (count($event_registrations) > 0): ?>
+            <div class="col s12 xl3">
+                <?php $event->showRegistrations(); ?>
+            </div>
+        <?php endif; ?>
     </div>
     <?php
     #endregion
