@@ -370,7 +370,7 @@ class Event
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 
-    public function showRegistrations($update = true)
+    public function showRegistrations($update = true, $showAll = true)
     {
         if ($update) {
             $this->updateRegistrations();
@@ -378,14 +378,32 @@ class Event
         if (!get_theme_support('materialize')): ?>
             <?php if (count($this->registrations) > 8): ?>
                 <h3>Registrations</h3>
-                <ul>
-                    <?php for ($i = 0; $i < 8; $i++) : ?>
+                <ul id="registrations-shortlist">
+                    <?php for ($i = 0; $i < 5; $i++) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
                         <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
                     <?php endfor; ?>
                 </ul>
-                <a href="#" class="btn waves-effect waves-light" onclick="Materialize.showStaggeredList('#other-registrations')">Show All</a>
+                <?php if ($showAll): ?>
+                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <script>
+                        function showList() {
+                            var shortList = document.getElementById('registrations-shortlist');
+                            shortList.parentNode.removeChild(shortList);
+                            document.getElementById('all-registrations').setAttribute('style', 'display: block;');
+                            Materialize.showStaggeredList('#all-registrations');
+                        }
+                    </script>
+                    <ul id="all-registrations" style="display: none;">
+                        <?php foreach ($this->registrations as $event_registration) : ?>
+                            <?php /* @var Registration $event_registration */ ?>
+                            <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    And <?= count($this->registrations) - 5 ?> more...
+                <?php endif; ?>
             <?php else: ?>
                 <h3>Registrations</h3>
                 <ul>
@@ -398,16 +416,52 @@ class Event
         <?php else: ?>
             <?php if (count($this->registrations) > 5): ?>
                 <h3>Registrations</h3>
-                <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
-                <script>
-                    function showList() {
-                        var shortList = document.getElementById('registrations-shortlist');
-                        shortList.parentNode.removeChild(shortList);
-                        document.getElementById('all-registrations').setAttribute('style', 'display: block; margin-top: 0;');
-                        Materialize.showStaggeredList('#all-registrations');
-                    }
-                </script>
-                <ul id="registrations-shortlist" class="collection with-header collapsible popout" data-collapsible="expandable" style="margin-bottom: 0;">
+                <?php if ($showAll): ?>
+                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <script>
+                        function showList() {
+                            var shortList = document.getElementById('registrations-shortlist');
+                            shortList.parentNode.removeChild(shortList);
+                            document.getElementById('all-registrations').setAttribute('style', 'display: block;');
+                            Materialize.showStaggeredList('#all-registrations');
+                        }
+                    </script>
+                    <ul id="all-registrations" class="collection with-header collapsible popout" data-collapsible="expandable" style="display: none;">
+                        <?php foreach ($this->registrations as $event_registration) : ?>
+                            <?php /* @var Registration $event_registration */ ?>
+                            <li>
+                                <div class="collapsible-header collection-item avatar">
+                                    <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
+                                    <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                                    <p><?= $event_registration->status ?></p>
+                                </div>
+                                <div class="collapsible-body row" style="padding: 5px 10px;">
+                                    <table class="striped">
+                                        <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                            <?php $value = $event_registration->getMeta($name); ?>
+                                            <?php $value = empty($value) ? '' : $value; ?>
+                                            <tr>
+                                                <th><?= $name ?></th>
+                                                <td><?= $value ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </table>
+                                    <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                              && is_user_logged_in()
+                                              && User::isBoard()
+                                              && !is_archive()
+                                    ): ?>
+                                        <div class="card-action">
+                                            <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                            <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <ul id="registrations-shortlist" class="collection with-header collapsible popout" data-collapsible="expandable">
                     <?php for ($i = 0; $i < 5; $i++) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
@@ -442,42 +496,10 @@ class Event
                         </li>
                     <?php endfor; ?>
                 </ul>
-                <ul id="all-registrations" class="collection with-header collapsible popout" data-collapsible="expandable" style="display: none; margin-top: 0;">
-                    <?php foreach ($this->registrations as $event_registration) : ?>
-                        <?php /* @var Registration $event_registration */ ?>
-                        <li>
-                            <div class="collapsible-header collection-item avatar">
-                                <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                <p><?= $event_registration->status ?></p>
-                            </div>
-                            <div class="collapsible-body row" style="padding: 5px 10px;">
-                                <table class="striped">
-                                    <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
-                                        <?php $value = $event_registration->getMeta($name); ?>
-                                        <?php $value = empty($value) ? '' : $value; ?>
-                                        <tr>
-                                            <th><?= $name ?></th>
-                                            <td><?= $value ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
-                                <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                          && is_user_logged_in()
-                                          && User::isBoard()
-                                          && !is_archive()
-                                ): ?>
-                                    <div class="card-action">
-                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-                <?php
-            else: ?>
+                <?php if (!$showAll): ?>
+                    And <?= count($this->registrations) - 5 ?> more...
+                <?php endif; ?>
+            <?php else: ?>
                 <h3>Registrations</h3>
                 <ul class="collection with-header collapsible popout" data-collapsible="expandable">
                     <?php foreach ($this->registrations as $event_registration) : ?>

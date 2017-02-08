@@ -63,7 +63,7 @@ $content             = get_the_content('');
                         <?= $content ?>
                     </div>
                     <div class="col s12 m4">
-                        <?php $event->showRegistrations(); ?>
+                        <?php $event->showRegistrations(true, false); ?>
                     </div>
                 </div>
             <?php else : ?>
