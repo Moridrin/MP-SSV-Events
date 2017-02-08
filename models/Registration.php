@@ -292,11 +292,11 @@ class Registration
      */
     public function getMeta($key)
     {
-        $value = $this->user ? $this->user->getMeta($key) : null;
+        global $wpdb;
+        $tableName = SSV_Events::TABLE_REGISTRATION_META;
+        $value     = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
         if (empty($value)) {
-            global $wpdb;
-            $tableName = SSV_Events::TABLE_REGISTRATION_META;
-            $value     = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
+            $value = $this->user ? $this->user->getMeta($key) : '';
         }
         return $value;
     }

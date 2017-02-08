@@ -110,7 +110,7 @@ function mp_ssv_events_register_plugin()
     $table_name = SSV_Events::TABLE_REGISTRATION;
     $sql
                 = "
-		CREATE TABLE $table_name (
+		CREATE TABLE IF NOT EXISTS $table_name (
 			ID bigint(20) NOT NULL AUTO_INCREMENT,
 			eventID bigint(20) NOT NULL,
 			userID bigint(20),
@@ -124,7 +124,7 @@ function mp_ssv_events_register_plugin()
     $table_name = SSV_Events::TABLE_REGISTRATION_META;
     $sql
                 = "
-		CREATE TABLE $table_name (
+		CREATE TABLE IF NOT EXISTS $table_name (
 			ID bigint(20) NOT NULL AUTO_INCREMENT,
 			registrationID bigint(20) NOT NULL,
 			meta_key VARCHAR(255) NOT NULL,

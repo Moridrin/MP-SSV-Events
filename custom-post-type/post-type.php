@@ -296,6 +296,7 @@ function ssv_events_registrations()
     $sql        = "SELECT * FROM $table WHERE eventID = $post->ID";
     $rows       = $wpdb->get_results($sql);
     $fieldNames = $event->getRegistrationFieldNames();
+    SSV_General::var_export($rows, true);
     ?>
     <table cellspacing="5" border="1">
         <tr>
