@@ -1,199 +1,184 @@
 <?php
 /**
  * Plugin Name: SSV Events
- * Plugin URI: http://moridrin.com/ssv-events
+ * Plugin URI: https://bosso.nl/ssv-events/
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
- * Version: 1.0
+ * Version: 3.0.1
  * Author: Jeroen Berkvens
  * Author URI: http://nl.linkedin.com/in/jberkvens/
  * License: WTFPL
  * License URI: http://www.wtfpl.net/txt/copying/
  */
+if (!defined('ABSPATH')) {
+    exit;
+}
 
+#region Require Once
 require_once 'general/general.php';
+
+require_once "options/options.php";
 
 require_once "models/Event.php";
 require_once "models/Registration.php";
-require_once "profile-content.php";
-require_once "location-widget.php";
-require_once "category-widget.php";
-require_once "post-type.php";
-require_once "event-content.php";
-require_once "options/options.php";
-require_once "registrations.php";
 
-function ssv_register_ssv_events()
+require_once "custom-post-type/post-type.php";
+require_once "custom-post-type/event-views/page-full.php";
+
+require_once "widgets/category-widget.php";
+#endregion
+
+#region SSV_Events class
+global $wpdb;
+define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
+define('SSV_EVENTS_URL', plugins_url() . '/ssv-events/');
+define('SSV_EVENTS_REGISTRATION_TABLE', $wpdb->prefix . "ssv_event_registration");
+define('SSV_EVENTS_REGISTRATION_META_TABLE', $wpdb->prefix . "ssv_event_registration_meta");
+
+class SSV_Events
 {
-    /* Database */
-    global $wpdb;
-    /** @noinspection PhpIncludeInspection */
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    $charset_collate = $wpdb->get_charset_collate();
-    $table_name = $wpdb->prefix . "ssv_event_registration";
-    $sql
-        = "
-		CREATE TABLE $table_name (
-			id bigint(20) NOT NULL AUTO_INCREMENT,
-			userID bigint(20),
-			eventID bigint(20) NOT NULL,
-			status text NOT NULL,
-			first_name varchar(30),
-			last_name varchar(30),
-			email varchar(30),
-			UNIQUE KEY id (id)
-		) $charset_collate;";
-    $wpdb->query($sql);
+    #region Constants
+    const PATH = SSV_EVENTS_PATH;
+    const URL = SSV_EVENTS_URL;
 
-    /* Options */
-    update_option('ssv_event_guest_registration', 'false');
-    update_option('ssv_event_default_registration_status', 'pending');
-    update_option('ssv_event_registration_message', 'Your registration is pending.');
-    update_option('ssv_event_cancellation_message', 'Your registration is canceled.');
-    update_option('ssv_event_email_registration_confirmation', 'true');
-    update_option('ssv_event_email_registration_status_changed', 'true');
-    update_option('ssv_event_email_registration_verify', 'true');
+    const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
+    const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
+
+    const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
+    const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
+    const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
+    const OPTION_EMAIL_AUTHOR = 'ssv_events__email_author';
+    const OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED = 'ssv_events__email_on_registration_status_changed';
+    const OPTION_PUBLISH_ERROR = 'ssv_events__publish_error';
+
+    const ADMIN_REFERER_OPTIONS = 'ssv_events__admin_referer_options';
+    const ADMIN_REFERER_REGISTRATION = 'ssv_events__admin_referer_registration';
+    #endregion
+
+    #region resetOptions()
+    /**
+     * This function sets all the options for this plugin back to their default value
+     */
+    public static function resetOptions()
+    {
+        self::resetGeneralOptions();
+        self::resetEmailOptions();
+        update_option(self::OPTION_PUBLISH_ERROR, false);
+    }
+
+    #region resetGeneralOptions()
+    /**
+     * This function sets all the options on the General Tab back to their default value
+     */
+    public static function resetGeneralOptions()
+    {
+        update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
+        update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
+        update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
+    }
+    #endregion
+
+    #region resetEmailOptions()
+    /**
+     * This function sets all the options on the Email Tab back to their default value
+     */
+    public static function resetEmailOptions()
+    {
+        update_option(self::OPTION_EMAIL_AUTHOR, true);
+        update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
+    }
+    #endregion
+
+    #endregion
+
+    public static function CLEAN_INSTALL()
+    {
+        mp_ssv_events_uninstall();
+        mp_ssv_events_register_plugin();
+    }
 }
 
-register_activation_hook(__FILE__, 'ssv_register_ssv_events');
+#endregion
 
-function ssv_unregister_ssv_events()
+#region Register
+function mp_ssv_events_register_plugin()
+{
+    global $wpdb;
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    $charset_collate = $wpdb->get_charset_collate();
+
+    #region Registration Table
+    $table_name = SSV_Events::TABLE_REGISTRATION;
+    $sql
+                = "
+		CREATE TABLE IF NOT EXISTS $table_name (
+			ID bigint(20) NOT NULL AUTO_INCREMENT,
+			eventID bigint(20) NOT NULL,
+			userID bigint(20),
+			registration_status VARCHAR(15) NOT NULL DEFAULT 'pending',
+			PRIMARY KEY (ID)
+		) $charset_collate;";
+    $wpdb->query($sql);
+    #endregion
+
+    #region Registration Meta Table
+    $table_name = SSV_Events::TABLE_REGISTRATION_META;
+    $sql
+                = "
+		CREATE TABLE IF NOT EXISTS $table_name (
+			ID bigint(20) NOT NULL AUTO_INCREMENT,
+			registrationID bigint(20) NOT NULL,
+			meta_key VARCHAR(255) NOT NULL,
+			meta_value VARCHAR(255),
+			PRIMARY KEY (ID)
+		) $charset_collate;";
+    $wpdb->query($sql);
+    #endregion
+
+    SSV_Events::resetOptions();
+}
+
+register_activation_hook(__FILE__, 'mp_ssv_events_register_plugin');
+register_activation_hook(__FILE__, 'mp_ssv_general_register_plugin');
+#endregion
+
+#region Unregister
+function mp_ssv_events_unregister()
 {
     //Nothing to do here.
 }
 
-register_deactivation_hook(__FILE__, 'ssv_unregister_ssv_events');
+register_deactivation_hook(__FILE__, 'mp_ssv_events_unregister');
+#endregion
 
-function ssv_uninstall_ssv_events()
+#region UnInstall
+function mp_ssv_events_uninstall()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . "ssv_event_registration";
-    $sql = "DROP TABLE IF_EXISTS $table_name;";
+    $wpdb->show_errors();
+    $table_name = SSV_Events::TABLE_REGISTRATION;
+    $sql        = "DROP TABLE IF EXISTS $table_name;";
+    $wpdb->query($sql);
+    $table_name = SSV_Events::TABLE_REGISTRATION_META;
+    $sql        = "DROP TABLE IF EXISTS $table_name;";
     $wpdb->query($sql);
 }
 
-register_uninstall_hook(__FILE__, 'ssv_uninstall_ssv_events');
+register_uninstall_hook(__FILE__, 'mp_ssv_events_uninstall');
+#endregion
 
-function ssv_events_template($archive_template)
+#region Reset Options
+/**
+ * This function will reset the events options if the admin referer originates from the SSV Events plugin.
+ *
+ * @param $admin_referer
+ */
+function mp_ssv_events_reset_options($admin_referer)
 {
-    if (is_post_type_archive('events')) {
-        $archive_template = dirname(__FILE__) . '/archive-events.php';
-    }
-    return $archive_template;
-}
-
-add_filter('archive_template', 'ssv_events_template');
-
-function ssv_save_event(
-    $post_ID,
-    $post_after,
-    /** @noinspection PhpUnusedParameterInspection */
-    $post_before
-) {
-    if (get_post_type() != 'events') {
-        return $post_ID;
-    }
-    $event = new Event($post_after);
-    if (!$event->isValid() && $event->isPublished()) {
-        $updateArguments = array();
-        $updateArguments['ID'] = $post_ID;
-        $updateArguments['post_status'] = 'draft';
-        wp_update_post($updateArguments);
-        update_option('ssv_is_publish_error', 1);
-    }
-    return $post_ID;
-}
-
-add_action('save_post', 'ssv_save_event', 10, 3);
-
-function ssv_events_admin_notice()
-{
-    $screen = get_current_screen();
-    if ('events' != $screen->post_type || 'post' != $screen->base) {
+    if (!starts_with($admin_referer, 'ssv_events__')) {
         return;
     }
-    $publish_error = get_option('ssv_is_publish_error', true);
-    $save_notice = get_option('ssv_is_save_warning', true);
-    if ($publish_error) {
-        ?>
-        <div class="notice notice-error">
-            <p><?php _e('You cannot publish an event without a start date and time!', 'ssv'); ?></p>
-        </div>
-        <?php
-    } elseif ($save_notice) {
-        ?>
-        <div class="notice notice-warning">
-            <p><?php _e('You cannot publish an event without a start date and time!', 'ssv'); ?></p>
-        </div>
-        <?php
-    }
-    update_option('ssv_is_publish_error', 0);
-    update_option('ssv_is_save_warning', 0);
+    SSV_Events::resetOptions();
 }
 
-add_action('admin_notices', 'ssv_events_admin_notice');
-
-function ssv_events_updated_messages($messages)
-{
-    global $post, $post_ID;
-    $publish_error = get_option('ssv_is_publish_error', true);
-    if ($publish_error) {
-
-        $messages['events'] = array(
-            0  => '',
-            1  => sprintf(__('Event updated. <a href="%s">View Event</a>'), esc_url(get_permalink($post_ID))),
-            2  => __('Custom field updated.'),
-            3  => __('Custom field deleted.'),
-            4  => __('Event updated.'),
-            /* translators: %s: date and time of the revision */
-            5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'), wp_post_revision_title((int)$_GET['revision'], false)
-            ) : false,
-            6  => '', //Send a blank string to prevent it from posting that it has been published correctly.
-            7  => __('Event saved.'),
-            8  => sprintf(
-                __('Event submitted. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-            9  => sprintf(
-                __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
-                // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)), esc_url(get_permalink($post_ID))
-            ),
-            10 => sprintf(
-                __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-        );
-    } else {
-        $messages['events'] = array(
-            0  => '',
-            1  => sprintf(__('Event updated. <a href="%s">View Event</a>'), esc_url(get_permalink($post_ID))),
-            2  => __('Custom field updated.'),
-            3  => __('Custom field deleted.'),
-            4  => __('Event updated.'),
-            /* translators: %s: date and time of the revision */
-            5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'), wp_post_revision_title((int)$_GET['revision'], false)
-            ) : false,
-            6  => sprintf(__('Event published. <a href="%s">View event</a>'), esc_url(get_permalink($post_ID))),
-            7  => __('Event saved.'),
-            8  => sprintf(
-                __('Event submitted. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-            9  => sprintf(
-                __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
-                // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)), esc_url(get_permalink($post_ID))
-            ),
-            10 => sprintf(
-                __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-        );
-    }
-
-    return $messages;
-}
-
-add_filter('post_updated_messages', 'ssv_events_updated_messages');
+add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
+#endregion

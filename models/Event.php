@@ -8,41 +8,27 @@
  */
 class Event
 {
-    /**
-     * @var WP_Post
-     */
+    #region Variables
+    /** @var WP_Post */
     public $post;
 
-    /**
-     * @var int the ID of the WP_Post
-     */
-    public $ID;
+    /** @var DateTime */
+    private $start;
 
-    /**
-     * @var DateTime
-     */
-    private $startDate;
+    /** @var DateTime */
+    private $end;
 
-    /**
-     * @var DateTime
-     */
-    private $endDate;
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $location;
 
-    /**
-     * @var bool
-     */
-    private $registration_enabled;
+    /** @var string */
+    private $registration;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $registrations;
+    #endregion
 
+    #region Construct
     /**
      * Event constructor.
      *
@@ -50,16 +36,11 @@ class Event
      */
     public function __construct($post)
     {
-        $this->post = $post;
-        $this->ID = $post->ID;
-        $this->startDate = DateTime::createFromFormat(
-            'Y-m-dH:i', get_post_meta($post->ID, 'start_date', true) . get_post_meta($post->ID, 'start_time', true)
-        );
-        $this->endDate = DateTime::createFromFormat(
-            'Y-m-dH:i', get_post_meta($post->ID, 'end_date', true) . get_post_meta($post->ID, 'end_time', true)
-        );
-        $this->location = get_post_meta(get_the_ID(), 'location', true);
-        $this->registration_enabled = get_post_meta(get_the_ID(), 'registration', true) == 'true';
+        $this->post         = $post;
+        $this->start        = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
+        $this->end          = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
+        $this->location     = get_post_meta($post->ID, 'location', true);
+        $this->registration = get_post_meta($post->ID, 'registration', true);
     }
 
     /**
@@ -67,79 +48,83 @@ class Event
      *
      * @return Event
      */
-    public static function get_by_id($id)
+    public static function getByID($id)
     {
         return new Event(get_post($id));
     }
+    #endregion
 
+    #region getID()
     /**
      * @return int
      */
-    public function getPostId()
+    public function getID()
     {
         return $this->post->ID;
     }
+    #endregion
 
+    #region getTitle()
     /**
-     * @return DateTime
+     * @return string
      */
-    public function getStartDate()
+    public function getTitle()
     {
-        return $this->startDate;
+        return $this->post->post_title;
     }
+    #endregion
 
+    #region getStart($format)
     /**
-     * @param bool $newline set false if you don't want to echo <br/> at the end of the line.
+     * @param null|string $format
+     *
+     * @return null|string
      */
-    public function echoStartDate($newline = true)
+    public function getStart($format = null)
     {
-        if (!$this->startDate) {
-            return;
+        if (!$this->start) {
+            return null;
         }
-        if ($this->startDate->format('Hi') != '00:00') {
-            echo $this->startDate->format('Y-m-d H:i');
+        if ($this->start->format('H:i') != '00:00') {
+            $format = $format ?: 'Y-m-d H:i';
         } else {
-            echo $this->startDate->format('Y-m-d');
+            $format = $format ?: 'Y-m-d';
         }
-        if ($newline) {
-            echo '<br/>';
-        }
+        return $this->start->format($format);
     }
+    #endregion
 
+    #region getEnd($format)
     /**
-     * @return DateTime
+     * @param null|string $format
+     *
+     * @return null|string
      */
-    public function getEndDate()
+    public function getEnd($format = null)
     {
-        return $this->endDate;
-    }
-
-    /**
-     * @param bool $newline set false if you don't want to echo <br/> at the end of the line.
-     */
-    public function echoEndDate($newline = true)
-    {
-        if (!$this->endDate) {
-            return;
+        if (!$this->end) {
+            return null;
         }
-        if ($this->endDate->format('Hi') != '00:00') {
-            echo $this->endDate->format('Y-m-d H:i');
+        if ($this->start->format('H:i') != '00:00') {
+            $format = $format ?: 'Y-m-d H:i';
         } else {
-            echo $this->endDate->format('Y-m-d');
+            $format = $format ?: 'Y-m-d';
         }
-        if ($newline) {
-            echo '<br/>';
-        }
+        return $this->end->format($format);
     }
+    #endregion
 
+    #region getLocation()
     /**
-     * @return DateTime
+     * @return string
      */
     public function getLocation()
     {
         return $this->location;
     }
+    #endregion
 
+    #region getGoogleCalendarURL()
     /**
      * @return string URL to create Google Calendar Event.
      */
@@ -147,18 +132,20 @@ class Event
     {
         $URL = 'https://www.google.com/calendar/render?action=TEMPLATE';
         $URL .= '&text=' . get_the_title($this->post->ID);
-        $URL .= '&dates=' . $this->startDate->format('Ymd\\THi00');
-        if ($this->endDate != false) {
-            $URL .= '/' . $this->endDate->format('Ymd\\THi00');
+        $URL .= '&dates=' . $this->start->format('Ymd\\THi00');
+        if ($this->end != false) {
+            $URL .= '/' . $this->end->format('Ymd\\THi00');
         } else {
-            $URL .= '/' . $this->startDate->format('Ymd\\THi00');
+            $URL .= '/' . $this->start->format('Ymd\\THi00');
         }
         if (!empty($this->location)) {
             $URL .= '&location=' . $this->location;
         }
         return $URL;
     }
+    #endregion
 
+    #region getLiveCalendarURL()
     /**
      * @return string URL to create Live (Hotmail) Event.
      */
@@ -167,10 +154,10 @@ class Event
         /** @noinspection SpellCheckingInspection */
         $URL = 'http://calendar.live.com/calendar/calendar.aspx?rru=addevent';
         /** @noinspection SpellCheckingInspection */
-        $URL .= '&dtstart=' . $this->startDate->format('Ymd\\THi00');
-        if ($this->endDate != false) {
+        $URL .= '&dtstart=' . $this->start->format('Ymd\\THi00');
+        if ($this->end != false) {
             /** @noinspection SpellCheckingInspection */
-            $URL .= '$dtend=' . $this->endDate->format('Ymd\\THi00');
+            $URL .= '$dtend=' . $this->end->format('Ymd\\THi00');
         }
         $URL .= '&summary=' . get_the_title($this->post->ID);
         if (!empty($this->location)) {
@@ -178,67 +165,127 @@ class Event
         }
         return $URL;
     }
+    #endregion
 
+    #region isValid()
     /**
      * @return bool true if the Event is valid (all mandatory fields are filled).
      */
     public function isValid()
     {
-        if ($this->startDate == false) {
+        if ($this->start == false) {
             return false;
         }
         return true;
     }
+    #endregion
 
+    #region isPublished()
     /**
      * @return bool true if the event is published
      */
     public function isPublished()
     {
-        if ($this->post->post_status == 'publish') {
-            return true;
-        }
-        return false;
+        return $this->post->post_status == 'publish';
     }
+    #endregion
 
-    public function canRegister()
-    {
-        return $this->isRegistrationEnabled() && $this->startDate > new DateTime();
-    }
-
+    #region isRegistrationEnabled()
     /**
      * @return bool
      */
     public function isRegistrationEnabled()
     {
-        return $this->registration_enabled;
+        return $this->registration != Registration::MODE_DISABLED;
     }
+    #endregion
 
+    #region isRegistrationMembersOnly()
     /**
-     * @param int|WP_User|FrontendMember|null $user use null to test with the current user.
+     * @return bool
+     */
+    public function isRegistrationMembersOnly()
+    {
+        return $this->registration == Registration::MODE_MEMBERS_ONLY;
+    }
+    #endregion
+
+    #region isRegistrationPossible()
+    /**
+     * This function returns if it is currently possible for someone to register.
+     *
+     * @return bool
+     */
+    public function isRegistrationPossible()
+    {
+        switch ($this->registration) {
+            case Registration::MODE_EVERYONE:
+            case Registration::MODE_MEMBERS_ONLY:
+                return $this->start > new DateTime();
+                break;
+            case Registration::MODE_DISABLED:
+            default:
+                return false;
+                break;
+        }
+    }
+    #endregion
+
+    #region canRegister()
+    /**
+     * This method returns if you can currently register (or unregister).
+     *
+     * @return bool true if you currently can register or unregister.
+     */
+    public function canRegister()
+    {
+        switch ($this->registration) {
+            case Registration::MODE_EVERYONE:
+                return $this->start > new DateTime();
+                break;
+            case Registration::MODE_MEMBERS_ONLY:
+                return is_user_logged_in() && $this->start > new DateTime();
+                break;
+            case Registration::MODE_DISABLED:
+            default:
+                return false;
+                break;
+        }
+    }
+    #endregion
+
+    #region isRegistered($user)
+    /**
+     * @param int|WP_User|null $user use null to test with the current user.
      *
      * @return bool
      */
     public function isRegistered($user = null)
     {
+        if ($user == null && !is_user_logged_in()) {
+            return false;
+        }
         $userID = null;
         if (is_int($user)) {
             $userID = $user;
-        } elseif ($user instanceof WP_User || $user instanceof FrontendMember) {
+        } elseif ($user instanceof WP_User) {
             $userID = $user->ID;
         } else {
             $userID = get_current_user_id();
         }
+        $this->updateRegistrations();
         if (count($this->registrations) > 0) {
             foreach ($this->registrations as $registration) {
-                if ($registration->member->ID == $userID) {
+                if ($registration->user != null && $registration->user->ID == $userID) {
                     return true;
                 }
             }
         }
         return false;
     }
+    #endregion
 
+    #region getRegistrations()
     /**
      * @param bool $update set to false if you don't require a new update from the database.
      *
@@ -252,15 +299,243 @@ class Event
         return $this->registrations;
     }
 
+    #endregion
+
     public function updateRegistrations()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . "ssv_event_registration";
-        $event_registrations = $wpdb->get_results("SELECT * FROM $table_name WHERE eventID = $this->ID");
-        if (!empty($event_registrations)) {
-            foreach ($event_registrations as $event_registration) {
-                $this->registrations[] = Registration::fromDatabase($this->ID, $event_registration);
+        $eventID   = $this->getID();
+        $tableName = SSV_Events::TABLE_REGISTRATION;
+        if (is_user_logged_in() && User::isBoard()) {
+            $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
+        } else {
+            $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
+        }
+        $this->registrations = array();
+        foreach ($eventRegistrations as $eventRegistration) {
+            $this->registrations[] = Registration::getByID($eventRegistration->ID);
+        }
+    }
+
+    /**
+     * @param bool $includeBase
+     *
+     * @return array
+     */
+    public function getRegistrationFieldNames($includeBase = true)
+    {
+        if ($includeBase) {
+            $fieldNames = array('first_name', 'last_name', 'email');
+        } else {
+            $fieldNames = array();
+        }
+        $fieldIDs = get_post_meta($this->post->ID, Field::CUSTOM_FIELD_IDS_META, true);
+        $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
+        foreach ($fieldIDs as $id) {
+            $field = get_post_meta($this->post->ID, Field::PREFIX . $id, true);
+            $field = Field::fromJSON($field);
+            if ($field instanceof InputField) {
+                /** @var InputField $field */
+                $fieldNames[] = $field->name;
             }
         }
+        return $fieldNames;
+    }
+
+    public function showRegistrationForm()
+    {
+        ?>
+        <h1>Register</h1>
+        <?php
+        /** @var InputField $actionField */
+        $actionField = Field::fromJSON(
+            json_encode(
+                array(
+                    'id'            => '-1',
+                    'title'         => '',
+                    'field_type'    => 'input',
+                    'input_type'    => 'hidden',
+                    'name'          => 'action',
+                    'default_value' => 'register',
+                    'class'         => '',
+                    'style'         => '',
+                )
+            )
+        );
+        $form        = Form::fromDatabase();
+        $form->addFields($actionField, false);
+        if (!is_user_logged_in()) {
+            $form->addFields(Registration::getDefaultFields());
+        }
+        echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
+    }
+
+    public function showRegistrations($update = true, $showAll = true)
+    {
+        if ($update) {
+            $this->updateRegistrations();
+        }
+        if (!get_theme_support('materialize')): ?>
+            <?php if (count($this->registrations) > 8): ?>
+                <h3>Registrations</h3>
+                <ul id="registrations-shortlist">
+                    <?php for ($i = 0; $i < 5; $i++) : ?>
+                        <?php /* @var Registration $event_registration */ ?>
+                        <?php $event_registration = array_values($this->registrations)[$i] ?>
+                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                    <?php endfor; ?>
+                </ul>
+                <?php if ($showAll): ?>
+                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <script>
+                        function showList() {
+                            var shortList = document.getElementById('registrations-shortlist');
+                            shortList.parentNode.removeChild(shortList);
+                            document.getElementById('all-registrations').setAttribute('style', 'display: block;');
+                            Materialize.showStaggeredList('#all-registrations');
+                        }
+                    </script>
+                    <ul id="all-registrations" style="display: none;">
+                        <?php foreach ($this->registrations as $event_registration) : ?>
+                            <?php /* @var Registration $event_registration */ ?>
+                            <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    And <?= count($this->registrations) - 5 ?> more...
+                <?php endif; ?>
+            <?php else: ?>
+                <h3>Registrations</h3>
+                <ul>
+                    <?php foreach ($this->registrations as $event_registration) : ?>
+                        <?php /* @var Registration $event_registration */ ?>
+                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        <?php else: ?>
+            <?php if (count($this->registrations) > 5): ?>
+                <h3>Registrations</h3>
+                <?php if ($showAll): ?>
+                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <script>
+                        function showList() {
+                            var shortList = document.getElementById('registrations-shortlist');
+                            shortList.parentNode.removeChild(shortList);
+                            document.getElementById('all-registrations').setAttribute('style', 'display: block;');
+                            Materialize.showStaggeredList('#all-registrations');
+                        }
+                    </script>
+                    <ul id="all-registrations" class="collection with-header collapsible popout" data-collapsible="expandable" style="display: none;">
+                        <?php foreach ($this->registrations as $event_registration) : ?>
+                            <?php /* @var Registration $event_registration */ ?>
+                            <li>
+                                <div class="collapsible-header collection-item avatar">
+                                    <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
+                                    <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                                    <p><?= $event_registration->status ?></p>
+                                </div>
+                                <div class="collapsible-body row" style="padding: 5px 10px;">
+                                    <table class="striped">
+                                        <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                            <?php $value = $event_registration->getMeta($name); ?>
+                                            <?php $value = empty($value) ? '' : $value; ?>
+                                            <tr>
+                                                <th><?= $name ?></th>
+                                                <td><?= $value ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </table>
+                                    <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                              && is_user_logged_in()
+                                              && User::isBoard()
+                                              && !is_archive()
+                                    ): ?>
+                                        <div class="card-action">
+                                            <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                            <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <ul id="registrations-shortlist" class="collection with-header collapsible popout" data-collapsible="expandable">
+                    <?php for ($i = 0; $i < 5; $i++) : ?>
+                        <?php /* @var Registration $event_registration */ ?>
+                        <?php $event_registration = array_values($this->registrations)[$i] ?>
+                        <li>
+                            <div class="collapsible-header collection-item avatar">
+                                <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
+                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                                <p><?= $event_registration->status ?></p>
+                            </div>
+                            <div class="collapsible-body row" style="padding: 5px 10px;">
+                                <table class="striped">
+                                    <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                        <?php $value = $event_registration->getMeta($name); ?>
+                                        <?php $value = empty($value) ? '' : $value; ?>
+                                        <tr>
+                                            <th><?= $name ?></th>
+                                            <td><?= $value ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                                <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                          && is_user_logged_in()
+                                          && User::isBoard()
+                                          && !is_archive()
+                                ): ?>
+                                    <div class="card-action">
+                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+                <?php if (!$showAll): ?>
+                    And <?= count($this->registrations) - 5 ?> more...
+                <?php endif; ?>
+            <?php else: ?>
+                <h3>Registrations</h3>
+                <ul class="collection with-header collapsible popout" data-collapsible="expandable">
+                    <?php foreach ($this->registrations as $event_registration) : ?>
+                        <?php /* @var Registration $event_registration */ ?>
+                        <li>
+                            <div class="collapsible-header collection-item avatar">
+                                <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
+                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
+                                <p><?= $event_registration->status ?></p>
+                            </div>
+                            <div class="collapsible-body row" style="padding: 5px 10px;">
+                                <table class="striped">
+                                    <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                        <?php $value = $event_registration->getMeta($name); ?>
+                                        <?php $value = empty($value) ? '' : $value; ?>
+                                        <tr>
+                                            <th><?= $name ?></th>
+                                            <td><?= $value ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                                <?php if ($event_registration->status == Registration::STATUS_PENDING
+                                          && is_user_logged_in()
+                                          && User::isBoard()
+                                          && !is_archive()
+                                ): ?>
+                                    <div class="card-action">
+                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif;
+        endif;
     }
 }
