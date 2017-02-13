@@ -174,7 +174,7 @@ register_uninstall_hook(__FILE__, 'mp_ssv_events_uninstall');
  */
 function mp_ssv_events_reset_options($admin_referer)
 {
-    if (!starts_with($admin_referer, 'ssv_events__')) {
+    if (!mp_ssv_starts_with($admin_referer, 'ssv_events__')) {
         return;
     }
     SSV_Events::resetOptions();
