@@ -329,15 +329,10 @@ class Event
         } else {
             $fieldNames = array();
         }
-        $fieldIDs = get_post_meta($this->post->ID, Field::CUSTOM_FIELD_IDS_META, true);
-        $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
-        foreach ($fieldIDs as $id) {
-            $field = get_post_meta($this->post->ID, Field::PREFIX . $id, true);
-            $field = Field::fromJSON($field);
-            if ($field instanceof InputField) {
-                /** @var InputField $field */
-                $fieldNames[] = $field->name;
-            }
+        $form = Form::fromDatabase(false);
+        $inputFields = $form->getInputFields();
+        foreach ($inputFields as $inputField) {
+            $fieldNames[] = $inputField->name;
         }
         return $fieldNames;
     }

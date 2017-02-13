@@ -49,7 +49,6 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
 {
     $hasUpcomingEvents = $upcomingEvents->have_posts();
     $hasPastEvents     = $pastEvents->have_posts();
-//    SSV_General::var_export($upcomingEvents->request, 1);
     if ($hasUpcomingEvents || $hasPastEvents) {
         if ($hasUpcomingEvents) {
             ?>
