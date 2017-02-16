@@ -108,14 +108,14 @@ class Registration
         #region Validate
         global $wpdb;
         if ($user !== null) {
-            $table = SSV_Events::TABLE_REGISTRATION;
+            $table   = SSV_Events::TABLE_REGISTRATION;
             $eventID = $event->getID();
-            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND userID = '$user->ID'";
+            $sql     = "SELECT * FROM $table WHERE eventID = $eventID AND userID = '$user->ID'";
         } else {
-            $table = SSV_Events::TABLE_REGISTRATION_META;
-            $email = $inputFields['email']->value;
+            $table   = SSV_Events::TABLE_REGISTRATION_META;
+            $email   = $inputFields['email']->value;
             $eventID = $event->getID();
-            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND meta_key = 'email' AND meta_value = '$email'";
+            $sql     = "SELECT * FROM $table WHERE eventID = $eventID AND meta_key = 'email' AND meta_value = '$email'";
         }
         if ($wpdb->get_row($sql) !== null) {
             return array(new Message('Already registered.', Message::ERROR_MESSAGE));
@@ -169,7 +169,9 @@ class Registration
             $to         = User::getByID(Event::getByID($event->getID())->post->post_author)->user_email;
             $subject    = "New Registration for " . $eventTitle;
             if ($user != null) {
-                $message = 'User ' . $user->display_name . ' has registered for ' . $eventTitle . '.';
+                ob_start();
+                ?>User <a href="<?= $user->getProfileURL() ?>"><?= $user->display_name ?></a> has registered for <a href="<?= get_permalink($event->getID()) ?>"><?= $eventTitle ?></a>.<?php
+                $message = ob_get_clean();
             } else {
                 $message = 'Someone has registered for ' . $eventTitle . ' with the following information:<br/>';
                 foreach ($inputFields as $field) {
