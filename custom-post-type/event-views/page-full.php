@@ -21,12 +21,12 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Update Registration Status
-    if (User::isBoard()) {
+    if (current_user_can('manage_events')) { //TODO make this work
         if (isset($_GET['approve'])) {
-            Registration::getByID($_GET['approve'])->approve();
+            Registration::getByID(SSV_General::sanitize($_GET['approve']))->approve();
             SSV_General::redirect(get_permalink());
         } elseif (isset($_GET['deny'])) {
-            Registration::getByID($_GET['deny'])->deny();
+            Registration::getByID(SSV_General::sanitize($_GET['deny']))->deny();
             SSV_General::redirect(get_permalink());
         }
     }
@@ -50,11 +50,11 @@ function mp_ssv_events_add_registrations_to_content($content)
                     $content = $error->getHTML() . $content;
                 }
             } else {
-                $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
+                $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
             }
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
-            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
+            $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
         }
         $event_registrations = $event->getRegistrations();
     }
@@ -69,12 +69,12 @@ function mp_ssv_events_add_registrations_to_content($content)
             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                 <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
                     <div class="col s3">From:</div>
-                    <div class="col s9"><?= $event->getStart() ?></div>
+                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                     <div class="col s3">Till:</div>
-                    <div class="col s9"><?= $event->getEnd() ?></div>
+                    <div class="col s9"><?= esc_html($event->getEnd()) ?></div>
                 <?php else : ?>
                     <div class="col s3">Start:</div>
-                    <div class="col s9"><?= $event->getStart() ?></div>
+                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                 <?php endif; ?>
             </div>
         </div>
@@ -106,7 +106,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             }
         } else {
             ?>
-            <a href="/login" class="btn waves-effect waves-light">Login to Register</a>
+            <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login to Register</a>
             <?php
         }
     }

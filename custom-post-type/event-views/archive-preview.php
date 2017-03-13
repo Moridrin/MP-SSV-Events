@@ -27,7 +27,7 @@ $content             = get_the_content('');
                 <h2 class="card-title activator">
                     <?= the_title() ?>
                     <?php if ($event->isRegistrationEnabled()) : ?>
-                        <span class="new badge" data-badge-caption="Registrations"><?= count($event_registrations) ?></span>
+                        <span class="new badge" data-badge-caption="Registrations"><?= esc_html(count($event_registrations)) ?></span>
                     <?php endif; ?>
                 </h2>
             </header>
@@ -38,10 +38,10 @@ $content             = get_the_content('');
                 <div class="col s12 m4">
                     <div class="row" style="border-left: solid">
                         <div class="col s3">From:</div>
-                        <div class="col s9"><?= $event->getStart() ?></div>
+                        <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                         <?php if ($event->getEnd()) : ?>
                             <div class="col s3">Till:</div>
-                            <div class="col s9"><?= $event->getEnd() ?></div>
+                            <div class="col s9"><?= esc_html($event->getEnd()) ?></div>
                         <?php endif; ?>
                     </div>
                 </div>

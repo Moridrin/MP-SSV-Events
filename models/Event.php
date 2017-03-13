@@ -377,7 +377,7 @@ class Event
                     <?php for ($i = 0; $i < 5; $i++) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
-                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                     <?php endfor; ?>
                 </ul>
                 <?php if ($showAll): ?>
@@ -393,7 +393,7 @@ class Event
                     <ul id="all-registrations" style="display: none;">
                         <?php foreach ($this->registrations as $event_registration) : ?>
                             <?php /* @var Registration $event_registration */ ?>
-                            <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                            <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -404,7 +404,7 @@ class Event
                 <ul>
                     <?php foreach ($this->registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
-                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
@@ -427,8 +427,8 @@ class Event
                             <li>
                                 <div class="collapsible-header collection-item avatar">
                                     <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                    <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                    <p><?= $event_registration->status ?></p>
+                                    <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                    <p><?= esc_html($event_registration->status) ?></p>
                                 </div>
                                 <div class="collapsible-body row" style="padding: 5px 10px;">
                                     <table class="striped">
@@ -436,8 +436,8 @@ class Event
                                             <?php $value = $event_registration->getMeta($name); ?>
                                             <?php $value = empty($value) ? '' : $value; ?>
                                             <tr>
-                                                <th><?= $name ?></th>
-                                                <td><?= $value ?></td>
+                                                <th><?= esc_html($name) ?></th>
+                                                <td><?= esc_html($value) ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </table>
@@ -447,8 +447,8 @@ class Event
                                               && !is_archive()
                                     ): ?>
                                         <div class="card-action">
-                                            <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                            <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                            <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                            <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -463,8 +463,8 @@ class Event
                         <li>
                             <div class="collapsible-header collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                <p><?= $event_registration->status ?></p>
+                                <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                <p><?= esc_html($event_registration->status) ?></p>
                             </div>
                             <div class="collapsible-body row" style="padding: 5px 10px;">
                                 <table class="striped">
@@ -472,8 +472,8 @@ class Event
                                         <?php $value = $event_registration->getMeta($name); ?>
                                         <?php $value = empty($value) ? '' : $value; ?>
                                         <tr>
-                                            <th><?= $name ?></th>
-                                            <td><?= $value ?></td>
+                                            <th><?= esc_html($name) ?></th>
+                                            <td><?= esc_html($value) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </table>
@@ -483,8 +483,8 @@ class Event
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
-                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -502,8 +502,8 @@ class Event
                         <li>
                             <div class="collapsible-header collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                <p><?= $event_registration->status ?></p>
+                                <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                <p><?= esc_html($event_registration->status) ?></p>
                             </div>
                             <div class="collapsible-body row" style="padding: 5px 10px;">
                                 <table class="striped">
@@ -511,8 +511,8 @@ class Event
                                         <?php $value = $event_registration->getMeta($name); ?>
                                         <?php $value = empty($value) ? '' : $value; ?>
                                         <tr>
-                                            <th><?= $name ?></th>
-                                            <td><?= $value ?></td>
+                                            <th><?= esc_html($name) ?></th>
+                                            <td><?= esc_html($value) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </table>
@@ -522,8 +522,8 @@ class Event
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
-                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                     </div>
                                 <?php endif; ?>
                             </div>
