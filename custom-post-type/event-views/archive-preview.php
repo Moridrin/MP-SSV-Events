@@ -48,7 +48,7 @@ $content             = get_the_content('');
             </div>
         </div>
         <footer class="card-action" style="background-color: #E6E6E6;">
-            <a href="<?= get_permalink() ?>" class="btn waves-effect waves-light">Full Post</a>
+            <a href="<?= esc_url(get_permalink()) ?>" class="btn waves-effect waves-light">Full Post</a>
         </footer>
         <div class="card-reveal" style="overflow: hidden;">
             <header class="entry-header">
@@ -74,7 +74,7 @@ $content             = get_the_content('');
             <?php if ($event->isRegistrationPossible()) : ?>
                 <div class="card-action">
                     <?php if (is_user_logged_in()) : ?>
-                        <form action="<?= get_permalink() ?>" method="POST" style="margin: 0">
+                        <form action="<?= esc_url(get_permalink()) ?>" method="POST" style="margin: 0">
                             <?php if ($event->isRegistered(User::getCurrent())) : ?>
                                 <input type="hidden" name="action" value="cancel">
                                 <button type="submit" name="submit" class="btn waves-effect waves-light">Cancel Registration</button>
@@ -88,7 +88,7 @@ $content             = get_the_content('');
                     <?php elseif ($event->isRegistrationMembersOnly() && !is_user_logged_in()) : ?>
                         <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login</a>
                     <?php else : ?>
-                        <a href="<?= get_permalink() ?>">Open Event to Register</a>
+                        <a href="<?= esc_url(get_permalink()) ?>">Open Event to Register</a>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>

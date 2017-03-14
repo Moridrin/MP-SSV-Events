@@ -14,7 +14,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Add 'View Event' Link to Archive
     if ($post->post_type == 'events' && is_archive()) {
         if (strpos($content, 'class="more-link"') === false) {
-            $content .= '<a href="' . get_permalink($post->ID) . '">View Event</a>';
+            $content .= '<a href="' . esc_url(get_permalink($post->ID)) . '">View Event</a>';
         }
         return $content;
     }
@@ -95,7 +95,7 @@ function mp_ssv_events_add_registrations_to_content($content)
         if ($event->canRegister()) {
             if (is_user_logged_in() && $event->isRegistered()) {
                 ?>
-                <form action="<?= get_permalink() ?>" method="POST">
+                <form action="<?= esc_url(get_permalink()) ?>" method="POST">
                     <input type="hidden" name="action" value="cancel">
                     <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
                     <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
