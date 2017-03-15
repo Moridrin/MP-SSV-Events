@@ -112,7 +112,7 @@ function mp_ssv_events_updated_messages($messages)
             6  => sprintf('Event published. <a href="%s">View event</a>', esc_url(get_permalink($post_ID))),
             7  => 'Event saved.',
             8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
-            9  => sprintf('Event scheduled for: <strong>'.strtotime($post->post_date).'</strong>. <a target="_blank" href="%2$s">Preview event</a>', esc_url(get_permalink($post_ID))),
+            9  => sprintf('Event scheduled for: <strong>'.strtotime($post->post_date).'</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
             10 => sprintf('Event draft updated. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
         );
     }
@@ -307,7 +307,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    echo Form::fromDatabase(false)->getEditor(false);
+    echo Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false)->getEditor(false);
 }
 
 #endregion
@@ -347,7 +347,7 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
     }
 
-    $registrationFields = Form::fromDatabase();
+    $registrationFields = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
     $registrationIDs    = array();
     foreach ($registrationFields as $id => $field) {
         /** @var Field $field */

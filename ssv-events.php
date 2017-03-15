@@ -3,7 +3,7 @@
  * Plugin Name: SSV Events
  * Plugin URI: https://bosso.nl/ssv-events/
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
- * Version: 3.0.1
+ * Version: 3.1.0
  * Author: moridrin
  * Author URI: http://nl.linkedin.com/in/jberkvens/
  * License: WTFPL
@@ -52,6 +52,9 @@ class SSV_Events
 
     const ADMIN_REFERER_OPTIONS = 'ssv_events__admin_referer_options';
     const ADMIN_REFERER_REGISTRATION = 'ssv_events__admin_referer_registration';
+
+    const CAPABILITY_MANAGE_EVENTS = 'manage_events';
+    const CAPABILITY_MANAGE_EVENT_REGISTRATIONS = 'manage_event_registrations';
     #endregion
 
     #region resetOptions()
@@ -134,6 +137,20 @@ function mp_ssv_events_register_plugin()
     $wpdb->query($sql);
     #endregion
 
+    #region Custom Capabilities
+    $roles = get_editable_roles();
+    /**
+     * @var int     $key
+     * @var WP_Role $role
+     */
+    foreach ($GLOBALS['wp_roles']->role_objects as $key => $role) {
+        if (isset($roles[$key]) && $role->has_cap('edit_posts')) {
+            $role->add_cap(SSV_Events::CAPABILITY_MANAGE_EVENTS);
+            $role->add_cap(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
+        }
+    }
+    #endregion
+
     SSV_Events::resetOptions();
 }
 
@@ -144,7 +161,19 @@ register_activation_hook(__FILE__, 'mp_ssv_general_register_plugin');
 #region Unregister
 function mp_ssv_events_unregister()
 {
-    //Nothing to do here.
+    $roles = get_editable_roles();
+    /**
+     * @var int     $key
+     * @var WP_Role $role
+     */
+    foreach ($GLOBALS['wp_roles']->role_objects as $key => $role) {
+        if (isset($roles[$key]) && $role->has_cap(SSV_Events::CAPABILITY_MANAGE_EVENTS)) {
+            $role->remove_cap(SSV_Events::CAPABILITY_MANAGE_EVENTS);
+        }
+        if (isset($roles[$key]) && $role->has_cap(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)) {
+            $role->remove_cap(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
+        }
+    }
 }
 
 register_deactivation_hook(__FILE__, 'mp_ssv_events_unregister');

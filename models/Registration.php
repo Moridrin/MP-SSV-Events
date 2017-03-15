@@ -197,17 +197,18 @@ class Registration
         $firstNameField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'First Name',
-                    'field_type'    => 'input',
-                    'input_type'    => 'text',
-                    'name'          => 'first_name',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'First Name',
+                    'field_type'     => 'input',
+                    'input_type'     => 'text',
+                    'name'           => 'first_name',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
@@ -218,17 +219,18 @@ class Registration
         $lastNameField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'Last Name',
-                    'field_type'    => 'input',
-                    'input_type'    => 'text',
-                    'name'          => 'last_name',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'Last Name',
+                    'field_type'     => 'input',
+                    'input_type'     => 'text',
+                    'name'           => 'last_name',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
@@ -239,17 +241,18 @@ class Registration
         $emailField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'Email',
-                    'field_type'    => 'input',
-                    'input_type'    => 'email',
-                    'name'          => 'email',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'Email',
+                    'field_type'     => 'input',
+                    'input_type'     => 'email',
+                    'name'           => 'email',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );

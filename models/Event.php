@@ -306,7 +306,7 @@ class Event
         global $wpdb;
         $eventID   = $this->getID();
         $tableName = SSV_Events::TABLE_REGISTRATION;
-        if (is_user_logged_in() && current_user_can('manage_event_registrations')) {
+        if (is_user_logged_in() && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)) {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
         } else {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
@@ -329,7 +329,7 @@ class Event
         } else {
             $fieldNames = array();
         }
-        $form = Form::fromDatabase(false);
+        $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false);
         $inputFields = $form->getInputFields();
         foreach ($inputFields as $inputField) {
             $fieldNames[] = $inputField->name;
@@ -346,18 +346,19 @@ class Event
         $actionField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => '-1',
-                    'title'         => '',
-                    'field_type'    => 'input',
-                    'input_type'    => 'hidden',
-                    'name'          => 'action',
-                    'default_value' => 'register',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => '-1',
+                    'title'          => '',
+                    'field_type'     => 'input',
+                    'input_type'     => 'hidden',
+                    'name'           => 'action',
+                    'default_value'  => 'register',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
-        $form        = Form::fromDatabase();
+        $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
         $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields());
@@ -443,7 +444,7 @@ class Event
                                     </table>
                                     <?php if ($event_registration->status == Registration::STATUS_PENDING
                                               && is_user_logged_in()
-                                              && current_user_can('manage_event_registrations')
+                                              && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                               && !is_archive()
                                     ): ?>
                                         <div class="card-action">
@@ -479,7 +480,7 @@ class Event
                                 </table>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
-                                          && current_user_can('manage_event_registrations')
+                                          && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
@@ -518,7 +519,7 @@ class Event
                                 </table>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
-                                          && current_user_can('manage_event_registrations')
+                                          && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">

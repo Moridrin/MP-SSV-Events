@@ -21,7 +21,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Update Registration Status
-    if (current_user_can('manage_events')) { //TODO make this work
+    if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS)) { //TODO make this work
         if (isset($_GET['approve'])) {
             Registration::getByID(SSV_General::sanitize($_GET['approve']))->approve();
             SSV_General::redirect(get_permalink());
@@ -35,7 +35,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $form = Form::fromDatabase();
+            $form = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
             if (!is_user_logged_in()) {
                 $form->addFields(Registration::getDefaultFields(), false);
             }
