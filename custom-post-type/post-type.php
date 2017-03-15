@@ -16,7 +16,7 @@
 function mp_ssv_events_template($archive_template)
 {
     if (is_post_type_archive('events') && get_theme_support('materialize')) {
-        $archive_template = SSV_Events::PATH . 'archive-events.php';
+        $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
     }
     return $archive_template;
 }
