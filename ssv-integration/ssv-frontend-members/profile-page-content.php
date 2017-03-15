@@ -28,8 +28,8 @@ function ssv_profile_page_registrations_table_content() {
 	foreach ($upcoming_events as $upcoming_event) {
 		ob_start(); ?>
 		<tr>
-			<td><a href="<?php echo get_permalink($upcoming_event->ID); ?>"><?php echo $upcoming_event->post_title; ?></a></td>
-			<td><?php echo $upcoming_event->status; ?></td>
+			<td><a href="<?= esc_url(get_permalink($upcoming_event->ID)) ?>"><?= esc_html($upcoming_event->post_title) ?></a></td>
+			<td><?= esc_html($upcoming_event->status) ?></td>
 		</tr>
 		<?php
 		$content .= ob_get_clean();
@@ -58,8 +58,8 @@ function ssv_profile_page_registrations_table_content() {
 	foreach ($upcoming_events as $upcoming_event) {
 		ob_start(); ?>
 		<tr>
-			<td><a href="<?php echo get_permalink($upcoming_event->ID); ?>"><?php echo $upcoming_event->post_title; ?></a></td>
-			<td><?php echo $upcoming_event->status; ?></td>
+			<td><a href="<?= esc_url(get_permalink($upcoming_event->ID)) ?>"><?= esc_html($upcoming_event->post_title) ?></a></td>
+			<td><?= esc_html($upcoming_event->status) ?></td>
 		</tr>
 		<?php
 		$content .= ob_get_clean();

@@ -170,10 +170,10 @@ class Registration
             $subject    = "New Registration for " . $eventTitle;
             if ($user != null) {
                 ob_start();
-                ?>User <a href="<?= $user->getProfileURL() ?>"><?= $user->display_name ?></a> has registered for <a href="<?= get_permalink($event->getID()) ?>"><?= $eventTitle ?></a>.<?php
+                ?>User <a href="<?= esc_url($user->getProfileURL()) ?>"><?= esc_html($user->display_name) ?></a> has registered for <a href="<?= esc_url(get_permalink($event->getID())) ?>"><?= esc_html($eventTitle) ?></a>.<?php
                 $message = ob_get_clean();
             } else {
-                $message = 'Someone has registered for ' . $eventTitle . ' with the following information:<br/>';
+                $message = 'Someone has registered for ' . esc_html($eventTitle) . ' with the following information:<br/>';
                 foreach ($inputFields as $field) {
                     $message .= $field->title . ': ' . $field->value;
                 }

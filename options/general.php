@@ -31,11 +31,11 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
         </tr>
         <tr valign="top">
             <th scope="row">Registration Message</th>
-            <td><textarea name="registration_message" class="large-text" title="Registration Message"><?= get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE); ?></textarea></td>
+            <td><textarea name="registration_message" class="large-text" title="Registration Message"><?= esc_html(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) ?></textarea></td>
         </tr>
         <tr valign="top">
             <th scope="row">Cancellation Message</th>
-            <td><textarea name="cancellation_message" class="large-text" title="cancellation Message"><?= get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE); ?></textarea></td>
+            <td><textarea name="cancellation_message" class="large-text" title="cancellation Message"><?= esc_html(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) ?></textarea></td>
         </tr>
     </table>
     <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_OPTIONS); ?>
