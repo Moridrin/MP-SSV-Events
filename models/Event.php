@@ -306,7 +306,7 @@ class Event
         global $wpdb;
         $eventID   = $this->getID();
         $tableName = SSV_Events::TABLE_REGISTRATION;
-        if (is_user_logged_in() && User::isBoard()) {
+        if (is_user_logged_in() && current_user_can('manage_event_registrations')) {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
         } else {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
@@ -443,7 +443,7 @@ class Event
                                     </table>
                                     <?php if ($event_registration->status == Registration::STATUS_PENDING
                                               && is_user_logged_in()
-                                              && User::isBoard()
+                                              && current_user_can('manage_event_registrations')
                                               && !is_archive()
                                     ): ?>
                                         <div class="card-action">
@@ -479,7 +479,7 @@ class Event
                                 </table>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
-                                          && User::isBoard()
+                                          && current_user_can('manage_event_registrations')
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
@@ -518,7 +518,7 @@ class Event
                                 </table>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
-                                          && User::isBoard()
+                                          && current_user_can('manage_event_registrations')
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
