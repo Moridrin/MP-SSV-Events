@@ -44,9 +44,9 @@ class ssv_event_category extends WP_Widget
             echo '<label class="screen-reader-text" for="' . esc_attr($dropdown_id) . '">' . $title . '</label>';
 
             $cat_args['show_option_none'] = __('Select Event Category');
-            $cat_args['id'] = $dropdown_id;
+            $cat_args['id']               = $dropdown_id;
 
-            $taxonomy       = 'event_category';
+            $taxonomy  = 'event_category';
             $tax_terms = get_terms($taxonomy);
             ?>
             <select id="<?= esc_html($dropdown_id) ?>" onchange="onEventCatChange()" title="Select Category">
@@ -54,7 +54,8 @@ class ssv_event_category extends WP_Widget
                 <?php
                 $id = 0;
                 foreach ($tax_terms as $tax_term) {
-                    ?><option value="<?= esc_html($id) ?>"><?= esc_html($tax_term->name) ?></option><?php
+                    ?>
+                    <option value="<?= esc_html($id) ?>"><?= esc_html($tax_term->name) ?></option><?php
                     $id++;
                 }
                 ?>
@@ -77,14 +78,15 @@ class ssv_event_category extends WP_Widget
             <ul>
                 <?php
                 foreach ($tax_terms as $tax_term) {
-                    ?><li><a href="<?= esc_url(get_term_link($tax_term, $taxonomy)) ?>" title="View all posts in <?= esc_html($tax_term->name) ?>"><?= esc_html($tax_term->name) ?></a></li><?php
+                    ?>
+                    <li><a href="<?= esc_url(get_term_link($tax_term, $taxonomy)) ?>" title="View all posts in <?= esc_html($tax_term->name) ?>"><?= esc_html($tax_term->name) ?></a></li><?php
                 }
                 ?>
             </ul>
             <?php
         }
 
-        echo esc_html($args['after_widget']);
+        echo $args['after_widget'];
     }
     #endregion
 

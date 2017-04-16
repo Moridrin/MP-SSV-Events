@@ -25,6 +25,7 @@ require_once "custom-post-type/post-type.php";
 require_once "custom-post-type/event-views/page-full.php";
 
 require_once "widgets/category-widget.php";
+require_once "widgets/upcoming-events-widget.php";
 #endregion
 
 #region SSV_Events class
