@@ -42,7 +42,8 @@ class ssv_upcoming_events extends WP_Widget
         $categories = array();
         /** @var WP_Post $post */
         foreach ($posts as $post) {
-            foreach (get_the_terms($post, $taxonomy) as $term) {
+            $terms = get_the_terms($post, $taxonomy);
+            foreach (is_array($terms) ? $terms : array() as $term) {
                 if (!isset($categories[$term->term_id])) {
                     $categories[$term->term_id] = $term;
                 }
