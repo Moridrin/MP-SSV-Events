@@ -9,9 +9,11 @@
  * License: WTFPL
  * License URI: http://www.wtfpl.net/txt/copying/
  */
+namespace mp_ssv_events;
 if (!defined('ABSPATH')) {
     exit;
 }
+use WP_Role;
 
 #region Require Once
 require_once 'general/general.php';

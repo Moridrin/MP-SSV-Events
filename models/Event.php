@@ -1,4 +1,10 @@
 <?php
+namespace mp_ssv_events;
+if (!defined('ABSPATH')) {
+    exit;
+}
+use DateTime;
+use WP_Post;
 
 /**
  * Created by PhpStorm.

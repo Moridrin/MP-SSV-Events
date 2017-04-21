@@ -1,4 +1,8 @@
 <?php
+namespace mp_ssv_events;
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 /**
  * Created by PhpStorm.
