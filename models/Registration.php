@@ -1,4 +1,17 @@
 <?php
+namespace mp_ssv_events\models;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\custom_fields\input_fields\CustomInputField;
+use mp_ssv_general\custom_fields\input_fields\TextInputField;
+use mp_ssv_general\custom_fields\InputField;
+use mp_ssv_general\Message;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 /**
  * Created by PhpStorm.

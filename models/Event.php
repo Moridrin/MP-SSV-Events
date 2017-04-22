@@ -1,4 +1,15 @@
 <?php
+namespace mp_ssv_events\models;
+if (!defined('ABSPATH')) {
+    exit;
+}
+use DateTime;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\custom_fields\InputField;
+use mp_ssv_general\Form;
+use WP_Post;
+use WP_User;
 
 /**
  * Created by PhpStorm.
@@ -382,7 +393,7 @@ class Event
                     <?php endfor; ?>
                 </ul>
                 <?php if ($showAll): ?>
-                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <a href="#" class="btn waves-effect waves-light" onclick="showList()">Show All</a> <?php //TODO check if this works (otherwise use #!) ?>
                     <script>
                         function showList() {
                             var shortList = document.getElementById('registrations-shortlist');
@@ -413,7 +424,8 @@ class Event
             <?php if (count($this->registrations) > 5): ?>
                 <h3>Registrations</h3>
                 <?php if ($showAll): ?>
-                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <a href="#" class="btn waves-effect waves-light" onclick="showList()">Show All</a> <?php //TODO check if this works (otherwise use #!) ?>
+                    <!--suppress JSUnusedLocalSymbols -->
                     <script>
                         function showList() {
                             var shortList = document.getElementById('registrations-shortlist');

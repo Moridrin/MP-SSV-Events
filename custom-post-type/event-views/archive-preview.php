@@ -1,11 +1,12 @@
 <?php
-/**
- * The template part for displaying content
- *
- * @package    Moridrin
- * @subpackage SSV
- * @since      SSV 1.0
- */
+use mp_ssv_events\models\Event;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 #region setup variables
 global $post;

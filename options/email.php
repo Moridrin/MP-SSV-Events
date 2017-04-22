@@ -1,10 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: moridrin
- * Date: 21-1-17
- * Time: 8:02
- */
+namespace mp_ssv_events\options;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\SSV_General;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     if (isset($_POST['reset'])) {
