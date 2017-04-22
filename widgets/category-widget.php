@@ -141,4 +141,4 @@ class ssv_event_category extends WP_Widget
 
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("ssv_event_category");'));
+add_action('widgets_init', create_function('', 'return register_widget("mp_ssv_events\widgets\ssv_event_category");'));

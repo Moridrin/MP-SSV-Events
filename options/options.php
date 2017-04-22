@@ -1,5 +1,4 @@
 <?php
-namespace mp_ssv_events\options;
 use mp_ssv_general\SSV_General;
 
 if (!defined('ABSPATH')) {

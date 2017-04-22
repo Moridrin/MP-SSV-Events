@@ -1,5 +1,6 @@
 <?php
-namespace mp_ssv_events;
+use mp_ssv_events\models\Event;
+use mp_ssv_events\SSV_Events;
 use mp_ssv_general\SSV_General;
 use mp_ssv_general\User;
 

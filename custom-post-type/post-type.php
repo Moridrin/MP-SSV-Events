@@ -1,5 +1,7 @@
 <?php
-namespace mp_ssv_events;
+//namespace mp_ssv_events;
+use mp_ssv_events\SSV_Events;
+
 if (!defined('ABSPATH')) {
     exit;
 }
