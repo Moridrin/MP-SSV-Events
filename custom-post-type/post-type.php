@@ -1,10 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jeroen
- * Date: 9-12-16
- * Time: 16:02
- */
+namespace mp_ssv_events;
+if (!defined('ABSPATH')) {
+    exit;
+}
 #region Template
 /**
  * This function sets the correct template file for events.

@@ -1,4 +1,14 @@
 <?php
+namespace mp_ssv_events;
+use mp_ssv_general\Form;
+use mp_ssv_general\Message;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 #region Add Registrations to Content
 function mp_ssv_events_add_registrations_to_content($content)
 {

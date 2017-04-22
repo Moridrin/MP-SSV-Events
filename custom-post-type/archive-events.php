@@ -1,4 +1,10 @@
 <?php
+namespace mp_ssv_events;
+use WP_Query;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 #region setup variables
 $args = array(
     'posts_per_page' => 10,
