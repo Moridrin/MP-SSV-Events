@@ -13,8 +13,6 @@ namespace mp_ssv_events;
 if (!defined('ABSPATH')) {
     exit;
 }
-use mp_ssv_general\SSV_General;
-use WP_Role;
 
 #region Require Once
 require_once 'general/general.php';
