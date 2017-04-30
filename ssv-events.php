@@ -84,7 +84,7 @@ class SSV_Events
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
-        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'unset');
+        update_option(SSV_Events::OPTIONS_SET_GENERAL, 'unset');
     }
     #endregion
 
@@ -96,6 +96,7 @@ class SSV_Events
     {
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
+        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'unset');
     }
     #endregion
 
