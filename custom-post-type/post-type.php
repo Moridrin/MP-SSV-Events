@@ -1,7 +1,11 @@
 <?php
 //namespace mp_ssv_events;
 use mp_ssv_events\models\Event;
+use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\Form;
+use mp_ssv_general\SSV_General;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -281,7 +285,7 @@ function ssv_events_registrations()
         $i = 0;
         foreach ($rows as $row) {
             /** @var Registration $registration */
-            $registration = Registration::getByID($row->ID);
+            $registration = Registration::getByID($row->id);
             ?>
             <tr>
                 <?php foreach ($fieldNames as $fieldName): ?>
@@ -291,7 +295,7 @@ function ssv_events_registrations()
                     <input type="hidden" name="<?= esc_html($i) ?>_post" value="<?= esc_html($post->ID) ?>">
                     <input type="hidden" name="<?= esc_html($i) ?>_action" value="edit">
                     <input type="hidden" name="<?= esc_html($i) ?>_registrationID" value="<?= esc_html($registration->registrationID) ?>">
-                    <select name="<?= esc_html($i) ?>_status">
+                    <select name="<?= esc_html($i) ?>_status" title="Status">
                         <option value="pending" <?= $registration->status == 'pending' ? 'selected' : '' ?>>pending</option>
                         <option value="approved" <?= $registration->status == 'approved' ? 'selected' : '' ?>>approved</option>
                         <option value="denied" <?= $registration->status == 'denied' ? 'selected' : '' ?>>denied</option>
