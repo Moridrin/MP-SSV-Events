@@ -9,6 +9,7 @@
  * License: WTFPL
  * License URI: http://www.wtfpl.net/txt/copying/
  */
+
 namespace mp_ssv_events;
 if (!defined('ABSPATH')) {
     exit;
@@ -46,6 +47,8 @@ class SSV_Events
     const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
     const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
 
+    const OPTIONS_SET_GENERAL = 'ssv_events__options_set_general';
+    const OPTIONS_SET_EMAIL = 'ssv_events__options_set_email';
     const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
     const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
     const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
@@ -72,6 +75,7 @@ class SSV_Events
     }
 
     #region resetGeneralOptions()
+
     /**
      * This function sets all the options on the General Tab back to their default value
      */
@@ -80,6 +84,7 @@ class SSV_Events
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
+        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'unset');
     }
     #endregion
 

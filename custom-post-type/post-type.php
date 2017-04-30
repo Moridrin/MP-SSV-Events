@@ -102,7 +102,9 @@ function mp_ssv_events_updated_messages($messages)
             7  => 'Event saved.',
             8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', esc_url(get_permalink($post_ID))))),
             9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
-            10 => sprintf('Event draft updated. <a target="_blank" href="%s">Preview event</a>',esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
+            10 => sprintf(
+                'Event draft updated. <a target="_blank" href="%s">Preview event</a>',
+                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
             ),
         );
     } else {
@@ -117,7 +119,7 @@ function mp_ssv_events_updated_messages($messages)
             6  => sprintf('Event published. <a href="%s">View event</a>', esc_url(get_permalink($post_ID))),
             7  => 'Event saved.',
             8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
-            9  => sprintf('Event scheduled for: <strong>'.strtotime($post->post_date).'</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
+            9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
             10 => sprintf('Event draft updated. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
         );
     }
@@ -136,18 +138,30 @@ function mp_ssv_events_post_category()
 {
 
     $labels = array(
-        'name'               => 'Events', 'events',
-        'singular_name'      => 'Event', 'events',
-        'add_new'            => 'Add New', 'events',
-        'add_new_item'       => 'Add New Event', 'events',
-        'edit_item'          => 'Edit Event', 'events',
-        'new_item'           => 'New Event', 'events',
-        'view_item'          => 'View Event', 'events',
-        'search_items'       => 'Search Events', 'events',
-        'not_found'          => 'No Events found', 'events',
-        'not_found_in_trash' => 'No Events found in Trash', 'events',
-        'parent_item_colon'  => 'Parent Event:', 'events',
-        'menu_name'          => 'Events', 'events',
+        'name'               => 'Events',
+        'events',
+        'singular_name'      => 'Event',
+        'events',
+        'add_new'            => 'Add New',
+        'events',
+        'add_new_item'       => 'Add New Event',
+        'events',
+        'edit_item'          => 'Edit Event',
+        'events',
+        'new_item'           => 'New Event',
+        'events',
+        'view_item'          => 'View Event',
+        'events',
+        'search_items'       => 'Search Events',
+        'events',
+        'not_found'          => 'No Events found',
+        'events',
+        'not_found_in_trash' => 'No Events found in Trash',
+        'events',
+        'parent_item_colon'  => 'Parent Event:',
+        'events',
+        'menu_name'          => 'Events',
+        'events',
     );
 
     $args = array(
@@ -330,13 +344,23 @@ function mp_ssv_events_save_meta($post_id)
     }
     $i = 0;
     while (isset($_POST[$i . '_post'])) {
-        global $wpdb;
-        $wpdb->update(
-            $table = SSV_Events::TABLE_REGISTRATION,
-            array("registration_status" => SSV_General::sanitize($_POST[$i . '_status'])),
-            array("ID" => SSV_General::sanitize($_POST[$i . '_registrationID'])),
-            array('%s')
-        );
+        $registration = Registration::getByID($_POST[$i . '_registrationID']);
+        $statusNew    = SSV_General::sanitize($_POST[$i . '_status']);
+        if ($registration->status == $statusNew) {
+            $i++;
+            continue;
+        }
+        switch ($statusNew) {
+            case Registration::STATUS_PENDING:
+                $registration->makePending();
+                break;
+            case Registration::STATUS_APPROVED:
+                $registration->approve();
+                break;
+            case Registration::STATUS_DENIED:
+                $registration->deny();
+                break;
+        }
         $i++;
     }
     if (isset($_POST['registration'])) {

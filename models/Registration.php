@@ -1,5 +1,7 @@
 <?php
+
 namespace mp_ssv_events\models;
+
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\custom_fields\Field;
 use mp_ssv_general\custom_fields\input_fields\CustomInputField;
@@ -319,6 +321,36 @@ class Registration
             $value = $this->user ? $this->user->getMeta($key) : '';
         }
         return $value;
+    }
+    #endregion
+
+    #region makePending()
+    public function makePending()
+    {
+        global $wpdb;
+        $table = SSV_Events::TABLE_REGISTRATION;
+        $wpdb->replace(
+            $table,
+            array(
+                "ID"                  => $this->registrationID,
+                "eventID"             => $this->event->getID(),
+                "userID"              => $this->user->ID,
+                "registration_status" => self::STATUS_PENDING,
+            ),
+            array(
+                '%d',
+                '%d',
+                '%d',
+                '%s',
+            )
+        );
+        if (get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED)) {
+            $eventTitle = $this->event->post->post_title;
+            $to         = $this->getMeta('email');
+            $subject    = "Registration Pending";
+            $message    = 'Your registration for ' . $eventTitle . ' has been changed back to Pending.';
+            wp_mail($to, $subject, $message);
+        }
     }
     #endregion
 

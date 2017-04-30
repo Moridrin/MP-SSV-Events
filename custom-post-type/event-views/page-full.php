@@ -33,14 +33,13 @@ function mp_ssv_events_add_registrations_to_content($content)
     #endregion
 
     #region Update Registration Status
-    if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS)) { //TODO make this work
+    if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS) && (isset($_GET['approve']) || isset($_GET['deny']))) {
         if (isset($_GET['approve'])) {
             Registration::getByID(SSV_General::sanitize($_GET['approve']))->approve();
-            SSV_General::redirect(get_permalink());
-        } elseif (isset($_GET['deny'])) {
+        } else {
             Registration::getByID(SSV_General::sanitize($_GET['deny']))->deny();
-            SSV_General::redirect(get_permalink());
         }
+        SSV_General::redirect(get_permalink());
     }
     #endregion
 
