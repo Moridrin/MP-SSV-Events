@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 }
 function ssv_add_ssv_events_options()
 {
-    add_submenu_page('ssv_settings', 'Events Options', 'Events', 'manage_options', 'events_settings', 'ssv_events_options_page_content');
+    add_submenu_page('ssv_settings', 'Events Options', 'Events', 'manage_options', 'ssv-events-settings', 'ssv_events_options_page_content');
 }
 
 function ssv_events_options_page_content()

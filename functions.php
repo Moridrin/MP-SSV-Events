@@ -114,27 +114,3 @@ function mp_ssv_events_reset_options($admin_referer)
 
 add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
 #endregion
-
-#region Update Settings Message.
-function mp_ssv_events_update_settings_notification()
-{
-    if (get_option(SSV_Events::OPTIONS_SET_GENERAL) != 'set') {
-        ?>
-        <div class="update-nag notice">
-            <p>You still need to update the General settings for SSV Events.</p>
-            <p><a href="/wp-admin/admin.php?page=events_settings&tab=general">Set Now</a></p>
-        </div>
-        <?php
-    }
-    if (get_option(SSV_Events::OPTIONS_SET_EMAIL) != 'set') {
-        ?>
-        <div class="update-nag notice">
-            <p>You still need to update the Email settings for SSV Events.</p>
-            <p><a href="/wp-admin/admin.php?page=events_settings&tab=email">Set Now</a></p>
-        </div>
-        <?php
-    }
-}
-
-add_action('admin_notices', 'mp_ssv_events_update_settings_notification');
-#endregion

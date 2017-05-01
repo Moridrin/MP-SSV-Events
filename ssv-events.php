@@ -47,8 +47,6 @@ class SSV_Events
     const TABLE_REGISTRATION = SSV_EVENTS_REGISTRATION_TABLE;
     const TABLE_REGISTRATION_META = SSV_EVENTS_REGISTRATION_META_TABLE;
 
-    const OPTIONS_SET_GENERAL = 'ssv_events__options_set_general';
-    const OPTIONS_SET_EMAIL = 'ssv_events__options_set_email';
     const OPTION_DEFAULT_REGISTRATION_STATUS = 'ssv_events__default_registration_status';
     const OPTION_REGISTRATION_MESSAGE = 'ssv_events__registration_message';
     const OPTION_CANCELLATION_MESSAGE = 'ssv_events__cancellation_message';
