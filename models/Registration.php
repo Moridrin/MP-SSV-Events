@@ -1,5 +1,20 @@
 <?php
 
+namespace mp_ssv_events\models;
+
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\custom_fields\input_fields\CustomInputField;
+use mp_ssv_general\custom_fields\input_fields\TextInputField;
+use mp_ssv_general\custom_fields\InputField;
+use mp_ssv_general\Message;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Created by PhpStorm.
  * User: moridrin
@@ -108,14 +123,14 @@ class Registration
         #region Validate
         global $wpdb;
         if ($user !== null) {
-            $table = SSV_Events::TABLE_REGISTRATION;
+            $table   = SSV_Events::TABLE_REGISTRATION;
             $eventID = $event->getID();
-            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND userID = '$user->ID'";
+            $sql     = "SELECT * FROM $table WHERE eventID = $eventID AND userID = '$user->ID'";
         } else {
-            $table = SSV_Events::TABLE_REGISTRATION_META;
-            $email = $inputFields['email']->value;
+            $table   = SSV_Events::TABLE_REGISTRATION_META;
+            $email   = $inputFields['email']->value;
             $eventID = $event->getID();
-            $sql   = "SELECT * FROM $table WHERE eventID = $eventID AND meta_key = 'email' AND meta_value = '$email'";
+            $sql     = "SELECT * FROM $table WHERE eventID = $eventID AND meta_key = 'email' AND meta_value = '$email'";
         }
         if ($wpdb->get_row($sql) !== null) {
             return array(new Message('Already registered.', Message::ERROR_MESSAGE));
@@ -169,9 +184,11 @@ class Registration
             $to         = User::getByID(Event::getByID($event->getID())->post->post_author)->user_email;
             $subject    = "New Registration for " . $eventTitle;
             if ($user != null) {
-                $message = 'User ' . $user->display_name . ' has registered for ' . $eventTitle . '.';
+                ob_start();
+                ?>User <a href="<?= esc_url($user->getProfileURL()) ?>"><?= esc_html($user->display_name) ?></a> has registered for <a href="<?= esc_url(get_permalink($event->getID())) ?>"><?= esc_html($eventTitle) ?></a>.<?php
+                $message = ob_get_clean();
             } else {
-                $message = 'Someone has registered for ' . $eventTitle . ' with the following information:<br/>';
+                $message = 'Someone has registered for ' . esc_html($eventTitle) . ' with the following information:<br/>';
                 foreach ($inputFields as $field) {
                     $message .= $field->title . ': ' . $field->value;
                 }
@@ -195,17 +212,18 @@ class Registration
         $firstNameField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'First Name',
-                    'field_type'    => 'input',
-                    'input_type'    => 'text',
-                    'name'          => 'first_name',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'First Name',
+                    'field_type'     => 'input',
+                    'input_type'     => 'text',
+                    'name'           => 'first_name',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
@@ -216,17 +234,18 @@ class Registration
         $lastNameField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'Last Name',
-                    'field_type'    => 'input',
-                    'input_type'    => 'text',
-                    'name'          => 'last_name',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'Last Name',
+                    'field_type'     => 'input',
+                    'input_type'     => 'text',
+                    'name'           => 'last_name',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
@@ -237,17 +256,18 @@ class Registration
         $emailField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => -1,
-                    'title'         => 'Email',
-                    'field_type'    => 'input',
-                    'input_type'    => 'email',
-                    'name'          => 'email',
-                    'disabled'      => false,
-                    'required'      => true,
-                    'default_value' => '',
-                    'placeholder'   => '',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => -1,
+                    'title'          => 'Email',
+                    'field_type'     => 'input',
+                    'input_type'     => 'email',
+                    'name'           => 'email',
+                    'disabled'       => false,
+                    'required'       => true,
+                    'default_value'  => '',
+                    'placeholder'    => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
@@ -301,6 +321,36 @@ class Registration
             $value = $this->user ? $this->user->getMeta($key) : '';
         }
         return $value;
+    }
+    #endregion
+
+    #region makePending()
+    public function makePending()
+    {
+        global $wpdb;
+        $table = SSV_Events::TABLE_REGISTRATION;
+        $wpdb->replace(
+            $table,
+            array(
+                "ID"                  => $this->registrationID,
+                "eventID"             => $this->event->getID(),
+                "userID"              => $this->user->ID,
+                "registration_status" => self::STATUS_PENDING,
+            ),
+            array(
+                '%d',
+                '%d',
+                '%d',
+                '%s',
+            )
+        );
+        if (get_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED)) {
+            $eventTitle = $this->event->post->post_title;
+            $to         = $this->getMeta('email');
+            $subject    = "Registration Pending";
+            $message    = 'Your registration for ' . $eventTitle . ' has been changed back to Pending.';
+            wp_mail($to, $subject, $message);
+        }
     }
     #endregion
 

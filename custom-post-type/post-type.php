@@ -1,10 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jeroen
- * Date: 9-12-16
- * Time: 16:02
- */
+//namespace mp_ssv_events;
+use mp_ssv_events\models\Event;
+use mp_ssv_events\models\Registration;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\Form;
+use mp_ssv_general\SSV_General;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 #region Template
 /**
  * This function sets the correct template file for events.
@@ -16,7 +21,7 @@
 function mp_ssv_events_template($archive_template)
 {
     if (is_post_type_archive('events') && get_theme_support('materialize')) {
-        $archive_template = plugin_dir_path(__FILE__) . 'archive-events.php';
+        $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
     }
     return $archive_template;
 }
@@ -85,63 +90,37 @@ function mp_ssv_events_updated_messages($messages)
 {
     global $post, $post_ID;
     if (get_option(SSV_Events::OPTION_PUBLISH_ERROR, false)) {
-
+        /** @noinspection HtmlUnknownTarget */
         $messages['events'] = array(
             0  => '',
-            1  => sprintf(__('Event updated. <a href="%s">View Event</a>'), esc_url(get_permalink($post_ID))),
-            2  => __('Custom field updated.'),
-            3  => __('Custom field deleted.'),
-            4  => __('Event updated.'),
-            /* translators: %s: date and time of the revision */
-            5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'),
-                wp_post_revision_title((int)$_GET['revision'], false)
-            ) : false,
-            6  => '', //Send a blank string to prevent it from posting that it has been published correctly.
-            7  => __('Event saved.'),
-            8  => sprintf(
-                __('Event submitted. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-            9  => sprintf(
-                __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
-                // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)),
-                esc_url(get_permalink($post_ID))
-            ),
+            1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
+            2  => 'Custom field updated.',
+            3  => 'Custom field deleted.',
+            4  => 'Event updated.',
+            5  => isset($_GET['revision']) ? 'Event restored to revision from ' . wp_post_revision_title((int)$_GET['revision'], false) : false,
+            6  => '',
+            7  => 'Event saved.',
+            8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', esc_url(get_permalink($post_ID))))),
+            9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
             10 => sprintf(
-                __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),
+                'Event draft updated. <a target="_blank" href="%s">Preview event</a>',
                 esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
             ),
         );
     } else {
+        /** @noinspection HtmlUnknownTarget */
         $messages['events'] = array(
             0  => '',
-            1  => sprintf(__('Event updated. <a href="%s">View Event</a>'), esc_url(get_permalink($post_ID))),
-            2  => __('Custom field updated.'),
-            3  => __('Custom field deleted.'),
-            4  => __('Event updated.'),
-            /* translators: %s: date and time of the revision */
-            5  => isset($_GET['revision']) ? sprintf(
-                __('Event restored to revision from %s'),
-                wp_post_revision_title((int)$_GET['revision'], false)
-            ) : false,
-            6  => sprintf(__('Event published. <a href="%s">View event</a>'), esc_url(get_permalink($post_ID))),
-            7  => __('Event saved.'),
-            8  => sprintf(
-                __('Event submitted. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
-            9  => sprintf(
-                __('Event scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview event</a>'),
-                // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)),
-                esc_url(get_permalink($post_ID))
-            ),
-            10 => sprintf(
-                __('Event draft updated. <a target="_blank" href="%s">Preview event</a>'),
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
+            1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
+            2  => 'Custom field updated.',
+            3  => 'Custom field deleted.',
+            4  => 'Event updated.',
+            5  => isset($_GET['revision']) ? 'Event restored to revision from ' . wp_post_revision_title((int)$_GET['revision'], false) : false,
+            6  => sprintf('Event published. <a href="%s">View event</a>', esc_url(get_permalink($post_ID))),
+            7  => 'Event saved.',
+            8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
+            9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
+            10 => sprintf('Event draft updated. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
         );
     }
 
@@ -159,18 +138,30 @@ function mp_ssv_events_post_category()
 {
 
     $labels = array(
-        'name'               => _x('Events', 'events'),
-        'singular_name'      => _x('Event', 'events'),
-        'add_new'            => _x('Add New', 'events'),
-        'add_new_item'       => _x('Add New Event', 'events'),
-        'edit_item'          => _x('Edit Event', 'events'),
-        'new_item'           => _x('New Event', 'events'),
-        'view_item'          => _x('View Event', 'events'),
-        'search_items'       => _x('Search Events', 'events'),
-        'not_found'          => _x('No Events found', 'events'),
-        'not_found_in_trash' => _x('No Events found in Trash', 'events'),
-        'parent_item_colon'  => _x('Parent Event:', 'events'),
-        'menu_name'          => _x('Events', 'events'),
+        'name'               => 'Events',
+        'events',
+        'singular_name'      => 'Event',
+        'events',
+        'add_new'            => 'Add New',
+        'events',
+        'add_new_item'       => 'Add New Event',
+        'events',
+        'edit_item'          => 'Edit Event',
+        'events',
+        'new_item'           => 'New Event',
+        'events',
+        'view_item'          => 'View Event',
+        'events',
+        'search_items'       => 'Search Events',
+        'events',
+        'not_found'          => 'No Events found',
+        'events',
+        'not_found_in_trash' => 'No Events found in Trash',
+        'events',
+        'parent_item_colon'  => 'Parent Event:',
+        'events',
+        'menu_name'          => 'Events',
+        'events',
     );
 
     $args = array(
@@ -268,9 +259,9 @@ function ssv_events_date()
     $placeholder = (new DateTime('now'))->format('Y-m-d H:i');
     ?>
     Start Date<br/>
-    <input type="text" class="datetimepicker" name="start" value="<?= $start ?>" placeholder="<?= $placeholder ?>" title="Start Date" required><br/>
+    <input type="text" class="datetimepicker" name="start" value="<?= esc_html($start) ?>" placeholder="<?= esc_html($placeholder) ?>" title="Start Date" required><br/>
     End Date<br/>
-    <input type="text" class="datetimepicker" name="end" value="<?= $end ?>" placeholder="<?= $placeholder ?>" title="End Date" required>
+    <input type="text" class="datetimepicker" name="end" value="<?= esc_html($end) ?>" placeholder="<?= esc_html($placeholder) ?>" title="End Date" required>
     <?php
 }
 
@@ -281,7 +272,7 @@ function ssv_events_location()
     <table class="form-table">
         <tr valign="top">
             <th scope="row">Location</th>
-            <td><input type="text" name="location" value="<?php echo get_post_meta($post->ID, 'location', true); ?>" title="Location"/></td>
+            <td><input type="text" name="location" value="<?= esc_html(get_post_meta($post->ID, 'location', true)) ?>" title="Location"/></td>
         </tr>
     </table>
     <?php
@@ -296,12 +287,11 @@ function ssv_events_registrations()
     $sql        = "SELECT * FROM $table WHERE eventID = $post->ID";
     $rows       = $wpdb->get_results($sql);
     $fieldNames = $event->getRegistrationFieldNames();
-    SSV_General::var_export($rows, true);
     ?>
     <table cellspacing="5" border="1">
         <tr>
             <?php foreach ($fieldNames as $fieldName): ?>
-                <td><?= $fieldName ?></td>
+                <td><?= esc_html($fieldName) ?></td>
             <?php endforeach; ?>
             <th>Status</th>
         </tr>
@@ -309,17 +299,17 @@ function ssv_events_registrations()
         $i = 0;
         foreach ($rows as $row) {
             /** @var Registration $registration */
-            $registration = Registration::getByID($row->ID);
+            $registration = Registration::getByID($row->id);
             ?>
             <tr>
                 <?php foreach ($fieldNames as $fieldName): ?>
-                    <td><?= $registration->getMeta($fieldName) ?></td>
+                    <td><?= esc_html($registration->getMeta($fieldName)) ?></td>
                 <?php endforeach; ?>
                 <td>
-                    <input type="hidden" name="<?= $i ?>_post" value="<?= $post->ID ?>">
-                    <input type="hidden" name="<?= $i ?>_action" value="edit">
-                    <input type="hidden" name="<?= $i ?>_registrationID" value="<?= $registration->registrationID ?>">
-                    <select name="<?= $i ?>_status">
+                    <input type="hidden" name="<?= esc_html($i) ?>_post" value="<?= esc_html($post->ID) ?>">
+                    <input type="hidden" name="<?= esc_html($i) ?>_action" value="edit">
+                    <input type="hidden" name="<?= esc_html($i) ?>_registrationID" value="<?= esc_html($registration->registrationID) ?>">
+                    <select name="<?= esc_html($i) ?>_status" title="Status">
                         <option value="pending" <?= $registration->status == 'pending' ? 'selected' : '' ?>>pending</option>
                         <option value="approved" <?= $registration->status == 'approved' ? 'selected' : '' ?>>approved</option>
                         <option value="denied" <?= $registration->status == 'denied' ? 'selected' : '' ?>>denied</option>
@@ -336,7 +326,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    echo Form::fromDatabase(false)->getEditor(false);
+    echo Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false)->getEditor(false);
 }
 
 #endregion
@@ -354,13 +344,23 @@ function mp_ssv_events_save_meta($post_id)
     }
     $i = 0;
     while (isset($_POST[$i . '_post'])) {
-        global $wpdb;
-        $wpdb->update(
-            $table = SSV_Events::TABLE_REGISTRATION,
-            array("registration_status" => SSV_General::sanitize($_POST[$i . '_status'])),
-            array("ID" => SSV_General::sanitize($_POST[$i . '_registrationID'])),
-            array('%s')
-        );
+        $registration = Registration::getByID($_POST[$i . '_registrationID']);
+        $statusNew    = SSV_General::sanitize($_POST[$i . '_status']);
+        if ($registration->status == $statusNew) {
+            $i++;
+            continue;
+        }
+        switch ($statusNew) {
+            case Registration::STATUS_PENDING:
+                $registration->makePending();
+                break;
+            case Registration::STATUS_APPROVED:
+                $registration->approve();
+                break;
+            case Registration::STATUS_DENIED:
+                $registration->deny();
+                break;
+        }
         $i++;
     }
     if (isset($_POST['registration'])) {
@@ -376,7 +376,7 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
     }
 
-    $registrationFields = Form::fromDatabase();
+    $registrationFields = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
     $registrationIDs    = array();
     foreach ($registrationFields as $id => $field) {
         /** @var Field $field */

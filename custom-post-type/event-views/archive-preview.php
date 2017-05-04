@@ -1,11 +1,12 @@
 <?php
-/**
- * The template part for displaying content
- *
- * @package    Moridrin
- * @subpackage SSV
- * @since      SSV 1.0
- */
+use mp_ssv_events\models\Event;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 #region setup variables
 global $post;
@@ -27,7 +28,7 @@ $content             = get_the_content('');
                 <h2 class="card-title activator">
                     <?= the_title() ?>
                     <?php if ($event->isRegistrationEnabled()) : ?>
-                        <span class="new badge" data-badge-caption="Registrations"><?= count($event_registrations) ?></span>
+                        <span class="new badge" data-badge-caption="Registrations"><?= esc_html(count($event_registrations)) ?></span>
                     <?php endif; ?>
                 </h2>
             </header>
@@ -38,17 +39,17 @@ $content             = get_the_content('');
                 <div class="col s12 m4">
                     <div class="row" style="border-left: solid">
                         <div class="col s3">From:</div>
-                        <div class="col s9"><?= $event->getStart() ?></div>
+                        <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                         <?php if ($event->getEnd()) : ?>
                             <div class="col s3">Till:</div>
-                            <div class="col s9"><?= $event->getEnd() ?></div>
+                            <div class="col s9"><?= esc_html($event->getEnd()) ?></div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
         <footer class="card-action" style="background-color: #E6E6E6;">
-            <a href="<?= get_permalink() ?>" class="btn waves-effect waves-light">Full Post</a>
+            <a href="<?= esc_url(get_permalink()) ?>" class="btn waves-effect waves-light">Full Post</a>
         </footer>
         <div class="card-reveal" style="overflow: hidden;">
             <header class="entry-header">
@@ -74,7 +75,7 @@ $content             = get_the_content('');
             <?php if ($event->isRegistrationPossible()) : ?>
                 <div class="card-action">
                     <?php if (is_user_logged_in()) : ?>
-                        <form action="<?= get_permalink() ?>" method="POST" style="margin: 0">
+                        <form action="<?= esc_url(get_permalink()) ?>" method="POST" style="margin: 0">
                             <?php if ($event->isRegistered(User::getCurrent())) : ?>
                                 <input type="hidden" name="action" value="cancel">
                                 <button type="submit" name="submit" class="btn waves-effect waves-light">Cancel Registration</button>
@@ -88,7 +89,7 @@ $content             = get_the_content('');
                     <?php elseif ($event->isRegistrationMembersOnly() && !is_user_logged_in()) : ?>
                         <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login</a>
                     <?php else : ?>
-                        <a href="<?= get_permalink() ?>">Open Event to Register</a>
+                        <a href="<?= esc_url(get_permalink()) ?>">Open Event to Register</a>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>

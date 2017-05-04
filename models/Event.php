@@ -1,5 +1,17 @@
 <?php
 
+namespace mp_ssv_events\models;
+if (!defined('ABSPATH')) {
+    exit;
+}
+use DateTime;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\custom_fields\Field;
+use mp_ssv_general\custom_fields\InputField;
+use mp_ssv_general\Form;
+use WP_Post;
+use WP_User;
+
 /**
  * Created by PhpStorm.
  * User: Jeroen Berkvens
@@ -306,7 +318,7 @@ class Event
         global $wpdb;
         $eventID   = $this->getID();
         $tableName = SSV_Events::TABLE_REGISTRATION;
-        if (is_user_logged_in() && User::isBoard()) {
+        if (is_user_logged_in() && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)) {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID");
         } else {
             $eventRegistrations = $wpdb->get_results("SELECT ID FROM $tableName WHERE eventID = $eventID AND registration_status != 'denied'");
@@ -329,15 +341,10 @@ class Event
         } else {
             $fieldNames = array();
         }
-        $fieldIDs = get_post_meta($this->post->ID, Field::CUSTOM_FIELD_IDS_META, true);
-        $fieldIDs = is_array($fieldIDs) ? $fieldIDs : array();
-        foreach ($fieldIDs as $id) {
-            $field = get_post_meta($this->post->ID, Field::PREFIX . $id, true);
-            $field = Field::fromJSON($field);
-            if ($field instanceof InputField) {
-                /** @var InputField $field */
-                $fieldNames[] = $field->name;
-            }
+        $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false);
+        $inputFields = $form->getInputFields();
+        foreach ($inputFields as $inputField) {
+            $fieldNames[] = $inputField->name;
         }
         return $fieldNames;
     }
@@ -351,18 +358,19 @@ class Event
         $actionField = Field::fromJSON(
             json_encode(
                 array(
-                    'id'            => '-1',
-                    'title'         => '',
-                    'field_type'    => 'input',
-                    'input_type'    => 'hidden',
-                    'name'          => 'action',
-                    'default_value' => 'register',
-                    'class'         => '',
-                    'style'         => '',
+                    'id'             => '-1',
+                    'title'          => '',
+                    'field_type'     => 'input',
+                    'input_type'     => 'hidden',
+                    'name'           => 'action',
+                    'default_value'  => 'register',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
                 )
             )
         );
-        $form        = Form::fromDatabase();
+        $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
         $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields());
@@ -382,13 +390,14 @@ class Event
                     <?php for ($i = 0; $i < 5; $i++) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
-                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                     <?php endfor; ?>
                 </ul>
                 <?php if ($showAll): ?>
-                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <a href="#" class="btn waves-effect waves-light" onclick="showList()">Show All <?= count($this->registrations) ?></a>
                     <script>
                         function showList() {
+                            console.log(this);
                             var shortList = document.getElementById('registrations-shortlist');
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
@@ -398,7 +407,7 @@ class Event
                     <ul id="all-registrations" style="display: none;">
                         <?php foreach ($this->registrations as $event_registration) : ?>
                             <?php /* @var Registration $event_registration */ ?>
-                            <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                            <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php else: ?>
@@ -409,7 +418,7 @@ class Event
                 <ul>
                     <?php foreach ($this->registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
-                        <li><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></li>
+                        <li><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
@@ -417,43 +426,53 @@ class Event
             <?php if (count($this->registrations) > 5): ?>
                 <h3>Registrations</h3>
                 <?php if ($showAll): ?>
-                    <a href="#!" class="btn waves-effect waves-light" onclick="showList()">Show All</a>
+                    <a href="#" class="btn waves-effect waves-light" onclick="showList()">Show All <?= count($this->registrations) ?></a>
+                    <!--suppress JSUnusedLocalSymbols -->
                     <script>
                         function showList() {
+                            console.log(event.srcElement);
                             var shortList = document.getElementById('registrations-shortlist');
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
                             Materialize.showStaggeredList('#all-registrations');
+                            event.srcElement.onclick = function () {
+                                showDetails()
+                            };
+                            event.srcElement.innerHTML = 'Show Details';
+                        }
+                        function showDetails() {
+                            jQuery('#all-registrations').collapsible('open', 1);
                         }
                     </script>
-                    <ul id="all-registrations" class="collection with-header collapsible popout" data-collapsible="expandable" style="display: none;">
+                    <ul id="all-registrations" class="collection with-header <?= is_user_logged_in() ? 'collapsible' : '' ?> popout" data-collapsible="expandable" style="display: none;">
                         <?php foreach ($this->registrations as $event_registration) : ?>
                             <?php /* @var Registration $event_registration */ ?>
                             <li>
                                 <div class="collapsible-header collection-item avatar">
                                     <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                    <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                    <p><?= $event_registration->status ?></p>
+                                    <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                    <p><?= esc_html($event_registration->status) ?></p>
                                 </div>
                                 <div class="collapsible-body row" style="padding: 5px 10px;">
-                                    <table class="striped">
-                                        <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
-                                            <?php $value = $event_registration->getMeta($name); ?>
-                                            <?php $value = empty($value) ? '' : $value; ?>
-                                            <tr>
-                                                <th><?= $name ?></th>
-                                                <td><?= $value ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </table>
+                                    <?php if (is_user_logged_in()): ?>
+                                        <table class="striped">
+                                            <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                                <?php $value = $event_registration->getMeta($name); ?>
+                                                <?php $value = empty($value) ? '' : $value; ?>
+                                                <tr>
+                                                    <th><?= esc_html($name) ?></th>
+                                                    <td><?= esc_html($value) ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </table>
+                                    <?php endif; ?>
                                     <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                              && is_user_logged_in()
-                                              && User::isBoard()
+                                              && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                               && !is_archive()
                                     ): ?>
                                         <div class="card-action">
-                                            <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                            <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                            <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                            <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -461,35 +480,36 @@ class Event
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
-                <ul id="registrations-shortlist" class="collection with-header collapsible popout" data-collapsible="expandable">
+                <ul id="registrations-shortlist" class="collection with-header <?= is_user_logged_in() ? 'collapsible' : '' ?> popout" data-collapsible="expandable">
                     <?php for ($i = 0; $i < 5; $i++) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
                         <li>
                             <div class="collapsible-header collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                <p><?= $event_registration->status ?></p>
+                                <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                <p><?= esc_html($event_registration->status) ?></p>
                             </div>
                             <div class="collapsible-body row" style="padding: 5px 10px;">
-                                <table class="striped">
-                                    <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
-                                        <?php $value = $event_registration->getMeta($name); ?>
-                                        <?php $value = empty($value) ? '' : $value; ?>
-                                        <tr>
-                                            <th><?= $name ?></th>
-                                            <td><?= $value ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
+                                <?php if (is_user_logged_in()): ?>
+                                    <table class="striped">
+                                        <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                            <?php $value = $event_registration->getMeta($name); ?>
+                                            <?php $value = empty($value) ? '' : $value; ?>
+                                            <tr>
+                                                <th><?= esc_html($name) ?></th>
+                                                <td><?= esc_html($value) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </table>
+                                <?php endif; ?>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                          && is_user_logged_in()
-                                          && User::isBoard()
+                                          && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
-                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -507,8 +527,8 @@ class Event
                         <li>
                             <div class="collapsible-header collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
-                                <span class="title"><?= $event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name') ?></span>
-                                <p><?= $event_registration->status ?></p>
+                                <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
+                                <p><?= esc_html($event_registration->status) ?></p>
                             </div>
                             <div class="collapsible-body row" style="padding: 5px 10px;">
                                 <table class="striped">
@@ -516,19 +536,19 @@ class Event
                                         <?php $value = $event_registration->getMeta($name); ?>
                                         <?php $value = empty($value) ? '' : $value; ?>
                                         <tr>
-                                            <th><?= $name ?></th>
-                                            <td><?= $value ?></td>
+                                            <th><?= esc_html($name) ?></th>
+                                            <td><?= esc_html($value) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </table>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
-                                          && User::isBoard()
+                                          && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>
                                     <div class="card-action">
-                                        <a href="<?= get_permalink() ?>?approve=<?= $event_registration->registrationID ?>">Approve</a>
-                                        <a href="<?= get_permalink() ?>?deny=<?= $event_registration->registrationID ?>">Deny</a>
+                                        <a href="<?= get_permalink() ?>?approve=<?= esc_html($event_registration->registrationID) ?>">Approve</a>
+                                        <a href="<?= get_permalink() ?>?deny=<?= esc_html($event_registration->registrationID) ?>">Deny</a>
                                     </div>
                                 <?php endif; ?>
                             </div>

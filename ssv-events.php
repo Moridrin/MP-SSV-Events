@@ -3,18 +3,21 @@
  * Plugin Name: SSV Events
  * Plugin URI: https://bosso.nl/ssv-events/
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
- * Version: 3.0.1
+ * Version: 3.2.0
  * Author: moridrin
  * Author URI: http://nl.linkedin.com/in/jberkvens/
  * License: WTFPL
  * License URI: http://www.wtfpl.net/txt/copying/
  */
+
+namespace mp_ssv_events;
 if (!defined('ABSPATH')) {
     exit;
 }
 
 #region Require Once
 require_once 'general/general.php';
+require_once 'functions.php';
 
 require_once "options/options.php";
 
@@ -25,6 +28,7 @@ require_once "custom-post-type/post-type.php";
 require_once "custom-post-type/event-views/page-full.php";
 
 require_once "widgets/category-widget.php";
+require_once "widgets/upcoming-events-widget.php";
 #endregion
 
 #region SSV_Events class
@@ -52,6 +56,9 @@ class SSV_Events
 
     const ADMIN_REFERER_OPTIONS = 'ssv_events__admin_referer_options';
     const ADMIN_REFERER_REGISTRATION = 'ssv_events__admin_referer_registration';
+
+    const CAPABILITY_MANAGE_EVENTS = 'manage_events';
+    const CAPABILITY_MANAGE_EVENT_REGISTRATIONS = 'manage_event_registrations';
     #endregion
 
     #region resetOptions()
@@ -66,6 +73,7 @@ class SSV_Events
     }
 
     #region resetGeneralOptions()
+
     /**
      * This function sets all the options on the General Tab back to their default value
      */
@@ -74,6 +82,7 @@ class SSV_Events
         update_option(self::OPTION_DEFAULT_REGISTRATION_STATUS, 'pending');
         update_option(self::OPTION_REGISTRATION_MESSAGE, 'Your registration is pending.');
         update_option(self::OPTION_CANCELLATION_MESSAGE, 'Your registration is canceled.');
+        update_option(SSV_Events::OPTIONS_SET_GENERAL, 'unset');
     }
     #endregion
 
@@ -85,6 +94,7 @@ class SSV_Events
     {
         update_option(self::OPTION_EMAIL_AUTHOR, true);
         update_option(self::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, false);
+        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'unset');
     }
     #endregion
 
@@ -97,88 +107,4 @@ class SSV_Events
     }
 }
 
-#endregion
-
-#region Register
-function mp_ssv_events_register_plugin()
-{
-    global $wpdb;
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    $charset_collate = $wpdb->get_charset_collate();
-
-    #region Registration Table
-    $table_name = SSV_Events::TABLE_REGISTRATION;
-    $sql
-                = "
-		CREATE TABLE IF NOT EXISTS $table_name (
-			ID bigint(20) NOT NULL AUTO_INCREMENT,
-			eventID bigint(20) NOT NULL,
-			userID bigint(20),
-			registration_status VARCHAR(15) NOT NULL DEFAULT 'pending',
-			PRIMARY KEY (ID)
-		) $charset_collate;";
-    $wpdb->query($sql);
-    #endregion
-
-    #region Registration Meta Table
-    $table_name = SSV_Events::TABLE_REGISTRATION_META;
-    $sql
-                = "
-		CREATE TABLE IF NOT EXISTS $table_name (
-			ID bigint(20) NOT NULL AUTO_INCREMENT,
-			registrationID bigint(20) NOT NULL,
-			meta_key VARCHAR(255) NOT NULL,
-			meta_value VARCHAR(255),
-			PRIMARY KEY (ID)
-		) $charset_collate;";
-    $wpdb->query($sql);
-    #endregion
-
-    SSV_Events::resetOptions();
-}
-
-register_activation_hook(__FILE__, 'mp_ssv_events_register_plugin');
-register_activation_hook(__FILE__, 'mp_ssv_general_register_plugin');
-#endregion
-
-#region Unregister
-function mp_ssv_events_unregister()
-{
-    //Nothing to do here.
-}
-
-register_deactivation_hook(__FILE__, 'mp_ssv_events_unregister');
-#endregion
-
-#region UnInstall
-function mp_ssv_events_uninstall()
-{
-    global $wpdb;
-    $wpdb->show_errors();
-    $table_name = SSV_Events::TABLE_REGISTRATION;
-    $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
-    $table_name = SSV_Events::TABLE_REGISTRATION_META;
-    $sql        = "DROP TABLE IF EXISTS $table_name;";
-    $wpdb->query($sql);
-}
-
-register_uninstall_hook(__FILE__, 'mp_ssv_events_uninstall');
-#endregion
-
-#region Reset Options
-/**
- * This function will reset the events options if the admin referer originates from the SSV Events plugin.
- *
- * @param $admin_referer
- */
-function mp_ssv_events_reset_options($admin_referer)
-{
-    if (!starts_with($admin_referer, 'ssv_events__')) {
-        return;
-    }
-    SSV_Events::resetOptions();
-}
-
-add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
 #endregion

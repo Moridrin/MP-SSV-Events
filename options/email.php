@@ -1,10 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: moridrin
- * Date: 21-1-17
- * Time: 8:02
- */
+namespace mp_ssv_events\options;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\SSV_General;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     if (isset($_POST['reset'])) {
@@ -12,6 +13,7 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     } else {
         update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
         update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
+        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'set');
     }
 }
 ?>

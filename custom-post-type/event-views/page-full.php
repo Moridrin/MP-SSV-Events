@@ -1,4 +1,16 @@
 <?php
+use mp_ssv_events\models\Event;
+use mp_ssv_events\models\Registration;
+use mp_ssv_events\SSV_Events;
+use mp_ssv_general\Form;
+use mp_ssv_general\Message;
+use mp_ssv_general\SSV_General;
+use mp_ssv_general\User;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 #region Add Registrations to Content
 function mp_ssv_events_add_registrations_to_content($content)
 {
@@ -14,28 +26,27 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Add 'View Event' Link to Archive
     if ($post->post_type == 'events' && is_archive()) {
         if (strpos($content, 'class="more-link"') === false) {
-            $content .= '<a href="' . get_permalink($post->ID) . '">View Event</a>';
+            $content .= '<a href="' . esc_url(get_permalink($post->ID)) . '">View Event</a>';
         }
         return $content;
     }
     #endregion
 
     #region Update Registration Status
-    if (User::isBoard()) {
+    if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS) && (isset($_GET['approve']) || isset($_GET['deny']))) {
         if (isset($_GET['approve'])) {
-            Registration::getByID($_GET['approve'])->approve();
-            SSV_General::redirect(get_permalink());
-        } elseif (isset($_GET['deny'])) {
-            Registration::getByID($_GET['deny'])->deny();
-            SSV_General::redirect(get_permalink());
+            Registration::getByID(SSV_General::sanitize($_GET['approve']))->approve();
+        } else {
+            Registration::getByID(SSV_General::sanitize($_GET['deny']))->deny();
         }
+        SSV_General::redirect(get_permalink());
     }
     #endregion
 
     #region Save POST Request
     if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
-            $form = Form::fromDatabase();
+            $form = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
             if (!is_user_logged_in()) {
                 $form->addFields(Registration::getDefaultFields(), false);
             }
@@ -50,11 +61,11 @@ function mp_ssv_events_add_registrations_to_content($content)
                     $content = $error->getHTML() . $content;
                 }
             } else {
-                $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE) . '</div>' . $content;
+                $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_REGISTRATION_MESSAGE)) . '</div>' . $content;
             }
         } elseif ($_POST['action'] == 'cancel') {
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
-            $content = '<div class="card-panel primary">' . get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE) . '</div>' . $content;
+            $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
         }
         $event_registrations = $event->getRegistrations();
     }
@@ -69,12 +80,12 @@ function mp_ssv_events_add_registrations_to_content($content)
             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                 <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
                     <div class="col s3">From:</div>
-                    <div class="col s9"><?= $event->getStart() ?></div>
+                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                     <div class="col s3">Till:</div>
-                    <div class="col s9"><?= $event->getEnd() ?></div>
+                    <div class="col s9"><?= esc_html($event->getEnd()) ?></div>
                 <?php else : ?>
                     <div class="col s3">Start:</div>
-                    <div class="col s9"><?= $event->getStart() ?></div>
+                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                 <?php endif; ?>
             </div>
         </div>
@@ -95,7 +106,7 @@ function mp_ssv_events_add_registrations_to_content($content)
         if ($event->canRegister()) {
             if (is_user_logged_in() && $event->isRegistered()) {
                 ?>
-                <form action="<?= get_permalink() ?>" method="POST">
+                <form action="<?= esc_url(get_permalink()) ?>" method="POST">
                     <input type="hidden" name="action" value="cancel">
                     <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
                     <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
@@ -106,7 +117,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             }
         } else {
             ?>
-            <a href="/login" class="btn waves-effect waves-light">Login to Register</a>
+            <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login to Register</a>
             <?php
         }
     }

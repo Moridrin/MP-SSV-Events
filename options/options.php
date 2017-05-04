@@ -1,7 +1,12 @@
 <?php
+use mp_ssv_general\SSV_General;
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 function ssv_add_ssv_events_options()
 {
-    add_submenu_page('ssv_settings', 'Events Options', 'Events', 'manage_options', __FILE__, 'ssv_events_options_page_content');
+    add_submenu_page('ssv_settings', 'Events Options', 'Events', 'manage_options', 'ssv-events-settings', 'ssv_events_options_page_content');
 }
 
 function ssv_events_options_page_content()
@@ -14,21 +19,15 @@ function ssv_events_options_page_content()
     <div class="wrap">
         <h1>Events Options</h1>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=<?= $_GET['page'] ?>&tab=general" class="nav-tab <?= $active_tab == 'general' ? 'nav-tab-active' : '' ?>">General</a>
-            <a href="?page=<?= $_GET['page'] ?>&tab=email" class="nav-tab <?= $active_tab == 'email' ? 'nav-tab-active' : '' ?>">Email</a>
-            <a href="http://2016.bosso.nl/ssv-events/" target="_blank" class="nav-tab">
-                Help <img src="<?= SSV_Users::URL ?>general/images/link-new-tab.png" width="14px" style="vertical-align:middle">
+            <a href="?page=<?= esc_html($_GET['page']) ?>&tab=general" class="nav-tab <?= SSV_General::currentNavTab($active_tab, 'general') ?>">General</a>
+            <a href="?page=<?= esc_html($_GET['page']) ?>&tab=email" class="nav-tab <?= SSV_General::currentNavTab($active_tab, 'email') ?>">Email</a>
+            <a href="http://bosso.nl/ssv-events/" target="_blank" class="nav-tab">
+                Help <img src="<?= esc_url(SSV_General::URL) ?>/images/link-new-tab-small.png" width="14" style="vertical-align:middle">
             </a>
         </h2>
         <?php
-        switch ($active_tab) {
-            case "general":
-                require_once "general.php";
-                break;
-            case "email":
-                require_once "email.php";
-                break;
-        }
+        /** @noinspection PhpIncludeInspection */
+        require_once $active_tab . '.php';
         ?>
     </div>
     <?php
