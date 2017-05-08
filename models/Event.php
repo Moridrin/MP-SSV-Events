@@ -38,6 +38,9 @@ class Event
 
     /** @var array */
     private $registrations;
+
+    /** @var string */
+    public $mailchimpList;
     #endregion
 
     #region Construct
@@ -48,11 +51,12 @@ class Event
      */
     public function __construct($post)
     {
-        $this->post         = $post;
-        $this->start        = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
-        $this->end          = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
-        $this->location     = get_post_meta($post->ID, 'location', true);
-        $this->registration = get_post_meta($post->ID, 'registration', true);
+        $this->post          = $post;
+        $this->start         = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
+        $this->end           = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
+        $this->location      = get_post_meta($post->ID, 'location', true);
+        $this->registration  = get_post_meta($post->ID, 'registration', true);
+        $this->mailchimpList = get_post_meta($post->ID, 'mailchimp_list', true);
     }
 
     /**

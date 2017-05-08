@@ -50,6 +50,8 @@ function mp_ssv_events_save($post_ID, $post_after)
             )
         );
         update_option(SSV_Events::OPTION_PUBLISH_ERROR, true);
+    } elseif (empty($event->mailchimpList) && $event->isRegistrationPossible()) {
+        do_action(SSV_General::HOOK_USERS_NEW_EVENT, $event);
     }
     return $post_ID;
 }
