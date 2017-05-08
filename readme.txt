@@ -31,6 +31,10 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-events/issues). But you can also send an email to J.Berkvens@Moridrin.com (the lead developer).
 
 == Changelog ==
+= 3.2.1 =
+* Create List on Event Create
+* Add Registrants to List
+
 = 3.2.0 =
 * Namespaces added
 
