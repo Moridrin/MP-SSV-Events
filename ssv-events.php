@@ -11,6 +11,12 @@
  */
 
 namespace mp_ssv_events;
+global $wpdb;
+define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
+define('SSV_EVENTS_URL', plugins_url() . '/ssv-events/');
+define('SSV_EVENTS_REGISTRATION_TABLE', $wpdb->prefix . "ssv_event_registration");
+define('SSV_EVENTS_REGISTRATION_META_TABLE', $wpdb->prefix . "ssv_event_registration_meta");
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -32,12 +38,6 @@ require_once "widgets/upcoming-events-widget.php";
 #endregion
 
 #region SSV_Events class
-global $wpdb;
-define('SSV_EVENTS_PATH', plugin_dir_path(__FILE__));
-define('SSV_EVENTS_URL', plugins_url() . '/ssv-events/');
-define('SSV_EVENTS_REGISTRATION_TABLE', $wpdb->prefix . "ssv_event_registration");
-define('SSV_EVENTS_REGISTRATION_META_TABLE', $wpdb->prefix . "ssv_event_registration_meta");
-
 class SSV_Events
 {
     #region Constants

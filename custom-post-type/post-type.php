@@ -270,13 +270,21 @@ function ssv_events_date()
 function ssv_events_location()
 {
     global $post;
+    $location = get_post_meta($post->ID, 'location', true);
     ?>
-    <table class="form-table">
-        <tr valign="top">
-            <th scope="row">Location</th>
-            <td><input type="text" name="location" value="<?= esc_html(get_post_meta($post->ID, 'location', true)) ?>" title="Location"/></td>
-        </tr>
-    </table>
+    <div class="pac-card" id="pac-card">
+        <div id="pac-container" style="background-color: #FFF;">
+            <input id="pac-input" type="text" name="location" value="<?= $location ?>" onkeypress="return event.keyCode !== 13;" placeholder="Enter a location" autocomplete="off" style="margin: 6px 12px 12px 12px; width: 200px;">
+        </div>
+    </div>
+    <div id="map" style="height: 300px;"></div>
+    <div id="infowindow-content">
+        <img src="" width="16" height="16" id="place-icon">
+        <span id="place-name" class="title"></span><br>
+        <span id="place-address"></span>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbMIhqPjnYyyd4r9wcFAXpGbbbba2jRg&libraries=places&callback=initMapSearch" async defer></script>
     <?php
 }
 
