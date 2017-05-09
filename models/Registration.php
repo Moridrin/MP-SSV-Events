@@ -185,13 +185,26 @@ class Registration
             $subject    = "New Registration for " . $eventTitle;
             if ($user != null) {
                 ob_start();
-                ?>User <a href="<?= esc_url($user->getProfileURL()) ?>"><?= esc_html($user->display_name) ?></a> has registered for <a href="<?= esc_url(get_permalink($event->getID())) ?>"><?= esc_html($eventTitle) ?></a>.<?php
+                ?>User <a href="<?= esc_url($user->getProfileURL()) ?>"><?= esc_html($user->display_name) ?></a> has registered for <a href="<?= esc_url(get_permalink($event->getID())) ?>"><?= esc_html($eventTitle) ?></a> with the following information:<?php
                 $message = ob_get_clean();
             } else {
                 $message = 'Someone has registered for ' . esc_html($eventTitle) . ' with the following information:<br/>';
-                foreach ($inputFields as $field) {
-                    $message .= $field->title . ': ' . $field->value;
-                }
+            }
+            foreach ($inputFields as $field) {
+                $message .= $field->title . ': ' . $field->value . '<br/>';
+            }
+            wp_mail($to, $subject, $message);
+        }
+
+        if (get_option(SSV_Events::OPTION_EMAIL_REGISTRANT)) {
+            $eventTitle = Event::getByID($event->getID())->post->post_title;
+            $to         = $registration->getMeta('email');
+            $subject    = "You have registered for " . $eventTitle;
+            ob_start();
+            ?>You are now registered for <a href="<?= esc_url(get_permalink($event->getID())) ?>"><?= esc_html($eventTitle) ?></a> with the following information:<?php
+            $message = ob_get_clean();
+            foreach ($inputFields as $field) {
+                $message .= $field->title . ': ' . $field->value . '<br/>';
             }
             wp_mail($to, $subject, $message);
         }
@@ -301,6 +314,16 @@ class Registration
             $to         = User::getByID($this->event->post->post_author)->user_email;
             $subject    = "Cancellation for " . $eventTitle;
             $message    = $this->user->display_name . ' has just canceled his/her registration for ' . $eventTitle . '.';
+            wp_mail($to, $subject, $message);
+        }
+
+        if (get_option(SSV_Events::OPTION_EMAIL_REGISTRANT)) {
+            $eventTitle = Event::getByID($this->event->getID())->post->post_title;
+            $to         = $this->getMeta('email');
+            $subject    = "You have registered for " . $eventTitle;
+            ob_start();
+            ?>Your registered for <a href="<?= esc_url(get_permalink($this->event->getID())) ?>"><?= esc_html($eventTitle) ?></a> is now canceled.<?php
+            $message = ob_get_clean();
             wp_mail($to, $subject, $message);
         }
     }

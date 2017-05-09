@@ -88,11 +88,16 @@ function mp_ssv_events_add_registrations_to_content($content)
                     <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                 <?php endif; ?>
             </div>
-            <div class="row">
-                <div id="map" style="height: 300px;"></div>
-                <input type="hidden" id="map_location" value="Hertog Hendrik van Brabantplein, Eindhoven, Netherlands"/>
-                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbMIhqPjnYyyd4r9wcFAXpGbbbba2jRg&libraries=places&callback=initMap" async defer></script>
-            </div>
+            <?php if (!empty($event->getLocation())): ?>
+                <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
+                    <div class="col s12">
+                        <?= $event->getLocation() ?>
+                        <div id="map" style="height: 300px;"></div>
+                        <input type="hidden" id="map_location" value="<?= $event->getLocation() ?>"/>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMap" async defer></script>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="col s12 <?= count($event_registrations) > 0 ? 'xl6' : 'xl8' ?>">
             <?= $content ?>

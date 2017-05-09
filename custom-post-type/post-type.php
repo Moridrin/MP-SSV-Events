@@ -284,7 +284,7 @@ function ssv_events_location()
         <span id="place-address"></span>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbMIhqPjnYyyd4r9wcFAXpGbbbba2jRg&libraries=places&callback=initMapSearch" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMapSearch" async defer></script>
     <?php
 }
 
