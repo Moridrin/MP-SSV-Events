@@ -123,7 +123,7 @@ class ssv_upcoming_events extends WP_Widget
     public function update($new_instance, $old_instance)
     {
         $instance          = $old_instance;
-        $instance['title'] = SSV_General::sanitize($new_instance['title']);
+        $instance['title'] = SSV_General::sanitize($new_instance['title'], 'text');
         $instance['count'] = $new_instance['count'];
 
         return $instance;
@@ -135,7 +135,7 @@ class ssv_upcoming_events extends WP_Widget
     {
         //Defaults
         $instance = wp_parse_args((array)$instance, array('title' => ''));
-        $title    = SSV_General::sanitize($instance['title']);
+        $title    = SSV_General::sanitize($instance['title'], 'text');
         $count    = $instance['count'];
         ?>
         <p>

@@ -11,9 +11,9 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     if (isset($_POST['reset'])) {
         SSV_Events::resetEmailOptions();
     } else {
-        update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_author_on_registration'], FILTER_VALIDATE_BOOLEAN));
-        update_option(SSV_Events::OPTION_EMAIL_REGISTRANT, filter_var($_POST['email_registrant_on_registration'], FILTER_VALIDATE_BOOLEAN));
-        update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
+        update_option(SSV_Events::OPTION_EMAIL_AUTHOR, SSV_General::sanitize($_POST['email_author_on_registration'], 'boolean'));
+        update_option(SSV_Events::OPTION_EMAIL_REGISTRANT, SSV_General::sanitize($_POST['email_registrant_on_registration'], 'boolean'));
+        update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, SSV_General::sanitize($_POST['email_on_registration_status_changed'], 'boolean'));
     }
 }
 ?>

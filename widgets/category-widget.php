@@ -101,7 +101,7 @@ class ssv_event_category extends WP_Widget
     public function update($new_instance, $old_instance)
     {
         $instance                 = $old_instance;
-        $instance['title']        = SSV_General::sanitize($new_instance['title']);
+        $instance['title']        = SSV_General::sanitize($new_instance['title'], 'text');
         $instance['count']        = !empty($new_instance['count']) ? 1 : 0;
         $instance['hierarchical'] = !empty($new_instance['hierarchical']) ? 1 : 0;
         $instance['dropdown']     = !empty($new_instance['dropdown']) ? 1 : 0;
@@ -115,7 +115,7 @@ class ssv_event_category extends WP_Widget
     {
         //Defaults
         $instance     = wp_parse_args((array)$instance, array('title' => ''));
-        $title        = SSV_General::sanitize($instance['title']);
+        $title        = SSV_General::sanitize($instance['title'], 'text');
         $count        = isset($instance['count']) ? (bool)$instance['count'] : false;
         $hierarchical = isset($instance['hierarchical']) ? (bool)$instance['hierarchical'] : false;
         $dropdown     = isset($instance['dropdown']) ? (bool)$instance['dropdown'] : false;

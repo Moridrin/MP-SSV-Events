@@ -355,7 +355,7 @@ function mp_ssv_events_save_meta($post_id)
     $i = 0;
     while (isset($_POST[$i . '_post'])) {
         $registration = Registration::getByID($_POST[$i . '_registrationID']);
-        $statusNew    = SSV_General::sanitize($_POST[$i . '_status']);
+        $statusNew    = SSV_General::sanitize($_POST[$i . '_status'], array('pending', 'approved', 'denied'));
         if ($registration->status == $statusNew) {
             $i++;
             continue;
@@ -374,16 +374,16 @@ function mp_ssv_events_save_meta($post_id)
         $i++;
     }
     if (isset($_POST['registration'])) {
-        update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration']));
+        update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
     }
     if (isset($_POST['start'])) {
-        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start']));
+        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start'], 'date'));
     }
     if (isset($_POST['end'])) {
-        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end']));
+        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end'], 'date'));
     }
     if (isset($_POST['location'])) {
-        update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
+        update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location'], 'text'));
     }
 
     $registrationFields = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
