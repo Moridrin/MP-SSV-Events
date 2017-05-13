@@ -45,10 +45,10 @@ class ssv_event_category extends WP_Widget
         );
 
         if ($d) {
-            $dropdown_id    = ($first_dropdown) ? 'event_cat' : "{$this->id_base}-dropdown-{$this->number}";
+            $dropdown_id    = esc_attr(($first_dropdown) ? 'event_cat' : "{$this->id_base}-dropdown-{$this->number}");
             $first_dropdown = false;
 
-            echo '<label class="screen-reader-text" for="' . esc_attr($dropdown_id) . '">' . $title . '</label>';
+            ?><label class="screen-reader-text" for="<?= $dropdown_id ?>">$title</label><?php
 
             $cat_args['show_option_none'] = __('Select Event Category');
             $cat_args['id']               = $dropdown_id;

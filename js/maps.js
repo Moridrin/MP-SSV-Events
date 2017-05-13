@@ -1,6 +1,7 @@
 // This example requires the Places library. Include the libraries=places
 // parameter when you first load the API. For example:
 // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+//noinspection JSUnusedGlobalSymbols
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 51.4416, lng: 5.4697},
@@ -13,6 +14,7 @@ function initMap() {
         geocoder.geocode({'address': address}, function (results, status) {
             if (status === 'OK') {
                 map.setCenter(results[0].geometry.location);
+                //noinspection JSUnusedLocalSymbols
                 var marker = new google.maps.Marker({
                     map: map,
                     position: results[0].geometry.location
@@ -23,6 +25,7 @@ function initMap() {
         });
     }
 }
+//noinspection JSUnusedGlobalSymbols
 function initMapSearch() {
     var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 51.4416, lng: 5.4697},
@@ -51,6 +54,7 @@ function initMapSearch() {
         geocoder.geocode({'address': address}, function (results, status) {
             if (status === 'OK') {
                 map.setCenter(results[0].geometry.location);
+                //noinspection JSUnusedLocalSymbols
                 var marker = new google.maps.Marker({
                     map: map,
                     position: results[0].geometry.location
@@ -87,6 +91,7 @@ function initMapSearch() {
                 (place.address_components[2] && place.address_components[2].short_name || '')
             ].join(' ');
         }
+        //noinspection JSUndefinedPropertyAssignment
         infowindowContent.children['place-icon'].src = place.icon;
         infowindowContent.children['place-name'].textContent = place.name;
         infowindowContent.children['place-address'].textContent = address;
