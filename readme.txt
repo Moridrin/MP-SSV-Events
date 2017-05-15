@@ -11,11 +11,11 @@ SSV Events is a plugin that allows you to create events for your Students Sports
 
 == Description ==
 SSV Events is a plugin that allows you to create events for your Students Sports Club the way you want to. With this plugin you can:
- - Make events
- - Let users register
-   - One Click registration
-   - Cancel registration
- - Etc.
+* Make events
+* Let users register
+ * One Click registration
+ * Cancel registration
+* Etc.
 This plugin is fully compatible with the SSV library which can add functionality like: MailChimp, Frontend Members, etc.
 
 == Installation ==
