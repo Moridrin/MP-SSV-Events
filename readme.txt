@@ -1,4 +1,4 @@
-=== SSV Users ===
+=== SSV Events ===
 Contributors: moridrin
 Tags: ssv, mp-ssv, events, event management, moridrin, sportvereniging, sports club,
 Requires at least: 3.0.1
