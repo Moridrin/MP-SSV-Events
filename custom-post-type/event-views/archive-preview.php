@@ -20,12 +20,7 @@ $content             = get_the_content('');
         <?php if (is_sticky() && is_home() && !is_paged()) : ?>
             <span class="sticky-post">Featured</span>
         <?php endif; ?>
-        <h2>
-            <?= the_title() ?>
-            <?php if ($event->isRegistrationEnabled()) : ?>
-                <p><?= esc_html(count($event_registrations)) ?></p>
-            <?php endif; ?>
-        </h2>
+        <h2><?= the_title() ?></h2>
     </header>
     <?php the_post_thumbnail(); ?>
     <div class="col s12 m4">

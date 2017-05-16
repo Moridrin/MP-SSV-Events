@@ -313,7 +313,7 @@ function ssv_events_registrations()
         $i = 0;
         foreach ($rows as $row) {
             /** @var Registration $registration */
-            $registration = Registration::getByID($row->id);
+            $registration = Registration::getByID($row->ID);
             ?>
             <tr>
                 <?php foreach ($fieldNames as $fieldName): ?>
@@ -390,18 +390,7 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location'], 'text'));
     }
 
-    $registrationFields = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
-    $registrationIDs    = array();
-    foreach ($registrationFields as $id => $field) {
-        /** @var Field $field */
-        if (!empty($field->title)) {
-            update_post_meta($post_id, Field::PREFIX . $id, $field->toJSON());
-            $registrationIDs[] = $id;
-        } else {
-            delete_post_meta($post_id, Field::PREFIX . $id);
-        }
-    }
-    update_post_meta($post_id, Field::CUSTOM_FIELD_IDS_META, $registrationIDs);
+    Form::saveEditorFromPost();
     return $post_id;
 }
 

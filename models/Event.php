@@ -376,10 +376,10 @@ class Event
             )
         );
         $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
-        $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
-            $form->addFields(Registration::getDefaultFields());
+            $form->addFields(Registration::getDefaultFields(), false);
         }
+        $form->addFields($actionField, false);
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 
