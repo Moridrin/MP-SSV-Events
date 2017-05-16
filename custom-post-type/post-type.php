@@ -20,8 +20,12 @@ if (!defined('ABSPATH')) {
  */
 function mp_ssv_events_template($archive_template)
 {
-    if (is_post_type_archive('events') && get_theme_support('materialize')) {
-        $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
+    if (is_post_type_archive('events')) {
+        if (get_theme_support('materialize')) {
+            $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events-material.php';
+        } else {
+            $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
+        }
     }
     return $archive_template;
 }
@@ -377,10 +381,10 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
     }
     if (isset($_POST['start'])) {
-        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start'], 'date'));
+        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start'], 'datetime'));
     }
     if (isset($_POST['end'])) {
-        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end'], 'date'));
+        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end'], 'datetime'));
     }
     if (isset($_POST['location'])) {
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location'], 'text'));
