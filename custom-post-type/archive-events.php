@@ -2,6 +2,7 @@
 
 namespace mp_ssv_events;
 
+use mp_ssv_general\SSV_General;
 use WP_Query;
 
 if (!defined('ABSPATH')) {
@@ -32,12 +33,16 @@ $pastEvents             = new WP_Query($args);
 get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
-        <div id="primary" class="content-area">
-            <main id="main" class="site-main" role="main">
-                <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
-            </main>
+        <div class="row">
+            <div class="col s12 <?= is_dynamic_sidebar() ? 'm8 l9 xxl10' : '' ?>">
+                <div id="primary" class="content-area">
+                    <main id="main" class="site-main" role="main">
+                        <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
+                    </main>
+                </div>
+            </div>
+            <?php get_sidebar(); ?>
         </div>
-        <?php get_sidebar(); ?>
     </div>
     <?php
 get_footer();
@@ -84,7 +89,11 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
                 require 'event-views/archive-preview.php';
             }
         }
-        echo paginate_links();
+        if (function_exists('mp_ssv_get_pagination')) {
+            echo mp_ssv_get_pagination();
+        } else {
+            echo paginate_links();
+        }
     } else {
         get_template_part('template-parts/content', 'none');
     }

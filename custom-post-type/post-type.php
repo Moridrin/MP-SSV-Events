@@ -20,12 +20,8 @@ if (!defined('ABSPATH')) {
  */
 function mp_ssv_events_template($archive_template)
 {
-    if (is_post_type_archive('events')) {
-        if (get_theme_support('materialize')) {
-            $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events-material.php';
-        } else {
-            $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
-        }
+    if (is_post_type_archive('events') && get_theme_support('materialize')) {
+        $archive_template = SSV_Events::PATH . '/custom-post-type/archive-events.php';
     }
     return $archive_template;
 }

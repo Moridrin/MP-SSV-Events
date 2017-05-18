@@ -31,6 +31,11 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-events/issues). But you can also send an email to J.Berkvens@Moridrin.com (the lead developer).
 
 == Changelog ==
+= 3.2.2 =
+* Ready for WordPress
+* Working with other themes
+** No custom Events Archive for other themes
+
 = 3.2.1 =
 * Create List on Event Create
 * Add Registrants to List
