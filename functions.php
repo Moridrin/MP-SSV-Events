@@ -116,14 +116,14 @@ add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
 #endregion
 wp_enqueue_script('ssv_events_maps', SSV_Events::URL . '/js/maps.js', array('jquery'));
 
-function mp_ssv_enquire_admin_scripts()
+function mp_ssv_events_enquire_admin_scripts()
 {
     wp_enqueue_script('ssv_events_datetimepicker', SSV_Events::URL . '/js/jquery.datetimepicker.full.js', 'jquery-ui-datepicker');
     wp_enqueue_script('ssv_events_datetimepicker_admin_init', SSV_Events::URL . '/js/admin-init.js', 'ssv_events_datetimepicker');
     wp_enqueue_style('ssv_events_datetimepicker_admin_css', SSV_Events::URL . '/css/jquery.datetimepicker.css');
 }
 
-add_action('admin_enqueue_scripts', 'mp_ssv_enquire_admin_scripts', 12);
+add_action('admin_enqueue_scripts', 'mp_ssv_events_enquire_admin_scripts', 12);
 
 #region Update Settings Message.
 function mp_ssv_events_update_settings_notification()
