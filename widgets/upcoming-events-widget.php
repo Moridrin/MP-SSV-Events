@@ -84,16 +84,19 @@ class ssv_upcoming_events extends WP_Widget
             $posts      = get_posts($postArgs);
             if (get_theme_support('materialize')) {
                 ?>
-                <div class="row">
+                <div class="row card z-depth-4">
                     <div class="col s12">
-                        <strong><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></strong>
+                        <h3><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></h3>
                     </div>
                     <?php foreach ($posts as $post): ?>
+                        <hr/>
+                        <div class="col s12"  style="padding: 0 0 5px 0;">
                         <div class="col s4">
                             <?= (new Event($post))->getStart('d M') ?>
                         </div>
                         <div class="col s8">
                             <a href="<?= esc_url(get_permalink($post)) ?>"><?= $post->post_title ?></a>
+                        </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
