@@ -16,7 +16,7 @@ class ssv_upcoming_events extends WP_Widget
     public function __construct()
     {
         $widget_ops = array(
-            'classname'                   => 'widget_upcoming_events',
+            'classname'                   => 'widget_events_cards',
             'description'                 => 'A list or dropdown for the first upcoming events per category.',
             'customize_selective_refresh' => true,
         );
@@ -59,9 +59,6 @@ class ssv_upcoming_events extends WP_Widget
             }
         }
 
-        if (!get_theme_support('materialize')) {
-            ?><ul><?php
-        }
         foreach ($categories as $category) {
             $postArgs  = array(
                 'posts_per_page' => $c,
@@ -82,13 +79,12 @@ class ssv_upcoming_events extends WP_Widget
                 ),
             );
             $posts      = get_posts($postArgs);
-            if (get_theme_support('materialize')) {
-                ?>
-                <ul class="collection z-depth-4">
-                    <li class="collection-item" style="padding: 0 20px;">
-                            <h3><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></h3>
-                    </li>
-                    <?php foreach ($posts as $post): ?>
+            ?>
+            <ul class="card-panel collection" style="padding: 0">
+                <li class="collection-item" style="padding: 0 20px;">
+                    <h3><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></h3>
+                </li>
+                <?php foreach ($posts as $post): ?>
                     <li class="collection-item row" style="padding: 5px 0;">
                         <div class="col s4">
                             <?= (new Event($post))->getStart('d M') ?>
@@ -97,24 +93,9 @@ class ssv_upcoming_events extends WP_Widget
                             <a href="<?= esc_url(get_permalink($post)) ?>"><?= $post->post_title ?></a>
                         </div>
                     </li>
-                    <?php endforeach; ?>
-                </ul>
-                <?php
-            } else {
-                ?>
-                <li>
-                    <a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a>
-                    <ul>
-                        <?php foreach ($posts as $post): ?>
-                            <li><?= $post->post_title ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-                <?php
-            }
-        }
-        if (!get_theme_support('materialize')) {
-            ?></ul><?php
+                <?php endforeach; ?>
+            </ul>
+            <?php
         }
 
         echo $args['after_widget'];
