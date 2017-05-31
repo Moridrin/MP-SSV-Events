@@ -531,16 +531,18 @@ class Event
                                 <p><?= esc_html($event_registration->status) ?></p>
                             </div>
                             <div class="collapsible-body row" style="padding: 5px 10px;">
-                                <table class="striped">
-                                    <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
-                                        <?php $value = $event_registration->getMeta($name); ?>
-                                        <?php $value = empty($value) ? '' : $value; ?>
-                                        <tr>
-                                            <th><?= esc_html($name) ?></th>
-                                            <td><?= esc_html($value) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </table>
+                                <?php if (is_user_logged_in()): ?>
+                                    <table class="striped">
+                                        <?php foreach ($this->getRegistrationFieldNames() as $name): ?>
+                                            <?php $value = $event_registration->getMeta($name); ?>
+                                            <?php $value = empty($value) ? '' : $value; ?>
+                                            <tr>
+                                                <th><?= esc_html($name) ?></th>
+                                                <td><?= esc_html($value) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </table>
+                                <?php endif; ?>    
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
                                           && is_user_logged_in()
                                           && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
