@@ -9,7 +9,6 @@ use mp_ssv_events\SSV_Events;
 use mp_ssv_general\custom_fields\Field;
 use mp_ssv_general\custom_fields\InputField;
 use mp_ssv_general\Form;
-use mp_ssv_general\SSV_General;
 use WP_Post;
 use WP_User;
 
@@ -440,10 +439,10 @@ class Event
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
                             Materialize.showStaggeredList('#all-registrations');
-                            event.srcElement.onclick = function () {
-                                showDetails()
-                            };
-                            event.srcElement.innerHTML = 'Show Details';
+//                            event.srcElement.onclick = function () {
+//                                showDetails()
+//                            };
+//                            event.srcElement.innerHTML = 'Show Details';
                         }
                         function showDetails() {
                             jQuery('#all-registrations').collapsible('open', 1);
@@ -526,7 +525,7 @@ class Event
                 <?php endif; ?>
             <?php else: ?>
                 <h3>Registrations</h3>
-                <ul class="collection with-header collapsible popout" data-collapsible="expandable">
+                <ul class="collection with-header <?= is_user_logged_in() ? 'collapsible' : '' ?> popout" data-collapsible="expandable">
                     <?php foreach ($this->registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <li>
@@ -547,9 +546,8 @@ class Event
                                             </tr>
                                         <?php endforeach; ?>
                                     </table>
-                                <?php endif; ?>    
+                                <?php endif; ?>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                          && is_user_logged_in()
                                           && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>
