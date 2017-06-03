@@ -11,9 +11,9 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     if (isset($_POST['reset'])) {
         SSV_Events::resetEmailOptions();
     } else {
-        update_option(SSV_Events::OPTION_EMAIL_AUTHOR, filter_var($_POST['email_on_registration'], FILTER_VALIDATE_BOOLEAN));
-        update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, filter_var($_POST['email_on_registration_status_changed'], FILTER_VALIDATE_BOOLEAN));
-        update_option(SSV_Events::OPTIONS_SET_EMAIL, 'set');
+        update_option(SSV_Events::OPTION_EMAIL_AUTHOR, SSV_General::sanitize($_POST['email_author_on_registration'], 'boolean'));
+        update_option(SSV_Events::OPTION_EMAIL_REGISTRANT, SSV_General::sanitize($_POST['email_registrant_on_registration'], 'boolean'));
+        update_option(SSV_Events::OPTION_EMAIL_ON_REGISTRATION_STATUS_CHANGED, SSV_General::sanitize($_POST['email_on_registration_status_changed'], 'boolean'));
     }
 }
 ?>
@@ -23,9 +23,19 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
             <th scope="row">Email Author</th>
             <td>
                 <label>
-                    <input type="hidden" name="email_on_registration" value="false"/>
-                    <input type="checkbox" name="email_on_registration" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_AUTHOR) ? 'checked' : '' ?> />
+                    <input type="hidden" name="email_author_on_registration" value="false"/>
+                    <input type="checkbox" name="email_author_on_registration" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_AUTHOR) ? 'checked' : '' ?> />
                     When someone registers or cancels the event author will receive an email.
+                </label>
+            </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row">Email Registrant</th>
+            <td>
+                <label>
+                    <input type="hidden" name="email_registrant_on_registration" value="false"/>
+                    <input type="checkbox" name="email_registrant_on_registration" value="true" <?= get_option(SSV_Events::OPTION_EMAIL_REGISTRANT) ? 'checked' : '' ?> />
+                    When someone registers or cancels he/she will receive a confirmation email.
                 </label>
             </td>
         </tr>

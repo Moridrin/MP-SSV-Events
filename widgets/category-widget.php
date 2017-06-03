@@ -45,10 +45,10 @@ class ssv_event_category extends WP_Widget
         );
 
         if ($d) {
-            $dropdown_id    = ($first_dropdown) ? 'event_cat' : "{$this->id_base}-dropdown-{$this->number}";
+            $dropdown_id    = esc_attr(($first_dropdown) ? 'event_cat' : "{$this->id_base}-dropdown-{$this->number}");
             $first_dropdown = false;
 
-            echo '<label class="screen-reader-text" for="' . esc_attr($dropdown_id) . '">' . $title . '</label>';
+            ?><label class="screen-reader-text" for="<?= $dropdown_id ?>">$title</label><?php
 
             $cat_args['show_option_none'] = __('Select Event Category');
             $cat_args['id']               = $dropdown_id;
@@ -101,7 +101,7 @@ class ssv_event_category extends WP_Widget
     public function update($new_instance, $old_instance)
     {
         $instance                 = $old_instance;
-        $instance['title']        = SSV_General::sanitize($new_instance['title']);
+        $instance['title']        = SSV_General::sanitize($new_instance['title'], 'text');
         $instance['count']        = !empty($new_instance['count']) ? 1 : 0;
         $instance['hierarchical'] = !empty($new_instance['hierarchical']) ? 1 : 0;
         $instance['dropdown']     = !empty($new_instance['dropdown']) ? 1 : 0;
@@ -115,7 +115,7 @@ class ssv_event_category extends WP_Widget
     {
         //Defaults
         $instance     = wp_parse_args((array)$instance, array('title' => ''));
-        $title        = SSV_General::sanitize($instance['title']);
+        $title        = SSV_General::sanitize($instance['title'], 'text');
         $count        = isset($instance['count']) ? (bool)$instance['count'] : false;
         $hierarchical = isset($instance['hierarchical']) ? (bool)$instance['hierarchical'] : false;
         $dropdown     = isset($instance['dropdown']) ? (bool)$instance['dropdown'] : false;

@@ -1,5 +1,8 @@
 <?php
+
 namespace mp_ssv_events;
+
+use mp_ssv_general\SSV_General;
 use WP_Query;
 
 if (!defined('ABSPATH')) {
@@ -41,7 +44,7 @@ get_header();
             <?php get_sidebar(); ?>
         </div>
     </div>
-<?php
+    <?php
 get_footer();
 #endregion
 
@@ -86,7 +89,11 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
                 require 'event-views/archive-preview.php';
             }
         }
-        echo mp_ssv_get_pagination();
+        if (function_exists('mp_ssv_get_pagination')) {
+            echo mp_ssv_get_pagination();
+        } else {
+            echo paginate_links();
+        }
     } else {
         get_template_part('template-parts/content', 'none');
     }

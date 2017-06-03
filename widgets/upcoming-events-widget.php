@@ -16,7 +16,7 @@ class ssv_upcoming_events extends WP_Widget
     public function __construct()
     {
         $widget_ops = array(
-            'classname'                   => 'widget_upcoming_events',
+            'classname'                   => 'widget_events_cards',
             'description'                 => 'A list or dropdown for the first upcoming events per category.',
             'customize_selective_refresh' => true,
         );
@@ -59,9 +59,6 @@ class ssv_upcoming_events extends WP_Widget
             }
         }
 
-        if (!get_theme_support('materialize')) {
-            ?><ul><?php
-        }
         foreach ($categories as $category) {
             $postArgs  = array(
                 'posts_per_page' => $c,
@@ -82,37 +79,23 @@ class ssv_upcoming_events extends WP_Widget
                 ),
             );
             $posts      = get_posts($postArgs);
-            if (get_theme_support('materialize')) {
-                ?>
-                <div class="row">
-                    <div class="col s12">
-                        <strong><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></strong>
-                    </div>
-                    <?php foreach ($posts as $post): ?>
+            ?>
+            <ul class="card-panel collection" style="padding: 0">
+                <li class="collection-item" style="padding: 0 20px;">
+                    <h3><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></h3>
+                </li>
+                <?php foreach ($posts as $post): ?>
+                    <li class="collection-item row" style="padding: 5px 0;">
                         <div class="col s4">
                             <?= (new Event($post))->getStart('d M') ?>
                         </div>
                         <div class="col s8">
                             <a href="<?= esc_url(get_permalink($post)) ?>"><?= $post->post_title ?></a>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php
-            } else {
-                ?>
-                <li>
-                    <a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a>
-                    <ul>
-                        <?php foreach ($posts as $post): ?>
-                            <li><?= $post->post_title ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </li>
-                <?php
-            }
-        }
-        if (!get_theme_support('materialize')) {
-            ?></ul><?php
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
         }
 
         echo $args['after_widget'];
@@ -123,7 +106,7 @@ class ssv_upcoming_events extends WP_Widget
     public function update($new_instance, $old_instance)
     {
         $instance          = $old_instance;
-        $instance['title'] = SSV_General::sanitize($new_instance['title']);
+        $instance['title'] = SSV_General::sanitize($new_instance['title'], 'text');
         $instance['count'] = $new_instance['count'];
 
         return $instance;
@@ -135,7 +118,7 @@ class ssv_upcoming_events extends WP_Widget
     {
         //Defaults
         $instance = wp_parse_args((array)$instance, array('title' => ''));
-        $title    = SSV_General::sanitize($instance['title']);
+        $title    = SSV_General::sanitize($instance['title'], 'text');
         $count    = $instance['count'];
         ?>
         <p>

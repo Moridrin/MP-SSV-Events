@@ -35,9 +35,9 @@ function mp_ssv_events_add_registrations_to_content($content)
     #region Update Registration Status
     if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS) && (isset($_GET['approve']) || isset($_GET['deny']))) {
         if (isset($_GET['approve'])) {
-            Registration::getByID(SSV_General::sanitize($_GET['approve']))->approve();
+            Registration::getByID(SSV_General::sanitize($_GET['approve'], 'int'))->approve();
         } else {
-            Registration::getByID(SSV_General::sanitize($_GET['deny']))->deny();
+            Registration::getByID(SSV_General::sanitize($_GET['deny'], 'int'))->deny();
         }
         SSV_General::redirect(get_permalink());
     }
@@ -88,6 +88,16 @@ function mp_ssv_events_add_registrations_to_content($content)
                     <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                 <?php endif; ?>
             </div>
+            <?php if (!empty($event->getLocation())): ?>
+                <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
+                    <div class="col s12">
+                        <?= $event->getLocation() ?>
+                        <div id="map" style="height: 300px;"></div>
+                        <input type="hidden" id="map_location" value="<?= $event->getLocation() ?>"/>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMap" async defer></script>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
         <div class="col s12 <?= count($event_registrations) > 0 ? 'xl6' : 'xl8' ?>">
             <?= $content ?>

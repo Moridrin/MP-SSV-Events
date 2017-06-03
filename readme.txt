@@ -1,4 +1,4 @@
-=== SSV Users ===
+=== SSV Events ===
 Contributors: moridrin
 Tags: ssv, mp-ssv, events, event management, moridrin, sportvereniging, sports club,
 Requires at least: 3.0.1
@@ -11,11 +11,11 @@ SSV Events is a plugin that allows you to create events for your Students Sports
 
 == Description ==
 SSV Events is a plugin that allows you to create events for your Students Sports Club the way you want to. With this plugin you can:
- - Make events
- - Let users register
-   - One Click registration
-   - Cancel registration
- - Etc.
+* Make events
+* Let users register
+ * One Click registration
+ * Cancel registration
+* Etc.
 This plugin is fully compatible with the SSV library which can add functionality like: MailChimp, Frontend Members, etc.
 
 == Installation ==
@@ -31,6 +31,42 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-events/issues). But you can also send an email to J.Berkvens@Moridrin.com (the lead developer).
 
 == Changelog ==
+= 3.3.0 =
+* Opening registration details disabled for non logged in users
+* Widget Design improved
+* Updating name fields disabled (due to possible bugs)
+* Even more Widget Design improvements (styled by Guy Dubois)
+* Widget Design improved (styled by Guy Dubois)
+* Ready for WordPress
+* Working with other themes
+** No custom Events Archive for other themes
+* Create List on Event Create
+* Add Registrants to List
+
+= 3.2.7 =
+* Opening registration details disabled for non logged in users
+
+= 3.2.6 =
+* Widget Design improved
+
+= 3.2.5 =
+* Updating name fields disabled (due to possible bugs)
+
+= 3.2.4 =
+* Even more Widget Design improvements (styled by Guy Dubois)
+
+= 3.2.3 =
+* Widget Design improved (styled by Guy Dubois)
+
+= 3.2.2 =
+* Ready for WordPress
+* Working with other themes
+** No custom Events Archive for other themes
+
+= 3.2.1 =
+* Create List on Event Create
+* Add Registrants to List
+
 = 3.2.0 =
 * Namespaces added
 

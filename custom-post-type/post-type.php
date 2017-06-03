@@ -50,6 +50,8 @@ function mp_ssv_events_save($post_ID, $post_after)
             )
         );
         update_option(SSV_Events::OPTION_PUBLISH_ERROR, true);
+    } elseif (empty($event->mailchimpList) && $event->isRegistrationPossible()) {
+        do_action(SSV_General::HOOK_USERS_NEW_EVENT, $event);
     }
     return $post_ID;
 }
@@ -268,13 +270,21 @@ function ssv_events_date()
 function ssv_events_location()
 {
     global $post;
+    $location = get_post_meta($post->ID, 'location', true);
     ?>
-    <table class="form-table">
-        <tr valign="top">
-            <th scope="row">Location</th>
-            <td><input type="text" name="location" value="<?= esc_html(get_post_meta($post->ID, 'location', true)) ?>" title="Location"/></td>
-        </tr>
-    </table>
+    <div class="pac-card" id="pac-card">
+        <div id="pac-container" style="background-color: #FFF;">
+            <input id="pac-input" type="text" name="location" value="<?= $location ?>" onkeypress="return event.keyCode !== 13;" placeholder="Enter a location" autocomplete="off" style="margin: 6px 12px 12px 12px; width: 200px;">
+        </div>
+    </div>
+    <div id="map" style="height: 300px;"></div>
+    <div id="infowindow-content">
+        <img src="" width="16" height="16" id="place-icon">
+        <span id="place-name" class="title"></span><br>
+        <span id="place-address"></span>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMapSearch" async defer></script>
     <?php
 }
 
@@ -299,7 +309,7 @@ function ssv_events_registrations()
         $i = 0;
         foreach ($rows as $row) {
             /** @var Registration $registration */
-            $registration = Registration::getByID($row->id);
+            $registration = Registration::getByID($row->ID);
             ?>
             <tr>
                 <?php foreach ($fieldNames as $fieldName): ?>
@@ -345,7 +355,7 @@ function mp_ssv_events_save_meta($post_id)
     $i = 0;
     while (isset($_POST[$i . '_post'])) {
         $registration = Registration::getByID($_POST[$i . '_registrationID']);
-        $statusNew    = SSV_General::sanitize($_POST[$i . '_status']);
+        $statusNew    = SSV_General::sanitize($_POST[$i . '_status'], array('pending', 'approved', 'denied'));
         if ($registration->status == $statusNew) {
             $i++;
             continue;
@@ -364,30 +374,19 @@ function mp_ssv_events_save_meta($post_id)
         $i++;
     }
     if (isset($_POST['registration'])) {
-        update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration']));
+        update_post_meta($post_id, 'registration', SSV_General::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
     }
     if (isset($_POST['start'])) {
-        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start']));
+        update_post_meta($post_id, 'start', SSV_General::sanitize($_POST['start'], 'datetime'));
     }
     if (isset($_POST['end'])) {
-        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end']));
+        update_post_meta($post_id, 'end', SSV_General::sanitize($_POST['end'], 'datetime'));
     }
     if (isset($_POST['location'])) {
-        update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location']));
+        update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location'], 'text'));
     }
 
-    $registrationFields = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
-    $registrationIDs    = array();
-    foreach ($registrationFields as $id => $field) {
-        /** @var Field $field */
-        if (!empty($field->title)) {
-            update_post_meta($post_id, Field::PREFIX . $id, $field->toJSON());
-            $registrationIDs[] = $id;
-        } else {
-            delete_post_meta($post_id, Field::PREFIX . $id);
-        }
-    }
-    update_post_meta($post_id, Field::CUSTOM_FIELD_IDS_META, $registrationIDs);
+    Form::saveEditorFromPost();
     return $post_id;
 }
 

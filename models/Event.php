@@ -38,6 +38,9 @@ class Event
 
     /** @var array */
     private $registrations;
+
+    /** @var string */
+    public $mailchimpList;
     #endregion
 
     #region Construct
@@ -48,11 +51,12 @@ class Event
      */
     public function __construct($post)
     {
-        $this->post         = $post;
-        $this->start        = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
-        $this->end          = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
-        $this->location     = get_post_meta($post->ID, 'location', true);
-        $this->registration = get_post_meta($post->ID, 'registration', true);
+        $this->post          = $post;
+        $this->start         = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'start', true));
+        $this->end           = DateTime::createFromFormat('Y-m-d H:i', get_post_meta($post->ID, 'end', true));
+        $this->location      = get_post_meta($post->ID, 'location', true);
+        $this->registration  = get_post_meta($post->ID, 'registration', true);
+        $this->mailchimpList = get_post_meta($post->ID, 'mailchimp_list', true);
     }
 
     /**
@@ -371,10 +375,10 @@ class Event
             )
         );
         $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
-        $form->addFields($actionField, false);
         if (!is_user_logged_in()) {
-            $form->addFields(Registration::getDefaultFields());
+            $form->addFields(Registration::getDefaultFields(), false);
         }
+        $form->addFields($actionField, false);
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 
@@ -435,10 +439,10 @@ class Event
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
                             Materialize.showStaggeredList('#all-registrations');
-                            event.srcElement.onclick = function () {
-                                showDetails()
-                            };
-                            event.srcElement.innerHTML = 'Show Details';
+//                            event.srcElement.onclick = function () {
+//                                showDetails()
+//                            };
+//                            event.srcElement.innerHTML = 'Show Details';
                         }
                         function showDetails() {
                             jQuery('#all-registrations').collapsible('open', 1);
@@ -521,7 +525,7 @@ class Event
                 <?php endif; ?>
             <?php else: ?>
                 <h3>Registrations</h3>
-                <ul class="collection with-header collapsible popout" data-collapsible="expandable">
+                <ul class="collection with-header <?= is_user_logged_in() ? 'collapsible' : '' ?> popout" data-collapsible="expandable">
                     <?php foreach ($this->registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <li>
@@ -542,9 +546,8 @@ class Event
                                             </tr>
                                         <?php endforeach; ?>
                                     </table>
-                                <?php endif; ?>    
+                                <?php endif; ?>
                                 <?php if ($event_registration->status == Registration::STATUS_PENDING
-                                          && is_user_logged_in()
                                           && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)
                                           && !is_archive()
                                 ): ?>

@@ -12,10 +12,10 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
     if (isset($_POST['reset'])) {
         SSV_Events::resetGeneralOptions();
     } else {
-        update_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS, SSV_General::sanitize($_POST['default_registration_status']));
-        update_option(SSV_Events::OPTION_REGISTRATION_MESSAGE, SSV_General::sanitize($_POST['registration_message']));
-        update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, SSV_General::sanitize($_POST['cancellation_message']));
-        update_option(SSV_Events::OPTIONS_SET_GENERAL, 'set');
+        update_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS, SSV_General::sanitize($_POST['default_registration_status'], array('pending', 'approved', 'denied')));
+        update_option(SSV_Events::OPTION_REGISTRATION_MESSAGE, SSV_General::sanitize($_POST['registration_message'], 'text'));
+        update_option(SSV_Events::OPTION_CANCELLATION_MESSAGE, SSV_General::sanitize($_POST['cancellation_message'], 'text'));
+        update_option(SSV_Events::OPTION_MAPS_API_KEY, SSV_General::sanitize($_POST['maps_api_key'], 'text'));
     }
 }
 ?>
@@ -30,6 +30,12 @@ if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_OPTIONS)) {
                     <option value="approved" <?= selected($defaultRegistrationStatus, Registration::STATUS_APPROVED) ?>>Approved</option>
                     <option value="denied" <?= selected($defaultRegistrationStatus, Registration::STATUS_DENIED) ?>>Denied</option>
                 </select>
+            </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row">Google Maps API Key</th>
+            <td>
+                <input type="text" class="regular-text" name="maps_api_key" value="<?= esc_html(get_option(SSV_Events::OPTION_MAPS_API_KEY)) ?>" title="Google Maps API Key"/>
             </td>
         </tr>
         <tr valign="top">
