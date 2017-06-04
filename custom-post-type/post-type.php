@@ -3,7 +3,6 @@
 use mp_ssv_events\models\Event;
 use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
-use mp_ssv_general\custom_fields\Field;
 use mp_ssv_general\Form;
 use mp_ssv_general\SSV_General;
 
@@ -95,34 +94,31 @@ function mp_ssv_events_updated_messages($messages)
         /** @noinspection HtmlUnknownTarget */
         $messages['events'] = array(
             0  => '',
-            1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
+            1  => 'Event updated. <a href="' . esc_url(get_permalink($post_ID)) . '">View Event</a>',
             2  => 'Custom field updated.',
             3  => 'Custom field deleted.',
             4  => 'Event updated.',
             5  => isset($_GET['revision']) ? 'Event restored to revision from ' . wp_post_revision_title((int)$_GET['revision'], false) : false,
             6  => '',
             7  => 'Event saved.',
-            8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', esc_url(get_permalink($post_ID))))),
-            9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
-            10 => sprintf(
-                'Event draft updated. <a target="_blank" href="%s">Preview event</a>',
-                esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-            ),
+            8  => 'Event submitted. <a target="_blank" href="' . esc_url(add_query_arg('preview', 'true', esc_url(get_permalink($post_ID)))) . '">Preview event</a>',
+            9  => 'Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="' . esc_url(get_permalink($post_ID)) . '">Preview event</a>',
+            10 => 'Event draft updated. <a target="_blank" href="' . esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))) . '">Preview event</a>',
         );
     } else {
         /** @noinspection HtmlUnknownTarget */
         $messages['events'] = array(
             0  => '',
-            1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
+            1  => 'Event updated. <a href="' . esc_url(get_permalink($post_ID)) . '">View Event</a>',
             2  => 'Custom field updated.',
             3  => 'Custom field deleted.',
             4  => 'Event updated.',
             5  => isset($_GET['revision']) ? 'Event restored to revision from ' . wp_post_revision_title((int)$_GET['revision'], false) : false,
-            6  => sprintf('Event published. <a href="%s">View event</a>', esc_url(get_permalink($post_ID))),
+            6  => 'Event published. <a href="' . esc_url(get_permalink($post_ID)) . '">View event</a>',
             7  => 'Event saved.',
-            8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
-            9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
-            10 => sprintf('Event draft updated. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))),
+            8  => 'Event submitted. <a target="_blank" href="' . esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))) . '">Preview event</a>',
+            9  => 'Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="' . esc_url(get_permalink($post_ID)) . '">Preview event</a>',
+            10 => 'Event draft updated. <a target="_blank" href="' . esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))) . '">Preview event</a>',
         );
     }
 
@@ -141,29 +137,17 @@ function mp_ssv_events_post_category()
 
     $labels = array(
         'name'               => 'Events',
-        'events',
         'singular_name'      => 'Event',
-        'events',
         'add_new'            => 'Add New',
-        'events',
         'add_new_item'       => 'Add New Event',
-        'events',
         'edit_item'          => 'Edit Event',
-        'events',
         'new_item'           => 'New Event',
-        'events',
         'view_item'          => 'View Event',
-        'events',
         'search_items'       => 'Search Events',
-        'events',
         'not_found'          => 'No Events found',
-        'events',
         'not_found_in_trash' => 'No Events found in Trash',
-        'events',
         'parent_item_colon'  => 'Parent Event:',
-        'events',
         'menu_name'          => 'Events',
-        'events',
     );
 
     $args = array(
@@ -218,19 +202,108 @@ add_action('init', 'mp_ssv_events_category_taxonomy');
 #endregion
 
 #region Meta Boxes
+function mp_ssv_edit_form_after_title()
+{
+    global $post, $wp_meta_boxes;
+    do_meta_boxes('events', 'ssv_after_title', $post);
+    unset($wp_meta_boxes['events']['ssv_after_title']);
+}
+
+add_action('edit_form_after_title', 'mp_ssv_edit_form_after_title');
+
 /**
  * This method adds the custom Meta Boxes
  */
 function mp_ssv_events_meta_boxes()
 {
-    add_meta_box('ssv_events_registration', 'Registration', 'ssv_events_registration', 'events', 'side', 'default');
-    add_meta_box('ssv_events_date', 'Date', 'ssv_events_date', 'events', 'side', 'default');
-    add_meta_box('ssv_events_location', 'Location', 'ssv_events_location', 'events', 'side', 'default');
-    add_meta_box('ssv_events_registration_fields', 'Registration Fields', 'ssv_events_registration_fields', 'events', 'advanced', 'default');
-    add_meta_box('ssv_events_registrations', 'Registrations', 'ssv_events_registrations', 'events', 'advanced', 'default');
+    add_meta_box('ssv_events_event_details', 'Event Details', 'ssv_events_details', 'events', 'ssv_after_title', 'high');
+    add_meta_box('ssv_events_tickets', 'Tickets', 'ssv_events_tickets', 'events', 'normal', 'high');
 }
 
 add_action('add_meta_boxes', 'mp_ssv_events_meta_boxes');
+
+function ssv_events_details()
+{
+    global $post;
+    $start       = get_post_meta($post->ID, 'start', true);
+    $start       = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
+    $end         = get_post_meta($post->ID, 'end', true);
+    $end         = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
+    $placeholder = (new DateTime('now'))->format('Y-m-d H:i');
+    $location    = get_post_meta($post->ID, 'location', true);
+    ?>
+    <table width="100%">
+        <tr>
+            <td style="width: auto; white-space: nowrap;">
+                Start Date<br/>
+                <input type="text" class="datetimepicker" name="start" id="event_start_date" onchange="mp_ssv_update_event_start_date()" value="<?= esc_html($start) ?>" placeholder="<?= esc_html($placeholder) ?>" title="Start Date" required><br/>
+                End Date<br/>
+                <input type="text" class="datetimepicker" name="end" id="event_end_date" onchange="mp_ssv_update_event_end_date()" value="<?= esc_html($end) ?>" placeholder="<?= esc_html($placeholder) ?>" title="End Date" required><br/>
+                Location<br/>
+                <input id="pac-input" type="text" name="location" value="<?= $location ?>" onkeypress="return event.keyCode !== 13;" placeholder="Enter a location" autocomplete="off"><br/>
+            </td>
+            <td height="100%" width="99%">
+                <div id="map" style="height: 100%; margin: 10px 0;"></div>
+            </td>
+        </tr>
+    </table>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMapSearch" async defer></script>
+    <?php
+}
+
+function ssv_events_tickets()
+{
+    ?>
+    <style>
+        button.ssv-accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+        }
+
+        button.ssv-accordion.active, button.ssv-accordion:hover {
+            background-color: #ddd;
+        }
+
+        div.panel {
+            padding: 0 18px;
+            background-color: white;
+            display: none;
+        }
+    </style>
+    <div id="test" style="margin: 10px 0;">
+        <div id="tickets-placeholder" class="sortable"></div>
+    </div>
+    <button type="button" onclick="mp_ssv_add_new_ticket()">Add Ticket</button>
+    <!--suppress JSUnusedLocalSymbols -->
+    <script>
+        var fieldID = 0;
+        function mp_ssv_add_new_ticket() {
+            mp_ssv_add_ticket(fieldID, "", "", "");
+            fieldID++;
+        }
+        mp_ssv_add_new_ticket();
+
+        var customFieldIDs = [];
+        function mp_ssv_add_new_custom_field_to_container(container) {
+            var i = customFieldIDs[container];
+            if (!i) {
+                i = 0;
+            }
+            mp_ssv_add_new_field(container, 'input', 'text', i, {"override_right": ""}, false);
+            i++;
+            customFieldIDs[container] = i;
+        }
+    </script>
+    <?php
+}
 
 function ssv_events_registration()
 {
@@ -251,46 +324,11 @@ function ssv_events_registration()
     <?php
 }
 
-function ssv_events_date()
-{
-    global $post;
-    $start       = get_post_meta($post->ID, 'start', true);
-    $start       = $start ?: get_post_meta($post->ID, 'start_date', true) . ' ' . get_post_meta($post->ID, 'start_time', true);
-    $end         = get_post_meta($post->ID, 'end', true);
-    $end         = $end ?: get_post_meta($post->ID, 'end_date', true) . ' ' . get_post_meta($post->ID, 'end_time', true);
-    $placeholder = (new DateTime('now'))->format('Y-m-d H:i');
-    ?>
-    Start Date<br/>
-    <input type="text" class="datetimepicker" name="start" value="<?= esc_html($start) ?>" placeholder="<?= esc_html($placeholder) ?>" title="Start Date" required><br/>
-    End Date<br/>
-    <input type="text" class="datetimepicker" name="end" value="<?= esc_html($end) ?>" placeholder="<?= esc_html($placeholder) ?>" title="End Date" required>
-    <?php
-}
-
-function ssv_events_location()
-{
-    global $post;
-    $location = get_post_meta($post->ID, 'location', true);
-    ?>
-    <div class="pac-card" id="pac-card">
-        <div id="pac-container" style="background-color: #FFF;">
-            <input id="pac-input" type="text" name="location" value="<?= $location ?>" onkeypress="return event.keyCode !== 13;" placeholder="Enter a location" autocomplete="off" style="margin: 6px 12px 12px 12px; width: 200px;">
-        </div>
-    </div>
-    <div id="map" style="height: 300px;"></div>
-    <div id="infowindow-content">
-        <img src="" width="16" height="16" id="place-icon">
-        <span id="place-name" class="title"></span><br>
-        <span id="place-address"></span>
-    </div>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMapSearch" async defer></script>
-    <?php
-}
-
 function ssv_events_registrations()
 {
+    /** @var WP_Post $post */
     global $post;
+    /** @var wpdb $wpdb */
     global $wpdb;
     $event      = new Event($post);
     $table      = SSV_Events::TABLE_REGISTRATION;
@@ -386,7 +424,7 @@ function mp_ssv_events_save_meta($post_id)
         update_post_meta($post_id, 'location', SSV_General::sanitize($_POST['location'], 'text'));
     }
 
-    Form::saveEditorFromPost();
+    Form::saveEditorFromPost(); //TODO do this action for all tickets.
     return $post_id;
 }
 

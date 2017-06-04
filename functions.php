@@ -8,6 +8,7 @@ use mp_ssv_general\SSV_General;
 #region Register
 function mp_ssv_events_register_plugin()
 {
+    /** @var wpdb $wpdb */
     global $wpdb;
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $charset_collate = $wpdb->get_charset_collate();
@@ -120,6 +121,7 @@ function mp_ssv_events_enquire_admin_scripts()
 {
     wp_enqueue_script('ssv_events_datetimepicker', SSV_Events::URL . '/js/jquery.datetimepicker.full.js', 'jquery-ui-datepicker');
     wp_enqueue_script('ssv_events_datetimepicker_admin_init', SSV_Events::URL . '/js/admin-init.js', 'ssv_events_datetimepicker');
+    wp_enqueue_script('ssv_events_tickets', SSV_Events::URL . '/js/mp-ssv-tickets.js');
     wp_enqueue_style('ssv_events_datetimepicker_admin_css', SSV_Events::URL . '/css/jquery.datetimepicker.css');
 }
 

@@ -401,7 +401,6 @@ class Event
                     <a href="#" class="btn waves-effect waves-light" onclick="showList()">Show All <?= count($this->registrations) ?></a>
                     <script>
                         function showList() {
-                            console.log(this);
                             var shortList = document.getElementById('registrations-shortlist');
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
@@ -434,7 +433,6 @@ class Event
                     <!--suppress JSUnusedLocalSymbols -->
                     <script>
                         function showList() {
-                            console.log(event.srcElement);
                             var shortList = document.getElementById('registrations-shortlist');
                             shortList.parentNode.removeChild(shortList);
                             document.getElementById('all-registrations').setAttribute('style', 'display: block;');
