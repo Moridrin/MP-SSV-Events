@@ -110,7 +110,7 @@ class Event
     }
     #endregion
 
-    #region getEnd($format)
+    #region getDeleteRow($format)
     /**
      * @param null|string $format
      *

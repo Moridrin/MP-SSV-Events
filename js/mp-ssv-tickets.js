@@ -42,6 +42,8 @@ function mp_ssv_add_ticket(fieldID, fieldTitle, valueStart, valueEnd) {
     ticketDiv.appendChild(panelDiv);
     container.appendChild(ticketDiv);
     ssv_init_date_time_pickers();
+    mp_ssv_sortable_table('custom-ticket-fields-' + fieldID);
+
     button.click();
 }
 

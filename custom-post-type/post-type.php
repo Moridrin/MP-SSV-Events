@@ -289,7 +289,6 @@ function ssv_events_tickets()
             mp_ssv_add_ticket(fieldID, "", "", "");
             fieldID++;
         }
-        mp_ssv_add_new_ticket();
 
         var customFieldIDs = [];
         function mp_ssv_add_new_custom_field_to_container(container) {
@@ -297,7 +296,7 @@ function ssv_events_tickets()
             if (!i) {
                 i = 0;
             }
-            mp_ssv_add_new_field(container, 'input', 'text', i, {"override_right": ""}, false);
+            mp_ssv_add_custom_field(container, 'input', 'text', i, {"override_right": ""}, false);
             i++;
             customFieldIDs[container] = i;
         }
