@@ -296,7 +296,7 @@ function ssv_events_tickets()
             if (!i) {
                 i = 0;
             }
-            mp_ssv_add_custom_field(container, 'input', 'text', i, {"override_right": ""}, false);
+            mp_ssv_add_custom_input_field(container, i, 'text', {"override_right": ""}, false);
             i++;
             customFieldIDs[container] = i;
         }
