@@ -373,7 +373,7 @@ function ssv_events_registrations()
 
 function ssv_events_registration_fields()
 {
-    echo Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false)->getCustomizationEditor(false);
+    echo Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false)->getEditor(false);
 }
 
 #endregion

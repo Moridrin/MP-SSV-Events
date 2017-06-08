@@ -1,5 +1,7 @@
 <?php
+
 namespace mp_ssv_events\widgets;
+
 use mp_ssv_general\SSV_General;
 use WP_Widget;
 

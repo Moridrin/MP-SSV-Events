@@ -58,8 +58,8 @@ function mp_ssv_events_register_plugin()
     SSV_Events::resetOptions();
 }
 
-register_activation_hook(SSV_EVENTS_PATH. 'ssv-events.php', 'mp_ssv_events_register_plugin');
-register_activation_hook(SSV_EVENTS_PATH. 'ssv-events.php', 'mp_ssv_general_register_plugin');
+register_activation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_register_plugin');
+register_activation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_general_register_plugin');
 #endregion
 
 #region Unregister
@@ -80,7 +80,7 @@ function mp_ssv_events_unregister()
     }
 }
 
-register_deactivation_hook(SSV_EVENTS_PATH. 'ssv-events.php', 'mp_ssv_events_unregister');
+register_deactivation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_unregister');
 #endregion
 
 #region UnInstall
@@ -96,7 +96,7 @@ function mp_ssv_events_uninstall()
     $wpdb->query($sql);
 }
 
-register_uninstall_hook(SSV_EVENTS_PATH. 'ssv-events.php', 'mp_ssv_events_uninstall');
+register_uninstall_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_uninstall');
 #endregion
 
 #region Reset Options
