@@ -90,7 +90,7 @@ class Event
     }
     #endregion
 
-    #region getStart($format)
+    #region getFieldIDs($format)
     /**
      * @param null|string $format
      *
