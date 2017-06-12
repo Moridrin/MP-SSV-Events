@@ -253,6 +253,12 @@ function ssv_events_details()
 
 function ssv_events_tickets()
 {
+    /** @var \wpdb $wpdb */
+    global $wpdb;
+    $table      = SSV_General::CUSTOM_FIELDS_TABLE;
+    $baseFields = $wpdb->get_results("SELECT * FROM $table");
+    $baseFields = array_combine(array_column($baseFields, 'name'), $baseFields);
+    echo SSV_General::getCapabilitiesDataList();
     ?>
     <style>
         button.ssv-accordion {
@@ -278,6 +284,11 @@ function ssv_events_tickets()
             display: none;
         }
     </style>
+    <datalist id="custom_fields">
+        <?php foreach ($baseFields as $field): ?>
+            <option value="<?= $field->name ?>"><?= $field->title ?></option>
+        <?php endforeach; ?>
+    </datalist>
     <div id="test" style="margin: 10px 0;">
         <div id="tickets-placeholder" class="sortable"></div>
     </div>
@@ -291,13 +302,24 @@ function ssv_events_tickets()
         }
 
         var customFieldIDs = [];
-        function mp_ssv_add_new_custom_field_to_container(container) {
+        function mp_ssv_add_new_custom_field_to_container(containerID) {
+            var container = document.getElementById("custom-ticket-fields-" + containerID);
+            var baseFields = <?= json_encode($baseFields) ?>;
             var i = customFieldIDs[container];
             if (!i) {
                 i = 0;
             }
-            mp_ssv_add_custom_input_field(container, i, 'text', {"override_right": ""}, false);
+            var baseFieldSelector = document.getElementById("custom_field_selector_" + containerID);
+            var baseFieldName = baseFieldSelector.value;
+            if (!baseFieldName) {
+                baseFieldSelector.setAttribute("placeholder", "fill in a valid Field ID");
+            } else {
+                baseFieldSelector.setAttribute("placeholder", "");
+                var field = JSON.parse(baseFields[baseFieldName]['json']);
+                mp_ssv_add_custom_input_field_customizer('custom-ticket-fields-' + containerID, i, field['input_type'], field);
+            }
             i++;
+            baseFieldSelector.value = '';
             customFieldIDs[container] = i;
         }
     </script>

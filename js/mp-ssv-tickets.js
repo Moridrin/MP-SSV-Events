@@ -28,13 +28,25 @@ function mp_ssv_add_ticket(fieldID, fieldTitle, valueStart, valueEnd) {
 
     var customFieldsPlaceholder = document.createElement("table");
     customFieldsPlaceholder.setAttribute("id", "custom-ticket-fields-" + fieldID);
+    customFieldsPlaceholder.setAttribute("container_id", fieldID);
     customFieldsPlaceholder.setAttribute("class", "sortable");
+    var headerRow = document.createElement("tr");
+    customFieldsPlaceholder.appendChild(headerRow);
     customFieldsDiv.appendChild(customFieldsPlaceholder);
+
+    var customFieldSelectorLabel = document.createElement("label");
+    customFieldSelectorLabel.innerHTML = 'Field Name (or title)';
+    var customFieldSelector = document.createElement("input");
+    customFieldSelector.setAttribute("type", "text");
+    customFieldSelector.setAttribute("id", "custom_field_selector_" + fieldID);
+    customFieldSelector.setAttribute("list", "custom_fields");
+    customFieldSelectorLabel.appendChild(customFieldSelector);
+    customFieldsDiv.appendChild(customFieldSelectorLabel);
 
     var customFieldsButton = document.createElement("button");
     customFieldsButton.setAttribute("type", "button");
     customFieldsButton.innerHTML = "Add Custom Field";
-    customFieldsButton.setAttribute("onclick", "mp_ssv_add_new_custom_field_to_container('custom-ticket-fields-" + fieldID + "')");
+    customFieldsButton.setAttribute("onclick", "mp_ssv_add_new_custom_field_to_container(" + fieldID + ")");
     customFieldsDiv.appendChild(customFieldsButton);
 
     panelDiv.appendChild(ticketFieldsDiv);
