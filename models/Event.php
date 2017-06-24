@@ -356,7 +356,7 @@ class Event
     public function showRegistrationForm()
     {
         ?>
-        <h1>Register</h1>
+
         <?php
         /** @var InputField $actionField */
         $actionField = Field::fromJSON(
@@ -379,6 +379,17 @@ class Event
             $form->addFields(Registration::getDefaultFields(), false);
         }
         $form->addFields($actionField, false);
+        if (count($form->getInputFields()) > 1) {
+        ?>
+            <p>
+                Fill in the form below to register.
+            </p>
+        <?php } else { ?>
+            <p>
+                Click the button below to register.
+            </p>
+        <?php
+        }
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
 

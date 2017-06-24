@@ -29,17 +29,10 @@ $event_registrations = $event->getRegistrations();
                     </div>
                 </div>
                 <div class="card-content">
-                    <div class="col s12 <?= count($event_registrations) > 0 ? 'xl8' : 'xl12' ?>">
                         <?php
                         the_post();
                         the_content();
                         ?>
-                    </div>
-                    <?php if (count($event_registrations) > 0): ?>
-                    <div class="col s12 xl4">
-                        <?php $event->showRegistrations(); ?>
-                    </div>
-                    <?php endif ?>
                 </div>
             </div>
             <div class="card">
@@ -85,26 +78,33 @@ $event_registrations = $event->getRegistrations();
             if ($event->isRegistrationPossible()) { ?>
                 <div class="card">
                     <div class="card-content">
-                        <h3>Register</h3>
-                        <?php
-                        if ($event->canRegister()) {
-                            if (is_user_logged_in() && $event->isRegistered()) {
-                                ?>
-                                You already are registered for this event. Click the button below to cancel your registration.
-                                <form action="<?= esc_url(get_permalink()) ?>" method="POST">
-                                    <input type="hidden" name="action" value="cancel">
-                                    <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
-                                    <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
-                                </form>
-                                <?php
-                            } else {
-                                $event->showRegistrationForm();
-                            }
-                        } else {
-                            ?>
-                            <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login to Register</a>
+                        <div class="col s12 xl8">
+                            <h3>Register</h3>
                             <?php
-                        } ?>
+                            if ($event->canRegister()) {
+                                if (is_user_logged_in() && $event->isRegistered()) {
+                                    ?>
+                                    You already are registered for this event. Click the button below to cancel your registration.
+                                    <form action="<?= esc_url(get_permalink()) ?>" method="POST">
+                                        <input type="hidden" name="action" value="cancel">
+                                        <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
+                                        <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
+                                    </form>
+                                    <?php
+                                } else {
+                                    $event->showRegistrationForm();
+                                }
+                            } else {
+                                ?>
+                                <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login to Register</a>
+                                <?php
+                            } ?>
+                        </div>
+                        <?php if (count($event_registrations) > 0): ?>
+                            <div class="col s12 xl4">
+                                <?php $event->showRegistrations(); ?>
+                            </div>
+                        <?php endif ?>
                     </div>
                 </div>
             <?php }?>
