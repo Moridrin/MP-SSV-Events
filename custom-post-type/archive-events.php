@@ -62,9 +62,9 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
         if ($hasUpcomingEvents) {
             ?>
             <header class="full-width-entry-header" style="margin: 15px 0;">
-                <div class="parallax-container primary" style="height: 150px;">
+                <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Upcoming</h1>
+                        <h2 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 15px">Upcoming Events</h2>
                     </div>
                 </div>
             </header>
@@ -77,9 +77,9 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
         if ($hasPastEvents) {
             ?>
             <header class="full-width-entry-header" style="margin: 15px 0;">
-                <div class="parallax-container primary" style="height: 150px;">
+                <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Past</h1>
+                        <h2 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 15px">Past Events</h2>
                     </div>
                 </div>
             </header>
