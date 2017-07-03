@@ -24,7 +24,7 @@ $event_registrations = $event->getRegistrations();
                     <div class="card-overlay">
                         <div class="page-title">
                             <h1><?= the_title() ?></h1>
-                            <h3><?= esc_html($event->getStart('F jS @ H:i')) ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . esc_html($event->getEnd('F jS @ H:i')) : '' ?></h3>
+                            <h3 class="hide-on-small"><?= esc_html($event->getStart('F jS @ H:i')) ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . esc_html($event->getEnd('F jS @ H:i')) : '' ?></h3>
                         </div>
                     </div>
                 </div>
