@@ -114,7 +114,11 @@ function mp_ssv_events_reset_options($admin_referer)
 
 add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
 #endregion
-wp_enqueue_script('ssv_events_maps', SSV_Events::URL . '/js/maps.js', array('jquery'));
+function mp_ssv_events_enquire_admin_scripts()
+{
+    wp_enqueue_script('ssv_events_maps', SSV_Events::URL . '/js/maps.js', array('jquery'));
+}
+add_action( 'wp_enqueue_scripts', 'mp_ssv_events_enquire_scripts' );
 
 function mp_ssv_events_enquire_admin_scripts()
 {
