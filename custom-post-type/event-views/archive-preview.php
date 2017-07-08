@@ -45,7 +45,7 @@ $content             = get_the_content('');
         </div>
         <div class="card-action">
             <a href="<?= get_permalink() ?>" title="Read More" class="read-more">
-                View Event <i class="fa fa-long-arrow-right right"></i>
+                View Event <i style="padding-top:3px" class="fa fa-long-arrow-right right"></i>
             </a>
         </div>
     </div>

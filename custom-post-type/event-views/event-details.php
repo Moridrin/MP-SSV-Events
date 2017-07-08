@@ -21,10 +21,10 @@ $event_registrations = $event->getRegistrations();
                     <?php else: ?>
                         <div class="thumbnail-placeholder"></div>
                     <?php endif ?>
-                    <div class="card-overlay">
+                    <div class="card-overlay hide-on-small">
                         <div class="page-title">
                             <h1><?= the_title() ?></h1>
-                            <h3 class="hide-on-small"><?= esc_html($event->getStart('F jS @ H:i')) ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . esc_html($event->getEnd('F jS @ H:i')) : '' ?></h3>
+                            <h3><?= esc_html($event->getStart('F jS @ H:i')) ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . esc_html($event->getEnd('F jS @ H:i')) : '' ?></h3>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ $event_registrations = $event->getRegistrations();
             if ($event->isRegistrationPossible()) { ?>
                 <div class="card">
                     <div class="card-content">
-                        <div class="col s12 xl8">
+                        <div class="col s12 xl8" style="padding-bottom: 20px">
                             <h3>Register</h3>
                             <?php
                             if ($event->canRegister()) {
