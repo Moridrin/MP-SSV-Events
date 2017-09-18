@@ -34,7 +34,7 @@ get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
         <div class="row">
-            <div class="col s12 <?php echo is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
+            <div class="col s12 <?= is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
                         <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
@@ -64,7 +64,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <header class="full-width-entry-header" style="margin: 15px 0;">
                 <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h2 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 15px">Upcoming Events</h2>
+                        <h2 class="entry-title center-align white-text valign events-archive-header">Upcoming Events</h2>
                     </div>
                 </div>
             </header>
@@ -79,7 +79,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <header class="full-width-entry-header" style="margin: 15px 0;">
                 <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h2 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 15px">Past Events</h2>
+                        <h2 class="entry-title center-align white-text valign events-archive-header">Past Events</h2>
                     </div>
                 </div>
             </header>

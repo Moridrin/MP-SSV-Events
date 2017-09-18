@@ -18,7 +18,7 @@ $content             = get_the_content('');
 <article id="post-<?php the_ID(); ?>">
     <div class="card">
         <div class="card-image waves-effect waves-block waves-light">
-            <?php mp_ssv_post_thumbnail(true, array('class' => 'activator')); ?>
+            <?php mp_ssv_post_thumbnail(); ?>
         </div>
         <div class="card-content">
             <div class="post-title">
@@ -45,7 +45,7 @@ $content             = get_the_content('');
         </div>
         <div class="card-action">
             <a href="<?= get_permalink() ?>" title="Read More" class="read-more">
-                View Event <i style="padding-top:3px" class="fa fa-long-arrow-right right"></i>
+                View Event <span class="right">&#8594;</span>
             </a>
         </div>
     </div>

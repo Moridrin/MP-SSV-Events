@@ -11,9 +11,9 @@ get_header();
 $event               = Event::getByID($post->ID);
 $event_registrations = $event->getRegistrations();
 ?>
-<div id="page" class="container <?php echo is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
+<div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
     <div class="row">
-        <div class="col s12 <?php echo is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
+        <div class="col s12 <?= is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
             <div id="primary" class="content-area card">
                 <div class="card-image waves-effect waves-block waves-light">
                     <?php if (has_post_thumbnail()): ?>
@@ -24,7 +24,7 @@ $event_registrations = $event->getRegistrations();
                     <div class="card-overlay hide-on-small">
                         <div class="page-title">
                             <h1><?= the_title() ?></h1>
-                            <h3><?= esc_html($event->getStart('F jS @ H:i')) ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . esc_html($event->getEnd('F jS @ H:i')) : '' ?></h3>
+                            <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i') : '' ?></h3>
                         </div>
                     </div>
                 </div>
@@ -52,15 +52,15 @@ $event_registrations = $event->getRegistrations();
                                     <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                                 <?php endif; ?>
                             </div>
-                            <h5>Organiser</h5>
+                            <h5>Organizer</h5>
                             <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                                 <div class="col s12"><?= get_the_author() ?></div>
                                 <div class="col s12"><a href="mailto:<?= get_the_author_meta('email') ?>"><?= get_the_author_meta('email') ?></a></div>
                             </div>
                         </div>
-                        <div class="col s12 xl6">
-                            <h5>Location</h5>
-                            <?php if (!empty($event->getLocation())): ?>
+                        <?php if (!empty($event->getLocation())): ?>
+                            <div class="col s12 xl6">
+                                <h5>Location</h5>
                                 <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
                                     <div class="col s12">
                                         <?= $event->getLocation() ?>
@@ -69,8 +69,8 @@ $event_registrations = $event->getRegistrations();
                                         <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMap" async defer></script>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-                        </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -20,7 +20,6 @@ function mp_ssv_events_add_registrations_to_content($content)
         return $content;
     }
     $event               = Event::getByID($post->ID);
-    $event_registrations = $event->getRegistrations();
     #endregion
 
     #region Add 'View Event' Link to Archive
@@ -67,7 +66,6 @@ function mp_ssv_events_add_registrations_to_content($content)
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
             $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
         }
-        $event_registrations = $event->getRegistrations();
     }
     #endregion
 
