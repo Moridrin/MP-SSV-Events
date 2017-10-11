@@ -15,7 +15,7 @@ $event_registrations = $event->getRegistrations();
     <div class="row">
         <div class="col s12 <?= is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
             <div id="primary" class="content-area card">
-                <div class="card-image waves-effect waves-block waves-light">
+                <div class="card-image">
                     <?php if (has_post_thumbnail()): ?>
                         <img src="<?php the_post_thumbnail_url() ?>"/>
                     <?php else: ?>

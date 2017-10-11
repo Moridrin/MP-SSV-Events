@@ -17,12 +17,12 @@ $content             = get_the_content('');
 ?>
 <article id="post-<?php the_ID(); ?>">
     <div class="card">
-        <div class="card-image waves-effect waves-block waves-light">
+        <div class="card-image">
             <?php mp_ssv_post_thumbnail(); ?>
         </div>
         <div class="card-content">
             <div class="post-title">
-                <h3><?= the_title() ?></h3>
+                <h2><?= the_title() ?></h2>
                 <?php if ($event->isRegistrationEnabled()) : ?>
                     <span class="new badge" data-badge-caption="Registrations"><?= esc_html(count($event_registrations)) ?></span>
                 <?php endif; ?>
@@ -45,7 +45,7 @@ $content             = get_the_content('');
         </div>
         <div class="card-action">
             <a href="<?= get_permalink() ?>" title="Read More" class="read-more">
-                View Event <span class="right">&#8594;</span>
+                View Event <i class="tiny material-icons right">arrow_forward</i>
             </a>
         </div>
     </div>

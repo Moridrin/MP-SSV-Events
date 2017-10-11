@@ -459,11 +459,11 @@ class Event
                             jQuery('#all-registrations').collapsible('open', 1);
                         }
                     </script>
-                    <ul id="all-registrations" class="collection with-header <?= is_user_logged_in() ? 'collapsible' : '' ?> popout" data-collapsible="expandable" style="display: none;">
+                    <ul id="all-registrations" class="collection with-header <?= is_user_logged_in() ? 'collapsible ' : '' ?>popout" data-collapsible="expandable" style="display: none;">
                         <?php foreach ($this->registrations as $event_registration) : ?>
                             <?php /* @var Registration $event_registration */ ?>
                             <li>
-                                <div class="collapsible-header collection-item avatar">
+                                <div class="<?= is_user_logged_in() ? 'collapsible-header ' : '' ?>collection-item avatar">
                                     <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
                                     <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
                                     <p><?= esc_html($event_registration->status) ?></p>
@@ -500,7 +500,7 @@ class Event
                         <?php /* @var Registration $event_registration */ ?>
                         <?php $event_registration = array_values($this->registrations)[$i] ?>
                         <li>
-                            <div class="collapsible-header collection-item avatar">
+                            <div class="<?= is_user_logged_in() ? 'collapsible-header ' : '' ?>collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
                                 <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
                                 <p><?= esc_html($event_registration->status) ?></p>
@@ -540,7 +540,7 @@ class Event
                     <?php foreach ($this->registrations as $event_registration) : ?>
                         <?php /* @var Registration $event_registration */ ?>
                         <li>
-                            <div class="collapsible-header collection-item avatar">
+                            <div class="<?= is_user_logged_in() ? 'collapsible-header ' : '' ?>collection-item avatar">
                                 <img src="<?= get_avatar_url($event_registration->getMeta('email')); ?>" alt='' class="circle">
                                 <span class="title"><?= esc_html($event_registration->getMeta('first_name') . ' ' . $event_registration->getMeta('last_name')) ?></span>
                                 <p><?= esc_html($event_registration->status) ?></p>

@@ -64,7 +64,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <header class="full-width-entry-header" style="margin: 15px 0;">
                 <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h2 class="entry-title center-align white-text valign events-archive-header">Upcoming Events</h2>
+                        <h1 class="entry-title center-align white-text valign events-archive-header">Upcoming Events</h1>
                     </div>
                 </div>
             </header>
@@ -79,7 +79,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <header class="full-width-entry-header" style="margin: 15px 0;">
                 <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h2 class="entry-title center-align white-text valign events-archive-header">Past Events</h2>
+                        <h1 class="entry-title center-align white-text valign events-archive-header">Past Events</h1>
                     </div>
                 </div>
             </header>
