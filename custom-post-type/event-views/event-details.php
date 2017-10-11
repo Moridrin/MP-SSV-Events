@@ -52,11 +52,13 @@ $event_registrations = $event->getRegistrations();
                                     <div class="col s9"><?= esc_html($event->getStart()) ?></div>
                                 <?php endif; ?>
                             </div>
-                            <h5>Organizer</h5>
-                            <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
-                                <div class="col s12"><?= get_the_author() ?></div>
-                                <div class="col s12"><a href="mailto:<?= get_the_author_meta('email') ?>"><?= get_the_author_meta('email') ?></a></div>
-                            </div>
+                            <?php if (!empty($event->getLocation())): ?>
+                                <h5>Organizer</h5>
+                                <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
+                                    <div class="col s12"><?= get_the_author() ?></div>
+                                    <div class="col s12"><a href="mailto:<?= get_the_author_meta('email') ?>"><?= get_the_author_meta('email') ?></a></div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <?php if (!empty($event->getLocation())): ?>
                             <div class="col s12 xl6">
@@ -68,6 +70,14 @@ $event_registrations = $event->getRegistrations();
                                         <input type="hidden" id="map_location" value="<?= $event->getLocation() ?>"/>
                                         <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMap" async defer></script>
                                     </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="col s12 xl6">
+                                <h5>Organizer</h5>
+                                <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
+                                    <div class="col s12"><?= get_the_author() ?></div>
+                                    <div class="col s12"><a href="mailto:<?= get_the_author_meta('email') ?>"><?= get_the_author_meta('email') ?></a></div>
                                 </div>
                             </div>
                         <?php endif; ?>
