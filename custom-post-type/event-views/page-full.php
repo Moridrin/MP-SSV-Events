@@ -20,7 +20,6 @@ function mp_ssv_events_add_registrations_to_content($content)
         return $content;
     }
     $event               = Event::getByID($post->ID);
-    $event_registrations = $event->getRegistrations();
     #endregion
 
     #region Add 'View Event' Link to Archive
@@ -67,75 +66,25 @@ function mp_ssv_events_add_registrations_to_content($content)
             Registration::getByEventAndUser($event, new User(wp_get_current_user()))->cancel();
             $content = '<div class="card-panel primary">' . esc_html(get_option(SSV_Events::OPTION_CANCELLATION_MESSAGE)) . '</div>' . $content;
         }
-        $event_registrations = $event->getRegistrations();
     }
-    #endregion
-
-    #region Page Content
-    ob_start();
-    ?>
-    <div class="row">
-        <div class="col s12 <?= count($event_registrations) > 0 ? 'xl3' : 'xl4' ?>">
-            <h3>When</h3>
-            <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
-                <?php if ($event->getEnd() != false && $event->getEnd() != $event->getStart()): ?>
-                    <div class="col s3">From:</div>
-                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
-                    <div class="col s3">Till:</div>
-                    <div class="col s9"><?= esc_html($event->getEnd()) ?></div>
-                <?php else : ?>
-                    <div class="col s3">Start:</div>
-                    <div class="col s9"><?= esc_html($event->getStart()) ?></div>
-                <?php endif; ?>
-            </div>
-            <?php if (!empty($event->getLocation())): ?>
-                <div class="row" style="border-left: solid; margin-left: 0; margin-right: 0;">
-                    <div class="col s12">
-                        <?= $event->getLocation() ?>
-                        <div id="map" style="height: 300px;"></div>
-                        <input type="hidden" id="map_location" value="<?= $event->getLocation() ?>"/>
-                        <script src="https://maps.googleapis.com/maps/api/js?key=<?= get_option(SSV_Events::OPTION_MAPS_API_KEY) ?>&libraries=places&callback=initMap" async defer></script>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-        <div class="col s12 <?= count($event_registrations) > 0 ? 'xl6' : 'xl8' ?>">
-            <?= $content ?>
-        </div>
-        <?php if (count($event_registrations) > 0): ?>
-            <div class="col s12 xl3">
-                <?php $event->showRegistrations(); ?>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php
-    #endregion
-
-    #region Add registration button
-    if ($event->isRegistrationPossible()) {
-        if ($event->canRegister()) {
-            if (is_user_logged_in() && $event->isRegistered()) {
-                ?>
-                <form action="<?= esc_url(get_permalink()) ?>" method="POST">
-                    <input type="hidden" name="action" value="cancel">
-                    <button type="submit" name="submit" class="btn waves-effect">Cancel Registration</button>
-                    <?= SSV_General::getFormSecurityFields(SSV_Events::ADMIN_REFERER_REGISTRATION, false, false); ?>
-                </form>
-                <?php
-            } else {
-                $event->showRegistrationForm();
-            }
-        } else {
-            ?>
-            <a href="<?= SSV_General::getLoginURL() ?>" class="btn waves-effect waves-light">Login to Register</a>
-            <?php
-        }
-    }
-    $content = ob_get_clean();
     #endregion
 
     return $content;
 }
 
+function mp_ssv_events_event_template($single) {
+    global $post;
+
+    if ($post->post_type == "events"){
+        if(file_exists(ABSPATH . '/wp-content/plugins/ssv-events/custom-post-type/event-views/event-details.php'))
+            return ABSPATH . '/wp-content/plugins/ssv-events/custom-post-type/event-views/event-details.php';
+    }
+    return $single;
+}
+
 add_filter('the_content', 'mp_ssv_events_add_registrations_to_content');
+
+add_filter('single_template', 'mp_ssv_events_event_template');
+
+
 #endregion

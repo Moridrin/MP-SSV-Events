@@ -85,7 +85,7 @@ class ssv_upcoming_events extends WP_Widget
                     <h3><a href="<?= esc_url(get_term_link($category, $taxonomy)) ?>" title="View all posts in <?= esc_html($category->name) ?>"><?= esc_html($category->name) ?></a></h3>
                 </li>
                 <?php foreach ($posts as $post): ?>
-                    <li class="collection-item row" style="padding: 5px 0;">
+                    <li class="collection-item row">
                         <div class="col s4">
                             <?= (new Event($post))->getStart('d M') ?>
                         </div>

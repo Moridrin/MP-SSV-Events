@@ -34,7 +34,7 @@ get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
         <div class="row">
-            <div class="col s12 <?= is_dynamic_sidebar() ? 'm8 l9 xxl10' : '' ?>">
+            <div class="col s12 <?= is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
                         <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
@@ -62,9 +62,9 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
         if ($hasUpcomingEvents) {
             ?>
             <header class="full-width-entry-header" style="margin: 15px 0;">
-                <div class="parallax-container primary" style="height: 150px;">
+                <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Upcoming</h1>
+                        <h1 class="entry-title center-align white-text valign events-archive-header">Upcoming Events</h1>
                     </div>
                 </div>
             </header>
@@ -77,9 +77,9 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
         if ($hasPastEvents) {
             ?>
             <header class="full-width-entry-header" style="margin: 15px 0;">
-                <div class="parallax-container primary" style="height: 150px;">
+                <div class="parallax-container primary" style="height: 75px;">
                     <div class="shade darken-1 valign-wrapper" style="height: 100%">
-                        <h1 class="entry-title center-align white-text valign" style="margin-top: 0; padding-top: 30px">Past</h1>
+                        <h1 class="entry-title center-align white-text valign events-archive-header">Past Events</h1>
                     </div>
                 </div>
             </header>
