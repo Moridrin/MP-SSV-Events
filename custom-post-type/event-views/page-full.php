@@ -11,29 +11,23 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-#region Add Registrations to Content
 function mp_ssv_events_add_registrations_to_content($content)
 {
-    #region Init
-    global $post;
+        global $post;
     if ($post->post_type != 'events') {
         return $content;
     }
     $event               = Event::getByID($post->ID);
     $event_registrations = $event->getRegistrations();
-    #endregion
-
-    #region Add 'View Event' Link to Archive
-    if ($post->post_type == 'events' && is_archive()) {
+    
+        if ($post->post_type == 'events' && is_archive()) {
         if (strpos($content, 'class="more-link"') === false) {
             $content .= '<a href="' . esc_url(get_permalink($post->ID)) . '">View Event</a>';
         }
         return $content;
     }
-    #endregion
-
-    #region Update Registration Status
-    if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS) && (isset($_GET['approve']) || isset($_GET['deny']))) {
+    
+        if (current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENTS) && (isset($_GET['approve']) || isset($_GET['deny']))) {
         if (isset($_GET['approve'])) {
             Registration::getByID(SSV_General::sanitize($_GET['approve'], 'int'))->approve();
         } else {
@@ -41,10 +35,8 @@ function mp_ssv_events_add_registrations_to_content($content)
         }
         SSV_General::redirect(get_permalink());
     }
-    #endregion
-
-    #region Save POST Request
-    if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
+    
+        if (SSV_General::isValidPOST(SSV_Events::ADMIN_REFERER_REGISTRATION)) {
         if ($_POST['action'] == 'register') {
             $form = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
             if (!is_user_logged_in()) {
@@ -69,10 +61,8 @@ function mp_ssv_events_add_registrations_to_content($content)
         }
         $event_registrations = $event->getRegistrations();
     }
-    #endregion
-
-    #region Page Content
-    ob_start();
+    
+        ob_start();
     ?>
     <div class="row">
         <div class="col s12 <?= count($event_registrations) > 0 ? 'xl3' : 'xl4' ?>">
@@ -109,10 +99,8 @@ function mp_ssv_events_add_registrations_to_content($content)
         <?php endif; ?>
     </div>
     <?php
-    #endregion
-
-    #region Add registration button
-    if ($event->isRegistrationPossible()) {
+    
+        if ($event->isRegistrationPossible()) {
         if ($event->canRegister()) {
             if (is_user_logged_in() && $event->isRegistered()) {
                 ?>
@@ -132,10 +120,8 @@ function mp_ssv_events_add_registrations_to_content($content)
         }
     }
     $content = ob_get_clean();
-    #endregion
-
+    
     return $content;
 }
 
 add_filter('the_content', 'mp_ssv_events_add_registrations_to_content');
-#endregion

@@ -5,7 +5,6 @@ if (!defined('ABSPATH')) {
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\SSV_General;
 
-#region Register
 function mp_ssv_events_register_plugin()
 {
     /** @var wpdb $wpdb */
@@ -13,8 +12,7 @@ function mp_ssv_events_register_plugin()
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $charset_collate = $wpdb->get_charset_collate();
 
-    #region Registration Table
-    $table_name = SSV_Events::TABLE_REGISTRATION;
+        $table_name = SSV_Events::TABLE_REGISTRATION;
     $sql
                 = "
 		CREATE TABLE IF NOT EXISTS $table_name (
@@ -25,10 +23,8 @@ function mp_ssv_events_register_plugin()
 			PRIMARY KEY (ID)
 		) $charset_collate;";
     $wpdb->query($sql);
-    #endregion
 
-    #region Registration Meta Table
-    $table_name = SSV_Events::TABLE_REGISTRATION_META;
+        $table_name = SSV_Events::TABLE_REGISTRATION_META;
     $sql
                 = "
 		CREATE TABLE IF NOT EXISTS $table_name (
@@ -39,10 +35,8 @@ function mp_ssv_events_register_plugin()
 			PRIMARY KEY (ID)
 		) $charset_collate;";
     $wpdb->query($sql);
-    #endregion
 
-    #region Custom Capabilities
-    $roles = get_editable_roles();
+        $roles = get_editable_roles();
     /**
      * @var int     $key
      * @var WP_Role $role
@@ -53,16 +47,13 @@ function mp_ssv_events_register_plugin()
             $role->add_cap(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
         }
     }
-    #endregion
 
     SSV_Events::resetOptions();
 }
 
 register_activation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_register_plugin');
 register_activation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_general_register_plugin');
-#endregion
 
-#region Unregister
 function mp_ssv_events_unregister()
 {
     $roles = get_editable_roles();
@@ -81,9 +72,7 @@ function mp_ssv_events_unregister()
 }
 
 register_deactivation_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_unregister');
-#endregion
 
-#region UnInstall
 function mp_ssv_events_uninstall()
 {
     global $wpdb;
@@ -97,9 +86,7 @@ function mp_ssv_events_uninstall()
 }
 
 register_uninstall_hook(SSV_EVENTS_PATH . 'ssv-events.php', 'mp_ssv_events_uninstall');
-#endregion
 
-#region Reset Options
 /**
  * This function will reset the events options if the admin referer originates from the SSV Events plugin.
  *
@@ -114,7 +101,6 @@ function mp_ssv_events_reset_options($admin_referer)
 }
 
 add_filter(SSV_General::HOOK_RESET_OPTIONS, 'mp_ssv_events_reset_options');
-#endregion
 
 function mp_ssv_events_enquire_admin_scripts()
 {
@@ -127,7 +113,6 @@ function mp_ssv_events_enquire_admin_scripts()
 
 add_action('admin_enqueue_scripts', 'mp_ssv_events_enquire_admin_scripts', 12);
 
-#region Update Settings Message.
 function mp_ssv_events_update_settings_notification()
 {
     if (empty(get_option(SSV_Events::OPTION_MAPS_API_KEY))) {
@@ -141,4 +126,3 @@ function mp_ssv_events_update_settings_notification()
 }
 
 add_action('admin_notices', 'mp_ssv_events_update_settings_notification');
-#endregion

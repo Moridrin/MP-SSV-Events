@@ -8,7 +8,6 @@ use WP_Query;
 if (!defined('ABSPATH')) {
     exit;
 }
-#region setup variables
 $args = array(
     'posts_per_page' => 10,
     'paged'          => get_query_var('paged'),
@@ -27,9 +26,7 @@ $args['posts_per_page'] = 10 - $upcomingEvents->post_count;
 $args['meta_compare']   = '<';
 $args['order']          = 'DESC';
 $pastEvents             = new WP_Query($args);
-#endregion
 
-#region base layout
 get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
@@ -46,7 +43,6 @@ get_header();
     </div>
     <?php
 get_footer();
-#endregion
 
 /**
  * This function prints the default event preview lists (only for themes with support for "materialize").

@@ -9,7 +9,6 @@ use mp_ssv_general\SSV_General;
 if (!defined('ABSPATH')) {
     exit;
 }
-#region Template
 /**
  * This function sets the correct template file for events.
  *
@@ -26,9 +25,7 @@ function mp_ssv_events_template($archive_template)
 }
 
 add_filter('archive_template', 'mp_ssv_events_template');
-#endregion
 
-#region Save Event
 /**
  * @param $post_ID
  * @param $post_after
@@ -56,9 +53,7 @@ function mp_ssv_events_save($post_ID, $post_after)
 }
 
 add_action('save_post', 'mp_ssv_events_save', 10, 2);
-#endregion
 
-#region Admin Notice
 /**
  * This function displays the error message thrown by the Save or Update actions of an Event.
  */
@@ -79,9 +74,7 @@ function mp_ssv_events_admin_notice()
 }
 
 add_action('admin_notices', 'mp_ssv_events_admin_notice');
-#endregion
 
-#region Updated Messages
 /**
  * @param string[] $messages is an array of messages displayed after an event is updated.
  *
@@ -126,9 +119,7 @@ function mp_ssv_events_updated_messages($messages)
 }
 
 add_filter('post_updated_messages', 'mp_ssv_events_updated_messages');
-#endregion
 
-#region Post Category
 /**
  * This method initializes the post category functionality for Events
  */
@@ -175,9 +166,7 @@ function mp_ssv_events_post_category()
 }
 
 add_action('init', 'mp_ssv_events_post_category');
-#endregion
 
-#region Category Taxonomy
 /**
  * This function registers a taxonomy for the categories.
  */
@@ -199,9 +188,7 @@ function mp_ssv_events_category_taxonomy()
 }
 
 add_action('init', 'mp_ssv_events_category_taxonomy');
-#endregion
 
-#region Meta Boxes
 function mp_ssv_edit_form_after_title()
 {
     global $post, $wp_meta_boxes;
@@ -255,7 +242,7 @@ function ssv_events_tickets()
 {
     /** @var \wpdb $wpdb */
     global $wpdb;
-    $table      = SSV_General::CUSTOM_FIELDS_TABLE;
+    $table      = SSV_General::BASE_FIELDS_TABLE;
     $baseFields = $wpdb->get_results("SELECT * FROM $table");
     $baseFields = array_combine(array_column($baseFields, 'name'), $baseFields);
     echo SSV_General::getCapabilitiesDataList();
@@ -398,9 +385,7 @@ function ssv_events_registration_fields()
     echo Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS, false)->getEditor(false);
 }
 
-#endregion
 
-#region Save Meta
 /**
  * @param $post_id
  *
@@ -450,4 +435,3 @@ function mp_ssv_events_save_meta($post_id)
 }
 
 add_action('save_post_events', 'mp_ssv_events_save_meta');
-#endregion

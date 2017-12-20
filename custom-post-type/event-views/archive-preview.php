@@ -8,12 +8,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-#region setup variables
 global $post;
 $event               = Event::getByID($post->ID);
 $event_registrations = $event->getRegistrations();
 $content             = get_the_content('');
-#endregion
 ?>
 <article id="post-<?php the_ID(); ?>">
     <div class="card hoverable large">

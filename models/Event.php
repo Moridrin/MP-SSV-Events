@@ -20,8 +20,7 @@ use WP_User;
  */
 class Event
 {
-    #region Variables
-    /** @var WP_Post */
+        /** @var WP_Post */
     public $post;
 
     /** @var DateTime */
@@ -41,10 +40,8 @@ class Event
 
     /** @var string */
     public $mailchimpList;
-    #endregion
 
-    #region Construct
-    /**
+        /**
      * Event constructor.
      *
      * @param WP_Post $post
@@ -68,30 +65,24 @@ class Event
     {
         return new Event(get_post($id));
     }
-    #endregion
 
-    #region getID()
-    /**
+        /**
      * @return int
      */
     public function getID()
     {
         return $this->post->ID;
     }
-    #endregion
 
-    #region getTitle()
-    /**
+        /**
      * @return string
      */
     public function getTitle()
     {
         return $this->post->post_title;
     }
-    #endregion
 
-    #region getFieldIDs($format)
-    /**
+        /**
      * @param null|string $format
      *
      * @return null|string
@@ -108,10 +99,8 @@ class Event
         }
         return $this->start->format($format);
     }
-    #endregion
 
-    #region getDeleteRow($format)
-    /**
+        /**
      * @param null|string $format
      *
      * @return null|string
@@ -128,20 +117,16 @@ class Event
         }
         return $this->end->format($format);
     }
-    #endregion
 
-    #region getLocation()
-    /**
+        /**
      * @return string
      */
     public function getLocation()
     {
         return $this->location;
     }
-    #endregion
 
-    #region getGoogleCalendarURL()
-    /**
+        /**
      * @return string URL to create Google Calendar Event.
      */
     public function getGoogleCalendarURL()
@@ -159,10 +144,8 @@ class Event
         }
         return $URL;
     }
-    #endregion
 
-    #region getLiveCalendarURL()
-    /**
+        /**
      * @return string URL to create Live (Hotmail) Event.
      */
     public function getLiveCalendarURL()
@@ -181,10 +164,8 @@ class Event
         }
         return $URL;
     }
-    #endregion
 
-    #region isValid()
-    /**
+        /**
      * @return bool true if the Event is valid (all mandatory fields are filled).
      */
     public function isValid()
@@ -194,40 +175,32 @@ class Event
         }
         return true;
     }
-    #endregion
 
-    #region isPublished()
-    /**
+        /**
      * @return bool true if the event is published
      */
     public function isPublished()
     {
         return $this->post->post_status == 'publish';
     }
-    #endregion
 
-    #region isRegistrationEnabled()
-    /**
+        /**
      * @return bool
      */
     public function isRegistrationEnabled()
     {
         return $this->registration != Registration::MODE_DISABLED;
     }
-    #endregion
 
-    #region isRegistrationMembersOnly()
-    /**
+        /**
      * @return bool
      */
     public function isRegistrationMembersOnly()
     {
         return $this->registration == Registration::MODE_MEMBERS_ONLY;
     }
-    #endregion
 
-    #region isRegistrationPossible()
-    /**
+        /**
      * This function returns if it is currently possible for someone to register.
      *
      * @return bool
@@ -245,10 +218,8 @@ class Event
                 break;
         }
     }
-    #endregion
 
-    #region canRegister()
-    /**
+        /**
      * This method returns if you can currently register (or unregister).
      *
      * @return bool true if you currently can register or unregister.
@@ -268,10 +239,8 @@ class Event
                 break;
         }
     }
-    #endregion
 
-    #region isRegistered($user)
-    /**
+        /**
      * @param int|WP_User|null $user use null to test with the current user.
      *
      * @return bool
@@ -299,10 +268,8 @@ class Event
         }
         return false;
     }
-    #endregion
 
-    #region getRegistrations()
-    /**
+        /**
      * @param bool $update set to false if you don't require a new update from the database.
      *
      * @return array of registrations
@@ -315,7 +282,6 @@ class Event
         return $this->registrations;
     }
 
-    #endregion
 
     public function updateRegistrations()
     {

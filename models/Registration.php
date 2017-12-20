@@ -23,18 +23,15 @@ if (!defined('ABSPATH')) {
  */
 class Registration
 {
-    #region Constants
-    const STATUS_PENDING = 'pending';
+        const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
     const STATUS_DENIED = 'denied';
 
     const MODE_DISABLED = 'disabled';
     const MODE_MEMBERS_ONLY = 'members_only';
     const MODE_EVERYONE = 'everyone';
-    #endregion
 
-    #region Variables
-    /** @var int */
+        /** @var int */
     public $registrationID;
 
     /** @var Event */
@@ -45,10 +42,8 @@ class Registration
 
     /** @var User */
     public $user;
-    #endregion
 
-    #region Construct
-    /**
+        /**
      * Registration constructor.
      *
      * @param int       $registrationID
@@ -106,10 +101,8 @@ class Registration
     {
         return new Registration($registrationID);
     }
-    #endregion
 
-    #region createNew($event, $user, $args)
-    /**
+        /**
      * This function creates the database entries, sends an email to the event author and returns the newly created Registration object.
      *
      * @param Event        $event
@@ -120,8 +113,7 @@ class Registration
      */
     public static function createNew($event, $user = null, $inputFields = array())
     {
-        #region Validate
-        global $wpdb;
+                global $wpdb;
         if ($user !== null) {
             $table   = SSV_Events::TABLE_REGISTRATION;
             $eventID = $event->getID();
@@ -135,10 +127,8 @@ class Registration
         if ($wpdb->get_row($sql) !== null) {
             return array(new Message('Already registered.', Message::ERROR_MESSAGE));
         }
-        #endregion
 
-        #region Create Base
-        $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
+                $status = get_option(SSV_Events::OPTION_DEFAULT_REGISTRATION_STATUS);
         $wpdb->insert(
             SSV_Events::TABLE_REGISTRATION,
             array(
@@ -152,10 +142,8 @@ class Registration
                 '%s',
             )
         );
-        #endregion
 
-        #region Save Meta Data
-        $registrationID = $wpdb->insert_id;
+                $registrationID = $wpdb->insert_id;
         foreach ($inputFields as $field) {
             if (is_bool($field->value)) {
                 $field->value = $field->value ? 'true' : 'false';
@@ -174,12 +162,10 @@ class Registration
                 )
             );
         }
-        #endregion
 
         $registration = new Registration($registrationID, $event, $status, $user);
 
-        #region Email
-        if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
+                if (get_option(SSV_Events::OPTION_EMAIL_AUTHOR)) {
             $eventTitle = Event::getByID($event->getID())->post->post_title;
             $to         = User::getByID(Event::getByID($event->getID())->post->post_author)->user_email;
             $subject    = "New Registration for " . $eventTitle;
@@ -208,7 +194,6 @@ class Registration
             }
             wp_mail($to, $subject, $message);
         }
-        #endregion
 
         do_action(SSV_General::HOOK_EVENTS_NEW_REGISTRATION, $registration);
 
@@ -220,8 +205,7 @@ class Registration
      */
     public static function getDefaultFields()
     {
-        #region First Name
-        /** @var TextInputField $firstNameField */
+                /** @var TextInputField $firstNameField */
         $firstNameField = Field::fromJSON(
             json_encode(
                 array(
@@ -240,10 +224,8 @@ class Registration
                 )
             )
         );
-        #endregion
 
-        #region Last Name
-        /** @var TextInputField $lastNameField */
+                /** @var TextInputField $lastNameField */
         $lastNameField = Field::fromJSON(
             json_encode(
                 array(
@@ -262,10 +244,8 @@ class Registration
                 )
             )
         );
-        #endregion
 
-        #region Email
-        /** @var CustomInputField $emailField */
+                /** @var CustomInputField $emailField */
         $emailField = Field::fromJSON(
             json_encode(
                 array(
@@ -284,7 +264,6 @@ class Registration
                 )
             )
         );
-        #endregion
 
         return array(
             $firstNameField->name => $firstNameField,
@@ -292,10 +271,8 @@ class Registration
             $emailField->name     => $emailField,
         );
     }
-    #endregion
 
-    #region cancel()
-    /**
+        /**
      * This function removes the database entries and sends an email to the event author (if needed).
      */
     public function cancel()
@@ -327,10 +304,8 @@ class Registration
             wp_mail($to, $subject, $message);
         }
     }
-    #endregion
 
-    #region getMeta($key, $userMeta)
-    /**
+        /**
      * @param      $key
      *
      * @return null|string with the value matched by the key.
@@ -345,10 +320,8 @@ class Registration
         }
         return $value;
     }
-    #endregion
 
-    #region makePending()
-    public function makePending()
+        public function makePending()
     {
         global $wpdb;
         $table = SSV_Events::TABLE_REGISTRATION;
@@ -375,10 +348,8 @@ class Registration
             wp_mail($to, $subject, $message);
         }
     }
-    #endregion
 
-    #region approve()
-    public function approve()
+        public function approve()
     {
         global $wpdb;
         $table = SSV_Events::TABLE_REGISTRATION;
@@ -405,10 +376,8 @@ class Registration
             wp_mail($to, $subject, $message);
         }
     }
-    #endregion
 
-    #region deny()
-    public function deny()
+        public function deny()
     {
         global $wpdb;
         $table = SSV_Events::TABLE_REGISTRATION;
@@ -435,5 +404,4 @@ class Registration
             wp_mail($to, $subject, $message);
         }
     }
-    #endregion
-}
+    }

@@ -12,8 +12,7 @@ if (!defined('ABSPATH')) {
 class ssv_event_category extends WP_Widget
 {
 
-    #region Construct
-    public function __construct()
+        public function __construct()
     {
         $widget_ops = array(
             'classname'                   => 'widget_event_categories',
@@ -22,10 +21,8 @@ class ssv_event_category extends WP_Widget
         );
         parent::__construct('event_categories', 'Event Categories', $widget_ops);
     }
-    #endregion
 
-    #region Widget
-    public function widget($args, $instance)
+        public function widget($args, $instance)
     {
         static $first_dropdown = true;
 
@@ -97,10 +94,8 @@ class ssv_event_category extends WP_Widget
 
         echo $args['after_widget'];
     }
-    #endregion
 
-    #region Update
-    public function update($new_instance, $old_instance)
+        public function update($new_instance, $old_instance)
     {
         $instance                 = $old_instance;
         $instance['title']        = SSV_General::sanitize($new_instance['title'], 'text');
@@ -110,10 +105,8 @@ class ssv_event_category extends WP_Widget
 
         return $instance;
     }
-    #endregion
 
-    #region Form
-    public function form($instance)
+        public function form($instance)
     {
         //Defaults
         $instance     = wp_parse_args((array)$instance, array('title' => ''));
@@ -139,7 +132,6 @@ class ssv_event_category extends WP_Widget
         </p>
         <?php
     }
-    #endregion
 
 }
 
