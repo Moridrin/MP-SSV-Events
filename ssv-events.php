@@ -26,6 +26,7 @@ define('SSV_EVENTS_URL', plugins_url() . '/ssv-events/');
 define('SSV_EVENTS_REGISTRATIONS_TABLE', $wpdb->prefix . "ssv_event_registrations");
 
 require_once 'SSV_Events.php';
+require_once 'custom-post-type/EventsPostType.php';
 
 //if (!defined('ABSPATH')) {
 //    exit;

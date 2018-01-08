@@ -1,9 +1,7 @@
 <?php
 
 namespace mp_ssv_events\models;
-if (!defined('ABSPATH')) {
-    exit;
-}
+
 use DateTime;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\custom_fields\Field;
@@ -12,12 +10,10 @@ use mp_ssv_general\Form;
 use WP_Post;
 use WP_User;
 
-/**
- * Created by PhpStorm.
- * User: Jeroen Berkvens
- * Date: 16-7-16
- * Time: 8:21
- */
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Event
 {
     #region Variables

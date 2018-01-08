@@ -16,6 +16,7 @@ abstract class SSV_Events
 //    const ALL_FORMS_ADMIN_REFERER = 'ssv_forms__all_forms_admin_referer';
 //    const EDIT_FORM_ADMIN_REFERER = 'ssv_forms__edit_form_admin_referer';
 
+    const OPTION_PUBLISH_ERROR = 'ssv_events__options__event_publish_error';
     const OPTION_MAPS_API_KEY = 'ssv_events__options__google_maps_api_key';
 
     const REGISTRATIONS_TABLE = SSV_EVENTS_REGISTRATIONS_TABLE;
