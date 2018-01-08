@@ -43,7 +43,8 @@ abstract class SSV_Events
 		        	t_title VARCHAR(255) NOT NULL,
 		        	t_start VARCHAR(255) NOT NULL,
 		        	t_end VARCHAR(255) NOT NULL,
-		        	t_price DECIMAL(6,2) NOT NULL
+		        	t_price DECIMAL(6,2) NOT NULL,
+		        	UNIQUE KEY (`t_e_id`, `t_title`)
 		        ) $charset_collate;";
             $wpdb->query($sql);
             $table_name = $wpdb->prefix . "ssv_event_registrations";

@@ -187,9 +187,13 @@ abstract class EventsPostType
 
     public static function enqueueAdminScripts()
     {
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $table = SSV_Events::TICKETS_TABLE;
+        $ticketsMaxId = $wpdb->get_var("SELECT max(t_id) AS ticketsMaxId FROM $table") + 1;
         wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
         wp_enqueue_script('mp-ssv-event-edit-js', SSV_Events::URL . '/js/event-editor.js');
-        wp_localize_script('mp-ssv-event-edit-js', 'data', ['ticketsMaxId' => 0]);
+        wp_localize_script('mp-ssv-event-edit-js', 'data', ['ticketsMaxId' => $ticketsMaxId]);
     }
 
     public static function saveMeta($postId)
@@ -197,23 +201,17 @@ abstract class EventsPostType
         if (!current_user_can('edit_post', $postId)) {
             return $postId;
         }
-        $i = 0;
-        while (isset($_POST['ticket_' . $i])) {
-            $ticket = json_decode(stripslashes($_POST['ticket_' . $i++]));
-            /** @var \wpdb $wpdb */
-            global $wpdb;
-            BaseFunctions::var_export(
-                [
-                    't_e_id'  => $postId,
-                    't_title' => $ticket->title,
-                    't_start' => $ticket->dateTimeStart,
-                    't_end'   => $ticket->dateTimeEnd,
-                    't_price' => $ticket->price,
-                ]
-            , true);
+        /** @var \wpdb $wpdb */
+        global $wpdb;
+        $ticketIds = implode(',', $_POST['ticketIds']);
+        $table = SSV_Events::TICKETS_TABLE;
+        $wpdb->query("DELETE FROM $table WHERE t_e_id = '$postId' AND t_id NOT IN ($ticketIds)");
+        foreach ($_POST['ticketIds'] as $id) {
+            $ticket = json_decode(stripslashes($_POST['ticket_' . $id]));
             $wpdb->replace(
                 SSV_Events::TICKETS_TABLE,
                 [
+                    't_id'    => $id,
                     't_e_id'  => $postId,
                     't_title' => $ticket->title,
                     't_start' => $ticket->dateTimeStart,

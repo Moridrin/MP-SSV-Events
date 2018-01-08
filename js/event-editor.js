@@ -19,7 +19,10 @@ let ticketsManager = {
         tr.innerHTML =
             '<td>' +
             '   <strong>' + title + '</strong>' +
-            '<span class="inline-actions"> | <a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a></span>' +
+            '   <div class="row-actions">' +
+            '       <span class="inline-actions"><a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a> | </span>' +
+            '       <span class="trash"><a href="javascript:void(0)" onclick="ticketsManager.deleteRow(\'<?= $ticket->t_id ?>\')" class="submitdelete" aria-label="Delete “' + title + '”">Delete</a></span>' +
+            '   </div>' +
             '</td>' +
             '<td>' + dateTime + '</td>' +
             '<td>' + price + '</td>'
@@ -107,9 +110,13 @@ let ticketsManager = {
         let price = properties['price'];
         tr.innerHTML =
             '<td>' +
+            '   <input type="hidden" name="ticketIds[]" value="' + fieldId + '">' +
             '   <input type="hidden" id="tmp" name="ticket_' + fieldId + '" value=\'' + JSON.stringify(properties) + '\'>' +
             '   <strong>' + title + '</strong>' +
-            '   <span class="inline-actions"> | <a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a></span>' +
+            '   <div class="row-actions">' +
+            '       <span class="inline-actions"><a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a> | </span>' +
+            '       <span class="trash"><a href="javascript:void(0)" onclick="ticketsManager.deleteRow(\'<?= $ticket->t_id ?>\')" class="submitdelete" aria-label="Delete “' + title + '”">Delete</a></span>' +
+            '   </div>' +
             '</td>' +
             '<td>' + dateTimeStart + ' - ' + dateTimeEnd + '</td>' +
             '<td>' + price + '</td>'
@@ -156,5 +163,11 @@ let ticketsManager = {
             event.preventDefault();
             return false;
         }
+    },
+
+    deleteRow: function (fieldId) {
+        let tr = document.getElementById(fieldId + '_tr');
+        generalFunctions.removeElement(tr);
+        event.preventDefault();
     }
 };

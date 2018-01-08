@@ -31,8 +31,13 @@ function show_tickets_table(array $tickets)
                     ?>
                     <tr id="<?= $ticket->t_id ?>_tr" draggable="true" class="formField" data-properties='<?= json_encode($properties) ?>'>
                         <td>
+                            <input type="hidden" name="ticketIds[]" value='<?= $ticket->t_id ?>'>
+                            <input type="hidden" name="ticket_<?= $ticket->t_id ?>" value='<?= json_encode($properties) ?>'>
                             <strong id="<?= $ticket->t_id ?>_title"><?= $ticket->t_title ?></strong>
-                            <span class="inline-actions"> | <a href="javascript:void(0)" onclick="ticketsManager.inlineEdit('<?= $ticket->t_id ?>')" class="editinline" aria-label="Quick edit “<?= $ticket->t_title ?>” inline">Quick Edit</a></span>
+                            <div class="row-actions">
+                                <span class="inline-actions"><a href="javascript:void(0)" onclick="ticketsManager.inlineEdit('<?= $ticket->t_id ?>')" class="editinline" aria-label="Quick edit “<?= $ticket->t_title ?>” inline">Quick Edit</a> | </span>
+                                <span class="trash"><a href="javascript:void(0)" onclick="ticketsManager.deleteRow('<?= $ticket->t_id ?>')" class="submitdelete" aria-label="Delete “<?= $ticket->t_title ?>”">Delete</a></span>
+                            </div>
                         </td>
                         <td id="<?= $ticket->t_id ?>_dateTime"><?= $ticket->t_start ?> - <?= $ticket->t_end ?></td>
                         <td id="<?= $ticket->t_id ?>_price"><?= $ticket->t_price ?></td>
