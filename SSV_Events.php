@@ -19,6 +19,7 @@ abstract class SSV_Events
     const OPTION_PUBLISH_ERROR = 'ssv_events__options__event_publish_error';
     const OPTION_MAPS_API_KEY = 'ssv_events__options__google_maps_api_key';
 
+    const TICKETS_TABLE = SSV_EVENTS_TICKETS_TABLE;
     const REGISTRATIONS_TABLE = SSV_EVENTS_REGISTRATIONS_TABLE;
 
     public static function setup($networkEnable)

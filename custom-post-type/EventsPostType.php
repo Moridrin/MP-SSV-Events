@@ -6,13 +6,14 @@ use DateTime;
 use mp_ssv_events\models\Event;
 use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
-use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\base\SSV_Global;
 use WP_Post;
 
 if (!defined('ABSPATH')) {
     exit;
 }
+
+require_once 'templates/tickets.php';
 
 abstract class EventsPostType
 {
@@ -167,10 +168,17 @@ abstract class EventsPostType
 
     public static function ticketsMetaBox()
     {
-        global $post;
+        show_tickets_table([]);
         ?>
-        <button type="button">Add Ticket</button>
+        <div style="margin: 10px;">
+            <button type="button">Add Ticket</button>
+        </div>
         <?php
+    }
+
+    public static function enqueueAdminScripts()
+    {
+        wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
     }
 
     public static function saveMeta($postId)
@@ -224,3 +232,4 @@ add_action('init', [EventsPostType::class, 'registerPostType']);
 add_action('init', [EventsPostType::class, 'registerCategoryTaxonomy']);
 add_action('add_meta_boxes', [EventsPostType::class, 'metaBoxes']);
 add_action('save_post_events', [EventsPostType::class, 'saveMeta']);
+add_action('admin_enqueue_scripts', [EventsPostType::class, 'enqueueAdminScripts']);
