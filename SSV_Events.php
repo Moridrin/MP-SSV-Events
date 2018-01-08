@@ -55,13 +55,6 @@ abstract class SSV_Events
         wp_enqueue_style('ssv_events_main_css', SSV_Events::URL . '/css/ssv-events.css');
     }
 
-    public static function enqueueAdminScripts()
-    {
-        wp_enqueue_script('ssv_events_datetimepicker', SSV_Events::URL . '/js/jquery.datetimepicker.full.js', 'jquery-ui-datepicker');
-        wp_enqueue_script('ssv_events_datetimepicker_admin_init', SSV_Events::URL . '/js/admin-init.js', 'ssv_events_datetimepicker');
-        wp_enqueue_style('ssv_events_datetimepicker_admin_css', SSV_Events::URL . '/css/jquery.datetimepicker.css');
-    }
-
     public static function showMapsApiKeyMissingMessage()
     {
         if (empty(get_option(self::OPTION_MAPS_API_KEY))) {
@@ -86,5 +79,4 @@ abstract class SSV_Events
 }
 
 register_activation_hook(SSV_FORMS_ACTIVATOR_PLUGIN, [SSV_Events::class, 'setup']);
-add_action('admin_enqueue_scripts', [SSV_Events::class, 'enqueueAdminScripts']);
 add_action('wp_enqueue_scripts', [SSV_Events::class, 'enqueueScripts']);
