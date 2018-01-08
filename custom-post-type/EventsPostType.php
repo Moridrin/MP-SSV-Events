@@ -171,14 +171,18 @@ abstract class EventsPostType
         show_tickets_table([]);
         ?>
         <div style="margin: 10px;">
-            <button type="button">Add Ticket</button>
+            <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>
         </div>
+        <script>
+
+        </script>
         <?php
     }
 
     public static function enqueueAdminScripts()
     {
         wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
+        wp_enqueue_script('mp-ssv-event-edit-js', SSV_Events::URL . '/js/event-editor.js');
     }
 
     public static function saveMeta($postId)

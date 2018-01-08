@@ -1,5 +1,5 @@
-(function ($) {
-    $(document).ready(function () {
-
-    });
-})(jQuery);
+let ticketsManager = {
+    addNew: function () {
+        console.log('test');
+    }
+};
