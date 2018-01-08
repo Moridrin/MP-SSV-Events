@@ -102,22 +102,17 @@ let ticketsManager = {
         let tr = document.getElementById(fieldId + '_tr');
         let properties = JSON.parse(tr.dataset.properties);
         let title = properties['title'];
-        let dateTime = properties['dateTimeStart'] + ' - ' + properties['dateTimeEnd'];
+        let dateTimeStart = properties['dateTimeStart'];
+        let dateTimeEnd = properties['dateTimeEnd'];
         let price = properties['price'];
         tr.innerHTML =
             '<td>' +
-            '   <input type="hidden" name="' + fieldId + '_title" value="' + title + '">' +
+            '   <input type="hidden" id="tmp" name="ticket_' + fieldId + '" value=\'' + JSON.stringify(properties) + '\'>' +
             '   <strong>' + title + '</strong>' +
-            '<span class="inline-actions"> | <a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a></span>' +
+            '   <span class="inline-actions"> | <a href="javascript:void(0)" onclick="ticketsManager.inlineEdit(\'' + fieldId + '\')" class="editinline" aria-label="Quick edit “' + title + '” inline">Quick Edit</a></span>' +
             '</td>' +
-            '<td>' +
-            '   <input type="hidden" name="' + fieldId + '_dateTime" value="' + dateTime + '">' +
-            '   <span>' + dateTime + '</span>' +
-            '</td>' +
-            '<td>' +
-            '   <input type="hidden" name="' + fieldId + '_price" value="' + price + '">' +
-            '   <span>' + price + '</span>' +
-            '</td>'
+            '<td>' + dateTimeStart + ' - ' + dateTimeEnd + '</td>' +
+            '<td>' + price + '</td>'
         ;
         tr.setAttribute('class', 'inactive');
         tr.setAttribute('draggable', 'draggable');

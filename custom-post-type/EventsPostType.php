@@ -6,6 +6,7 @@ use DateTime;
 use mp_ssv_events\models\Event;
 use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
+use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\base\SSV_Global;
 use WP_Post;
 
@@ -39,8 +40,8 @@ abstract class EventsPostType
                 )
             );
             update_option(SSV_Events::OPTION_PUBLISH_ERROR, true);
-        } elseif (empty($event->mailchimpList) && $event->isRegistrationPossible()) {
-            do_action(SSV_Global::HOOK_USERS_NEW_EVENT, $event);
+//        } elseif (empty($event->mailchimpList) && $event->isRegistrationPossible()) {
+//            do_action(SSV_Global::HOOK_USERS_NEW_EVENT, $event);
         }
         return $postId;
     }
@@ -168,7 +169,15 @@ abstract class EventsPostType
 
     public static function ticketsMetaBox()
     {
-        show_tickets_table([]);
+        /** @var \wpdb $wpdb */
+        global $wpdb, $post;
+        $postId = $post->ID;
+        $tableName = SSV_Events::TICKETS_TABLE;
+        $tickets = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
+        if ($tickets === null) {
+            $tickets = [];
+        }
+        show_tickets_table($tickets);
         ?>
         <div style="margin: 10px;">
             <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>
@@ -189,40 +198,42 @@ abstract class EventsPostType
             return $postId;
         }
         $i = 0;
-        while (isset($_POST[$i . '_post'])) {
-            $registration = Registration::getByID($_POST[$i . '_registrationID']);
-            $statusNew    = SSV_General::sanitize($_POST[$i . '_status'], array('pending', 'approved', 'denied'));
-            if ($registration->status == $statusNew) {
-                $i++;
-                continue;
-            }
-            switch ($statusNew) {
-                case Registration::STATUS_PENDING:
-                    $registration->makePending();
-                    break;
-                case Registration::STATUS_APPROVED:
-                    $registration->approve();
-                    break;
-                case Registration::STATUS_DENIED:
-                    $registration->deny();
-                    break;
-            }
-            $i++;
+        while (isset($_POST['ticket_' . $i])) {
+            $ticket = json_decode(stripslashes($_POST['ticket_' . $i++]));
+            /** @var \wpdb $wpdb */
+            global $wpdb;
+            BaseFunctions::var_export(
+                [
+                    't_e_id'  => $postId,
+                    't_title' => $ticket->title,
+                    't_start' => $ticket->dateTimeStart,
+                    't_end'   => $ticket->dateTimeEnd,
+                    't_price' => $ticket->price,
+                ]
+            , true);
+            $wpdb->replace(
+                SSV_Events::TICKETS_TABLE,
+                [
+                    't_e_id'  => $postId,
+                    't_title' => $ticket->title,
+                    't_start' => $ticket->dateTimeStart,
+                    't_end'   => $ticket->dateTimeEnd,
+                    't_price' => $ticket->price,
+                ]
+            );
         }
         if (isset($_POST['registration'])) {
-            update_post_meta($postId, 'registration', SSV_General::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
+            update_post_meta($postId, 'registration', BaseFunctions::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
         }
         if (isset($_POST['start'])) {
-            update_post_meta($postId, 'start', SSV_General::sanitize($_POST['start'], 'datetime'));
+            update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
         }
         if (isset($_POST['end'])) {
-            update_post_meta($postId, 'end', SSV_General::sanitize($_POST['end'], 'datetime'));
+            update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
         }
         if (isset($_POST['location'])) {
-            update_post_meta($postId, 'location', SSV_General::sanitize($_POST['location'], 'text'));
+            update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
         }
-
-        Form::saveEditorFromPost();
         return $postId;
     }
 }

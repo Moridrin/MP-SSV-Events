@@ -34,19 +34,30 @@ abstract class SSV_Events
         }
         foreach ($blogIds as $blogId) {
             switch_to_blog($blogId);
+            $table_name = $wpdb->prefix . "ssv_event_tickets";
+            $sql
+                        = "
+		        CREATE TABLE IF NOT EXISTS $table_name (
+		        	t_id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		        	t_e_id bigint(20) NOT NULL,
+		        	t_title VARCHAR(255) NOT NULL,
+		        	t_start VARCHAR(255) NOT NULL,
+		        	t_end VARCHAR(255) NOT NULL,
+		        	t_price DECIMAL(6,2) NOT NULL
+		        ) $charset_collate;";
+            $wpdb->query($sql);
             $table_name = $wpdb->prefix . "ssv_event_registrations";
             $sql
                         = "
 		        CREATE TABLE IF NOT EXISTS $table_name (
-		        	ID bigint(20) NOT NULL AUTO_INCREMENT,
-		        	eventID bigint(20) NOT NULL,
-		        	userID bigint(20),
-		        	registration_status VARCHAR(15) NOT NULL DEFAULT 'pending',
-		        	PRIMARY KEY (ID)
+		        	r_id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		        	r_eventId bigint(20) NOT NULL,
+		        	r_userId bigint(20),
+		        	r_status VARCHAR(15) NOT NULL DEFAULT 'pending'
 		        ) $charset_collate;";
             $wpdb->query($sql);
-            restore_current_blog();
         }
+        restore_current_blog();
     }
 
     public static function enqueueScripts()
@@ -73,6 +84,8 @@ abstract class SSV_Events
         global $wpdb;
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         $tableName = self::REGISTRATIONS_TABLE;
+        $wpdb->query("DROP TABLE $tableName;");
+        $tableName = self::TICKETS_TABLE;
         $wpdb->query("DROP TABLE $tableName;");
         self::setup($networkWide);
     }
