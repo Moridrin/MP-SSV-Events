@@ -1,5 +1,6 @@
 // noinspection JSUnresolvedVariable
 let nextTicketId = data.ticketsMaxId;
+console.log('reset after tests');
 let ticketsManager = {
     addNew: function () {
         let ticketsTable = document.getElementById('the-list');
