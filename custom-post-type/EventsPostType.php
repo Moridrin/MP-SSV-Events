@@ -4,10 +4,11 @@ namespace mp_ssv_events\CustomPostTypes;
 
 use DateTime;
 use mp_ssv_events\models\Event;
-use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\base\SSV_Global;
+use mp_ssv_general\forms\options\Forms;
+use mp_ssv_general\forms\SSV_Forms;
 use WP_Post;
 
 if (!defined('ABSPATH')) {
@@ -171,9 +172,9 @@ abstract class EventsPostType
     {
         /** @var \wpdb $wpdb */
         global $wpdb, $post;
-        $postId = $post->ID;
+        $postId    = $post->ID;
         $tableName = SSV_Events::TICKETS_TABLE;
-        $tickets = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
+        $tickets   = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
         if ($tickets === null) {
             $tickets = [];
         }
@@ -189,11 +190,23 @@ abstract class EventsPostType
     {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $table = SSV_Events::TICKETS_TABLE;
-        $ticketsMaxId = $wpdb->get_var("SELECT max(t_id) AS ticketsMaxId FROM $table") + 1;
+        $table      = SSV_Forms::SITE_SPECIFIC_FORMS_TABLE;
+        $forms      = $wpdb->get_results("SELECT f_id, f_title FROM $table");
+        $formIds    = array_column($forms, 'f_id');
+        array_unshift($formIds, -1);
+        $formTitles = array_column($forms, 'f_title');
+        array_unshift($formTitles, '[none]');
         wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
         wp_enqueue_script('mp-ssv-event-edit-js', SSV_Events::URL . '/js/event-editor.js');
-        wp_localize_script('mp-ssv-event-edit-js', 'data', ['ticketsMaxId' => $ticketsMaxId]);
+        wp_localize_script(
+            'mp-ssv-event-edit-js',
+            'data',
+            [
+                'ticketsMaxId' => max($formIds),
+                'formTitles'   => $formTitles,
+                'formKeys'     => $formIds,
+            ]
+        );
     }
 
     public static function saveMeta($postId)
@@ -204,7 +217,7 @@ abstract class EventsPostType
         /** @var \wpdb $wpdb */
         global $wpdb;
         $ticketIds = implode(',', $_POST['ticketIds']);
-        $table = SSV_Events::TICKETS_TABLE;
+        $table     = SSV_Events::TICKETS_TABLE;
         $wpdb->query("DELETE FROM $table WHERE t_e_id = '$postId' AND t_id NOT IN ($ticketIds)");
         foreach ($_POST['ticketIds'] as $id) {
             $ticket = json_decode(stripslashes($_POST['ticket_' . $id]));

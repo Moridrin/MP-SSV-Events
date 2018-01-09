@@ -32,6 +32,20 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.1 =
+* Complete Re-do
+* Working Components
+  * Start and End DateTime
+  * Tickets
+    * Add
+    * Inline Edit
+      * Title
+      * Price
+      * From
+      * Till
+    * Delete
+* General updated
+
 = 3.3.0 =
 * Opening registration details disabled for non logged in users
 * Widget Design improved
@@ -40,7 +54,7 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 * Widget Design improved (styled by Guy Dubois)
 * Ready for WordPress
 * Working with other themes
-** No custom Events Archive for other themes
+  * No custom Events Archive for other themes
 * Create List on Event Create
 * Add Registrants to List
 
@@ -62,7 +76,7 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 = 3.2.2 =
 * Ready for WordPress
 * Working with other themes
-** No custom Events Archive for other themes
+  * No custom Events Archive for other themes
 
 = 3.2.1 =
 * Create List on Event Create

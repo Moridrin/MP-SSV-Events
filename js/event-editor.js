@@ -46,6 +46,7 @@ let ticketsManager = {
         ;
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'Title', 'title', 'text', properties.title);
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'Price', 'price', 'number', properties.price);
+        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Form', 'form', 'select', properties.form, data.formTitles, data.formKeys);
         html +=
             '       </div>' +
             '   </fieldset>' +
@@ -125,7 +126,7 @@ let ticketsManager = {
         tr.setAttribute('draggable', 'draggable');
     },
 
-    getCustomizationFieldInput: function (fieldId, title, name, type, value, options) {
+    getCustomizationFieldInput: function (fieldId, title, name, type, value, options, optionValues) {
         let html =
             '<label>' +
             '   <span class="title">' + title + '</span>' +
@@ -136,9 +137,12 @@ let ticketsManager = {
         } else if (type === 'number') {
             html += '<input type="number" id="' + fieldId + '_' + name + '" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onInlineEditKeyDown(\'' + fieldId + '\')" style="width: 100%;">';
         } else if (type === 'select') {
+            if (typeof(optionValues) === 'undefined') {
+                optionValues = options;
+            }
             html += '<select id="' + fieldId + '_' + name + '" name="' + name + '" style="width: 100%;">';
             for (let i = 0; i < options.length; ++i) {
-                html += '<option>' + options[i] + '</option>';
+                html += '<option value="' + optionValues[i] + '">' + options[i] + '</option>';
             }
             html += '</select>';
         } else if (type === 'datetimepicker') {
