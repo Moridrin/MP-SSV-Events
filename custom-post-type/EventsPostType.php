@@ -181,7 +181,7 @@ abstract class EventsPostType
         show_tickets_table($tickets);
         ?>
         <div style="margin: 10px;">
-            <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>test
+            <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>
         </div>
         <?php
     }

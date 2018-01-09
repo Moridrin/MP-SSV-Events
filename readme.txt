@@ -32,6 +32,9 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.3 =
+* Test Removed
+
 = 3.3.2 =
 * Form select added to Tickets
 
