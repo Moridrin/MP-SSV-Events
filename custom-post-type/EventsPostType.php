@@ -230,6 +230,7 @@ abstract class EventsPostType
                     't_start' => $ticket->dateTimeStart,
                     't_end'   => $ticket->dateTimeEnd,
                     't_price' => $ticket->price,
+                    't_f_id'  => $ticket->form,
                 ]
             );
         }

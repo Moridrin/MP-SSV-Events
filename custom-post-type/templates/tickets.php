@@ -27,6 +27,7 @@ function show_tickets_table(array $tickets)
                         'dateTimeStart' => $ticket->t_start,
                         'dateTimeEnd'   => $ticket->t_end,
                         'price'         => $ticket->t_price,
+                        'form'          => $ticket->t_f_id,
                     ];
                     ?>
                     <tr id="<?= $ticket->t_id ?>_tr" draggable="true" class="formField" data-properties='<?= json_encode($properties) ?>'>
