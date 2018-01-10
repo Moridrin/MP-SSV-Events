@@ -1,5 +1,7 @@
 <?php
+
 namespace mp_ssv_events\widgets;
+
 use mp_ssv_events\models\Event;
 use mp_ssv_general\SSV_General;
 use WP_Post;
@@ -36,16 +38,16 @@ class ssv_upcoming_events extends WP_Widget
             echo $args['before_title'] . $title . $args['after_title'];
         }
 
-        $taxonomy      = 'event_category';
-        $postArgs       = array(
-            'paged'          => get_query_var('paged'),
-            'post_type'      => 'events',
-            'meta_key'       => 'start',
-            'meta_value'     => date("Y-m-d", time()),
-            'orderby'        => 'meta_value',
-            'groupby'        => 'meta_value',
-            'meta_compare'   => '>=',
-            'order'          => 'ASC',
+        $taxonomy   = 'event_category';
+        $postArgs   = array(
+            'paged'        => get_query_var('paged'),
+            'post_type'    => 'events',
+            'meta_key'     => 'start',
+            'meta_value'   => date("Y-m-d", time()),
+            'orderby'      => 'meta_value',
+            'groupby'      => 'meta_value',
+            'meta_compare' => '>=',
+            'order'        => 'ASC',
         );
         $posts      = get_posts($postArgs);
         $categories = array();
@@ -60,7 +62,7 @@ class ssv_upcoming_events extends WP_Widget
         }
 
         foreach ($categories as $category) {
-            $postArgs  = array(
+            $postArgs = array(
                 'posts_per_page' => $c,
                 'paged'          => get_query_var('paged'),
                 'post_type'      => 'events',
@@ -78,7 +80,7 @@ class ssv_upcoming_events extends WP_Widget
                     ),
                 ),
             );
-            $posts      = get_posts($postArgs);
+            $posts    = get_posts($postArgs);
             ?>
             <ul class="card-panel collection" style="padding: 0">
                 <li class="collection-item" style="padding: 0 20px;">

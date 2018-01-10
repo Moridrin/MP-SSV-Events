@@ -1,5 +1,7 @@
 <?php
+
 namespace mp_ssv_events\widgets;
+
 use mp_ssv_general\SSV_General;
 use WP_Widget;
 
@@ -75,6 +77,7 @@ class ssv_event_category extends WP_Widget
                         location.href = "<?= home_url(); ?>/event_category/" + dropdown.options[dropdown.selectedIndex].text;
                     }
                 }
+
                 /* ]]> */
             </script>
             <?php

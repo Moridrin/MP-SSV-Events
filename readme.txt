@@ -30,7 +30,7 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 = How do I report a bug? =
 The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-events/issues). But you can also send an email to J.Berkvens@Moridrin.com (the lead developer).
 
-== Changelog ==
+== Changelogo ==
 
 = 3.3.2 =
 * Form select added to Tickets

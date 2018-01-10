@@ -10,9 +10,6 @@
  * License URI: http://www.wtfpl.net/txt/copying/
  */
 
-use mp_ssv_general\base\BaseFunctions;
-use mp_ssv_general\forms\SSV_Forms;
-
 if (!defined('ABSPATH')) {
     exit;
 }

@@ -6,8 +6,6 @@ use DateTime;
 use mp_ssv_events\models\Event;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\base\BaseFunctions;
-use mp_ssv_general\base\SSV_Global;
-use mp_ssv_general\forms\options\Forms;
 use mp_ssv_general\forms\SSV_Forms;
 use WP_Post;
 
@@ -15,13 +13,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once 'templates/tickets.php';
+require_once 'templates/tickets-table.php';
+require_once 'templates/ticket.php';
 
 abstract class EventsPostType
 {
     public static function archiveTemplate($archiveTemplate): string
     {
-        if (is_post_type_archive('events') && get_theme_support('materialize')) {
+        if (is_post_type_archive('event') && get_theme_support('materialize')) {
             $archiveTemplate = SSV_Events::PATH . '/custom-post-type/archive-events.php';
         }
         return $archiveTemplate;
@@ -29,7 +28,7 @@ abstract class EventsPostType
 
     public static function saveEvent(int $postId, WP_Post $postAfter): int
     {
-        if (get_post_type() != 'events') {
+        if (get_post_type() !== 'event') {
             return $postId;
         }
         $event = new Event($postAfter);
@@ -52,7 +51,7 @@ abstract class EventsPostType
         global $post, $post_ID;
         if (get_option(SSV_Events::OPTION_PUBLISH_ERROR, false)) {
             /** @noinspection HtmlUnknownTarget */
-            $messages['events'] = array(
+            $messages['event'] = array(
                 0  => '',
                 1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
                 2  => 'Custom field updated.',
@@ -70,7 +69,7 @@ abstract class EventsPostType
             );
         } else {
             /** @noinspection HtmlUnknownTarget */
-            $messages['events'] = array(
+            $messages['event'] = array(
                 0  => '',
                 1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
                 2  => 'Custom field updated.',
@@ -126,14 +125,14 @@ abstract class EventsPostType
             'capability_type'     => 'post',
         );
 
-        register_post_type('events', $args);
+        register_post_type('event', $args);
     }
 
     public static function registerCategoryTaxonomy()
     {
         register_taxonomy(
             'event_category',
-            'events',
+            'event',
             array(
                 'hierarchical' => true,
                 'label'        => 'Event Categories',
@@ -148,8 +147,8 @@ abstract class EventsPostType
 
     public static function metaBoxes()
     {
-        add_meta_box('ssv_events_date', 'Date', [self::class, 'dateMetaBox'], 'events', 'side', 'default');
-        add_meta_box('ssv_events_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'events', 'advanced', 'high');
+        add_meta_box('ssv_events_date', 'Date', [self::class, 'dateMetaBox'], 'event', 'side', 'default');
+        add_meta_box('ssv_events_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'event', 'advanced', 'high');
     }
 
     public static function dateMetaBox()
@@ -181,7 +180,7 @@ abstract class EventsPostType
         show_tickets_table($tickets);
         ?>
         <div style="margin: 10px;">
-            <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>test
+            <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>
         </div>
         <?php
     }
@@ -190,9 +189,9 @@ abstract class EventsPostType
     {
         /** @var \wpdb $wpdb */
         global $wpdb;
-        $table      = SSV_Forms::SITE_SPECIFIC_FORMS_TABLE;
-        $forms      = $wpdb->get_results("SELECT f_id, f_title FROM $table");
-        $formIds    = array_column($forms, 'f_id');
+        $table   = SSV_Forms::SITE_SPECIFIC_FORMS_TABLE;
+        $forms   = $wpdb->get_results("SELECT f_id, f_title FROM $table");
+        $formIds = array_column($forms, 'f_id');
         array_unshift($formIds, -1);
         $formTitles = array_column($forms, 'f_title');
         array_unshift($formTitles, '[none]');
@@ -207,6 +206,14 @@ abstract class EventsPostType
                 'formKeys'     => $formIds,
             ]
         );
+    }
+
+    public static function enqueueScripts()
+    {
+        if (get_post_type() === 'event') {
+//            wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
+//            wp_enqueue_script('mp-ssv-event-edit-js', SSV_Events::URL . '/js/event-editor.js');
+        }
     }
 
     public static function saveMeta($postId)
@@ -230,6 +237,7 @@ abstract class EventsPostType
                     't_start' => $ticket->dateTimeStart,
                     't_end'   => $ticket->dateTimeEnd,
                     't_price' => $ticket->price,
+                    't_f_id'  => $ticket->form,
                 ]
             );
         }
@@ -247,13 +255,36 @@ abstract class EventsPostType
         }
         return $postId;
     }
+
+    public static function applyFrontendTemplate($content)
+    {
+        global $post;
+        if ($post->post_type === 'event') {
+            /** @var \wpdb $wpdb */
+            global $wpdb;
+            $start     = new DateTime(get_post_meta($post->ID, 'start', true));
+            $end       = new DateTime(get_post_meta($post->ID, 'end', true));
+            $postId    = $post->ID;
+            $tableName = SSV_Events::TICKETS_TABLE;
+            $tickets   = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
+            if ($tickets === null) {
+                $tickets = [];
+            }
+            ob_start();
+            show_ticket($content, $start, $end, $tickets);
+            $content = ob_get_clean();
+        }
+        return $content;
+    }
 }
 
 add_filter('archive_template', [EventsPostType::class, 'archiveTemplate']);
+add_filter('the_content', [EventsPostType::class, 'applyFrontendTemplate']);
 add_action('save_post', [EventsPostType::class, 'saveEvent'], 10, 2);
 add_filter('post_updated_messages', [EventsPostType::class, 'updatedMessage']);
 add_action('init', [EventsPostType::class, 'registerPostType']);
 add_action('init', [EventsPostType::class, 'registerCategoryTaxonomy']);
 add_action('add_meta_boxes', [EventsPostType::class, 'metaBoxes']);
-add_action('save_post_events', [EventsPostType::class, 'saveMeta']);
+add_action('save_post_event', [EventsPostType::class, 'saveMeta']);
 add_action('admin_enqueue_scripts', [EventsPostType::class, 'enqueueAdminScripts']);
+add_action('wp_enqueue_scripts', [EventsPostType::class, 'enqueueScripts']);

@@ -376,7 +376,7 @@ class Event
         }
         $form->addFields($actionField, false);
         if (count($form->getInputFields()) > 1) {
-        ?>
+            ?>
             <p>
                 Fill in the form below to register.
             </p>
@@ -384,7 +384,7 @@ class Event
             <p>
                 Click the button below to register.
             </p>
-        <?php
+            <?php
         }
         echo $form->getHTML(SSV_Events::ADMIN_REFERER_REGISTRATION, 'Register');
     }
@@ -451,6 +451,7 @@ class Event
 //                            };
 //                            event.srcElement.innerHTML = 'Show Details';
                         }
+
                         function showDetails() {
                             jQuery('#all-registrations').collapsible('open', 1);
                         }

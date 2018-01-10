@@ -1,4 +1,5 @@
 <?php
+
 use mp_ssv_events\models\Event;
 use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
@@ -19,7 +20,7 @@ function mp_ssv_events_add_registrations_to_content($content)
     if ($post->post_type != 'events') {
         return $content;
     }
-    $event               = Event::getByID($post->ID);
+    $event = Event::getByID($post->ID);
     #endregion
 
     #region Add 'View Event' Link to Archive
@@ -72,12 +73,14 @@ function mp_ssv_events_add_registrations_to_content($content)
     return $content;
 }
 
-function mp_ssv_events_event_template($single) {
+function mp_ssv_events_event_template($single)
+{
     global $post;
 
-    if ($post->post_type == "events"){
-        if(file_exists(ABSPATH . '/wp-content/plugins/ssv-events/custom-post-type/event-views/event-details.php'))
+    if ($post->post_type == "events") {
+        if (file_exists(ABSPATH . '/wp-content/plugins/ssv-events/custom-post-type/event-views/event-details.php')) {
             return ABSPATH . '/wp-content/plugins/ssv-events/custom-post-type/event-views/event-details.php';
+        }
     }
     return $single;
 }

@@ -1,6 +1,6 @@
 <?php
+
 use mp_ssv_events\models\Event;
-use mp_ssv_events\models\Registration;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\Form;
 use mp_ssv_general\Message;
@@ -24,15 +24,16 @@ $event_registrations = $event->getRegistrations();
                     <div class="card-overlay hide-on-small">
                         <div class="page-title">
                             <h1><?= the_title() ?></h1>
-                            <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i') : '' ?></h3>
+                            <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i')
+                                    : '' ?></h3>
                         </div>
                     </div>
                 </div>
                 <div class="card-content">
-                        <?php
-                        the_post();
-                        the_content();
-                        ?>
+                    <?php
+                    the_post();
+                    the_content();
+                    ?>
                 </div>
             </div>
             <div class="card">
@@ -117,7 +118,7 @@ $event_registrations = $event->getRegistrations();
                         <?php endif ?>
                     </div>
                 </div>
-            <?php }?>
+            <?php } ?>
             <?php if (comments_open() || get_comments_number()): ?>
                 <?php comments_template(); ?>
             <?php endif; ?>

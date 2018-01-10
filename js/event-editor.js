@@ -8,7 +8,8 @@ let ticketsManager = {
             'title': '',
             'dateTimeStart': document.getElementsByName('start').item(0).value,
             'dateTimeEnd': document.getElementsByName('end').item(0).value,
-            'price': 0
+            'price': 0,
+            'form': -1
         };
         tr.dataset.properties = JSON.stringify(properties);
         let fieldId = nextTicketId++;
@@ -37,6 +38,7 @@ let ticketsManager = {
     inlineEdit: function (fieldId) {
         let tr = document.getElementById(fieldId + '_tr');
         let properties = JSON.parse(tr.dataset.properties);
+        console.log(properties);
         tr.setAttribute('class', 'inline-edit-row inline-edit-row-base-field quick-edit-row quick-edit-row-base-field inline-edit-base-field inline-editor');
         let html =
             '<td colspan="5" class="colspanchange">' +
@@ -91,11 +93,13 @@ let ticketsManager = {
 
     saveInlineEdit: function (fieldId) {
         let tr = document.getElementById(fieldId + '_tr');
+        let formSelect = document.getElementById(fieldId + '_form');
         let properties = {
             'title': document.getElementById(fieldId + '_title').value,
             'dateTimeStart': document.getElementById(fieldId + '_dateTimeStart').value,
             'dateTimeEnd': document.getElementById(fieldId + '_dateTimeEnd').value,
-            'price': document.getElementById(fieldId + '_price').value
+            'price': document.getElementById(fieldId + '_price').value,
+            'form': formSelect.options[formSelect.selectedIndex].value
         };
         tr.dataset.properties = JSON.stringify(properties);
         ticketsManager.updateTrForDisplay(fieldId);
@@ -142,7 +146,11 @@ let ticketsManager = {
             }
             html += '<select id="' + fieldId + '_' + name + '" name="' + name + '" style="width: 100%;">';
             for (let i = 0; i < options.length; ++i) {
-                html += '<option value="' + optionValues[i] + '">' + options[i] + '</option>';
+                if (optionValues[i].toString() === value.toString()) {
+                    html += '<option value="' + optionValues[i] + '" selected="selected">' + options[i] + '</option>';
+                } else {
+                    html += '<option value="' + optionValues[i] + '">' + options[i] + '</option>';
+                }
             }
             html += '</select>';
         } else if (type === 'datetimepicker') {

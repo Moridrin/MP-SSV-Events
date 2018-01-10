@@ -34,23 +34,25 @@ abstract class SSV_Events
         }
         foreach ($blogIds as $blogId) {
             switch_to_blog($blogId);
-            $table_name = $wpdb->prefix . "ssv_event_tickets";
+            $formsTableName = $wpdb->prefix . 'ssv_forms';
+            $tableName      = $wpdb->prefix . "ssv_event_tickets";
             $sql
-                        = "
-		        CREATE TABLE IF NOT EXISTS $table_name (
+                            = "
+		        CREATE TABLE IF NOT EXISTS $tableName (
 		        	t_id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		        	t_e_id bigint(20) NOT NULL,
 		        	t_title VARCHAR(255) NOT NULL,
 		        	t_start VARCHAR(255) NOT NULL,
 		        	t_end VARCHAR(255) NOT NULL,
 		        	t_price DECIMAL(6,2) NOT NULL,
+		        	t_f_id BIGINT(20) NOT NULL,
 		        	UNIQUE KEY (`t_e_id`, `t_title`)
 		        ) $charset_collate;";
             $wpdb->query($sql);
-            $table_name = $wpdb->prefix . "ssv_event_registrations";
+            $tableName = $wpdb->prefix . "ssv_event_registrations";
             $sql
-                        = "
-		        CREATE TABLE IF NOT EXISTS $table_name (
+                       = "
+		        CREATE TABLE IF NOT EXISTS $tableName (
 		        	r_id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		        	r_eventId bigint(20) NOT NULL,
 		        	r_userId bigint(20),
