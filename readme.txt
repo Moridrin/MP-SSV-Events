@@ -32,6 +32,11 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelogo ==
 
+= 3.3.3 =
+* Tickets
+* Checkbox Label updated
+* Datetime field instead of date field (needs customizing)
+
 = 3.3.2 =
 * Form select added to Tickets
 
