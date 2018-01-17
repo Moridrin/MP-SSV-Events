@@ -2,17 +2,17 @@
 
 namespace mp_ssv_events;
 
-use mp_ssv_general\SSV_General;
 use WP_Query;
 
 if (!defined('ABSPATH')) {
     exit;
 }
+
 #region setup variables
 $args = array(
     'posts_per_page' => 10,
     'paged'          => get_query_var('paged'),
-    'post_type'      => 'events',
+    'post_type'      => 'ssv_event',
     'meta_key'       => 'start',
     'meta_value'     => date("Y-m-d", time()),
     'orderby'        => 'meta_value',
@@ -41,7 +41,14 @@ get_header();
                     </main>
                 </div>
             </div>
-            <?php get_sidebar(); ?>
+            <?php
+            global $wp_registered_sidebars;
+            foreach ($wp_registered_sidebars as $sidebar) {
+                if (is_active_sidebar($sidebar['name'])) {
+                    dynamic_sidebar($sidebar['name']);
+                }
+            }
+            ?>
         </div>
     </div>
     <?php
@@ -71,7 +78,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <?php
             while ($upcomingEvents->have_posts()) {
                 $upcomingEvents->the_post();
-                require 'frontend-templates/materialize/archive-preview.php';
+                require 'archive-preview.php';
             }
         }
         if ($hasPastEvents) {
@@ -86,7 +93,7 @@ function mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents)
             <?php
             while ($pastEvents->have_posts()) {
                 $pastEvents->the_post();
-                require 'frontend-templates/materialize/archive-preview.php';
+                require 'archive-preview.php';
             }
         }
         if (function_exists('mp_ssv_get_pagination')) {

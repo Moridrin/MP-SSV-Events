@@ -48,7 +48,7 @@ let ticketsManager = {
         ;
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'Title', 'title', 'text', properties.title);
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'Price', 'price', 'number', properties.price);
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Form', 'form', 'select', properties.form, data.formTitles, data.formKeys);
+        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Form', 'form', 'select', properties.form, data.formTitles, data.formKeys, 'ticketsManager.onFormChange');
         html +=
             '       </div>' +
             '   </fieldset>' +
@@ -58,6 +58,8 @@ let ticketsManager = {
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'From', 'dateTimeStart', 'datetimepicker', properties.dateTimeStart);
         html += ticketsManager.getCustomizationFieldInput(fieldId, 'Till', 'dateTimeEnd', 'datetimepicker', properties.dateTimeEnd);
         html +=
+            '         <span id="' + fieldId + '_editFormLinkContainer" style="line-height: 32px">' +
+            '         </span>' +
             '      </div>' +
             '   </fieldset>' +
             '   <div class="submit inline-edit-save" style="float: none; padding: 10px 0;">' +
@@ -69,7 +71,7 @@ let ticketsManager = {
             '</td>'
         ;
         tr.innerHTML = html;
-
+        ticketsManager.onFormChange(fieldId);
         let dateTimePickers = $('.inline-edit-row .datetimepicker');
         dateTimePickers.each(function () {
             var value = $(this).attr('value') ? $(this).attr('value') : 'now';
@@ -130,7 +132,7 @@ let ticketsManager = {
         tr.setAttribute('draggable', 'draggable');
     },
 
-    getCustomizationFieldInput: function (fieldId, title, name, type, value, options, optionValues) {
+    getCustomizationFieldInput: function (fieldId, title, name, type, value, options, optionValues, onChange) {
         let html =
             '<label>' +
             '   <span class="title">' + title + '</span>' +
@@ -144,7 +146,11 @@ let ticketsManager = {
             if (typeof(optionValues) === 'undefined') {
                 optionValues = options;
             }
-            html += '<select id="' + fieldId + '_' + name + '" name="' + name + '" style="width: 100%;">';
+            if (typeof(onChange) !== 'undefined') {
+                html += '<select id="' + fieldId + '_' + name + '" name="' + name + '" style="width: 100%;" onchange="' + onChange + '(\'' + fieldId + '\')">';
+            } else {
+                html += '<select id="' + fieldId + '_' + name + '" name="' + name + '" style="width: 100%;">';
+            }
             for (let i = 0; i < options.length; ++i) {
                 if (optionValues[i].toString() === value.toString()) {
                     html += '<option value="' + optionValues[i] + '" selected="selected">' + options[i] + '</option>';
@@ -167,6 +173,15 @@ let ticketsManager = {
             '</label>'
         ;
         return html;
+    },
+
+    onFormChange: function (fieldId) {
+        let container = document.getElementById(fieldId + '_editFormLinkContainer');
+        let formSelect = document.getElementById(fieldId + '_form');
+        let formId = formSelect.options[formSelect.selectedIndex].value;
+        if (formId.toString() !== '-1') {
+            container.innerHTML = '<a href="/wp-admin/admin.php?page=ssv_forms&action=edit&id=' + formId + '" target="_blank">Edit Form</a> <img src="' + data.imageNewTab + '" width="14" style="vertical-align:middle" height="14">';
+        }
     },
 
     onInlineEditKeyDown: function (fieldId) {

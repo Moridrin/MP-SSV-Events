@@ -30,12 +30,14 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 = How do I report a bug? =
 The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-events/issues). But you can also send an email to J.Berkvens@Moridrin.com (the lead developer).
 
-== Changelogo ==
+== Changelog ==
 
 = 3.3.3 =
-* Tickets
-* Checkbox Label updated
-* Datetime field instead of date field (needs customizing)
+* Events Archive
+  * Date displaying correctly
+  * Order updated to order of events (by start date)
+* Displaying Ticket Forms
+  * You can now see the forms on the events page for the tickets.
 
 = 3.3.2 =
 * Form select added to Tickets

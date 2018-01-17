@@ -13,8 +13,7 @@ abstract class SSV_Events
     const PATH = SSV_EVENTS_PATH;
     const URL = SSV_EVENTS_URL;
 
-//    const ALL_FORMS_ADMIN_REFERER = 'ssv_forms__all_forms_admin_referer';
-//    const EDIT_FORM_ADMIN_REFERER = 'ssv_forms__edit_form_admin_referer';
+    const TICKET_FORM_REFERER = 'ssv_events__tickets_admin_referer';
 
     const OPTION_PUBLISH_ERROR = 'ssv_events__options__event_publish_error';
     const OPTION_MAPS_API_KEY = 'ssv_events__options__google_maps_api_key';
@@ -34,7 +33,6 @@ abstract class SSV_Events
         }
         foreach ($blogIds as $blogId) {
             switch_to_blog($blogId);
-            $formsTableName = $wpdb->prefix . 'ssv_forms';
             $tableName      = $wpdb->prefix . "ssv_event_tickets";
             $sql
                             = "
@@ -54,8 +52,10 @@ abstract class SSV_Events
                        = "
 		        CREATE TABLE IF NOT EXISTS $tableName (
 		        	r_id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		        	r_eventId bigint(20) NOT NULL,
+		        	r_e_id bigint(20),
+		        	r_t_id bigint(20),
 		        	r_userId bigint(20),
+		        	r_data VARCHAR(255),
 		        	r_status VARCHAR(15) NOT NULL DEFAULT 'pending'
 		        ) $charset_collate;";
             $wpdb->query($sql);

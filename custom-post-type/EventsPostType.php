@@ -6,29 +6,105 @@ use DateTime;
 use mp_ssv_events\models\Event;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\base\BaseFunctions;
+use mp_ssv_general\base\SSV_Global;
+use mp_ssv_general\base\User;
 use mp_ssv_general\forms\SSV_Forms;
 use WP_Post;
+use WP_Query;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once 'templates/tickets-table.php';
-require_once 'templates/ticket.php';
+require_once 'backend-templates/tickets-table.php';
+require_once 'backend-templates/ticket.php';
 
 abstract class EventsPostType
 {
     public static function archiveTemplate($archiveTemplate): string
     {
-        if (is_post_type_archive('event') && get_theme_support('materialize')) {
-            $archiveTemplate = SSV_Events::PATH . '/custom-post-type/archive-events.php';
+        if (is_post_type_archive('ssv_event')) {
+            if (get_theme_support('materialize')) {
+                $archiveTemplate = SSV_Events::PATH . '/custom-post-type/archive-events.php';
+            }
         }
         return $archiveTemplate;
     }
 
+    public static function frontendEventTemplate($single)
+    {
+        global $post;
+
+        if ($post->post_type === 'ssv_event') {
+            if (current_theme_supports('materialize')) {
+                return SSV_Events::PATH . '/custom-post-type/event-views/materialize/event-details.php';
+            }
+        }
+        return $single;
+    }
+
+    public static function frontendEventContentFilter(string $content): string
+    {
+        if (is_archive()) {
+            return $content;
+        }
+        /** @var \wpdb $wpdb */
+        global $wpdb, $post;
+        if ($post->post_type === 'ssv_event') {
+            if (BaseFunctions::isValidPOST(SSV_Events::TICKET_FORM_REFERER)) {
+                if (is_user_logged_in()) {
+                    $json = [
+                        'first_name' => User::getCurrent()->first_name,
+                        'last_name'  => User::getCurrent()->last_name,
+                        'email'      => User::getCurrent()->user_email,
+                    ];
+                } else {
+                    $json = [
+                        'first_name' => $_POST['first_name'],
+                        'last_name'  => $_POST['last_name'],
+                        'email'      => $_POST['email'],
+                    ];
+                }
+                $tableName = SSV_Events::TICKETS_TABLE;
+                $ticketId  = $_POST['ticket'];
+                $formId    = $wpdb->get_var("SELECT t_f_id FROM $tableName WHERE t_id = $ticketId");
+                if ($formId !== -1) {
+                    $tableName      = SSV_Forms::SITE_SPECIFIC_FORMS_TABLE;
+                    $formFieldNames = json_decode($wpdb->get_var("SELECT f_fields FROM $tableName WHERE f_id = $formId"));
+                    foreach ($formFieldNames as $formFieldName) {
+                        $json[$formFieldName] = $_POST[$formFieldName];
+                    }
+                }
+                $wpdb->insert(
+                    SSV_Events::REGISTRATIONS_TABLE,
+                    [
+                        'r_t_id'   => $ticketId,
+                        'r_userId' => User::getCurrent()->ID,
+                        'r_data'   => json_encode($json),
+                        'r_status' => 'pending',
+                    ]
+                );
+            }
+            if (!current_theme_supports('materialize')) {
+                $start     = new DateTime(get_post_meta($post->ID, 'start', true));
+                $end       = new DateTime(get_post_meta($post->ID, 'end', true));
+                $postId    = $post->ID;
+                $tableName = SSV_Events::TICKETS_TABLE;
+                $tickets   = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
+                if ($tickets === null) {
+                    $tickets = [];
+                }
+                ob_start();
+                show_event($content, $start, $end, $tickets);
+                $content = ob_get_clean();
+            }
+        }
+        return $content;
+    }
+
     public static function saveEvent(int $postId, WP_Post $postAfter): int
     {
-        if (get_post_type() !== 'event') {
+        if (get_post_type() !== 'ssv_event') {
             return $postId;
         }
         $event = new Event($postAfter);
@@ -51,7 +127,7 @@ abstract class EventsPostType
         global $post, $post_ID;
         if (get_option(SSV_Events::OPTION_PUBLISH_ERROR, false)) {
             /** @noinspection HtmlUnknownTarget */
-            $messages['event'] = array(
+            $messages['ssv_event'] = array(
                 0  => '',
                 1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
                 2  => 'Custom field updated.',
@@ -69,7 +145,7 @@ abstract class EventsPostType
             );
         } else {
             /** @noinspection HtmlUnknownTarget */
-            $messages['event'] = array(
+            $messages['ssv_event'] = array(
                 0  => '',
                 1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
                 2  => 'Custom field updated.',
@@ -109,7 +185,7 @@ abstract class EventsPostType
             'hierarchical'        => true,
             'description'         => 'Events filterable by category',
             'supports'            => array('title', 'editor', 'author', 'thumbnail', 'trackbacks', 'custom-fields', 'comments', 'revisions', 'page-attributes'),
-            'taxonomies'          => array('event_category'),
+            'taxonomies'          => array('ssv_event_category'),
             'public'              => true,
             'show_ui'             => true,
             'show_in_menu'        => true,
@@ -125,20 +201,20 @@ abstract class EventsPostType
             'capability_type'     => 'post',
         );
 
-        register_post_type('event', $args);
+        register_post_type('ssv_event', $args);
     }
 
     public static function registerCategoryTaxonomy()
     {
         register_taxonomy(
-            'event_category',
-            'event',
+            'ssv_event_category',
+            'ssv_event',
             array(
                 'hierarchical' => true,
                 'label'        => 'Event Categories',
                 'query_var'    => true,
                 'rewrite'      => array(
-                    'slug'       => 'event_category',
+                    'slug'       => 'ssv_event_category',
                     'with_front' => false,
                 ),
             )
@@ -147,8 +223,8 @@ abstract class EventsPostType
 
     public static function metaBoxes()
     {
-        add_meta_box('ssv_events_date', 'Date', [self::class, 'dateMetaBox'], 'event', 'side', 'default');
-        add_meta_box('ssv_events_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'event', 'advanced', 'high');
+        add_meta_box('ssv_events_date', 'Date', [self::class, 'dateMetaBox'], 'ssv_event', 'side', 'default');
+        add_meta_box('ssv_events_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'ssv_event', 'advanced', 'high');
     }
 
     public static function dateMetaBox()
@@ -204,21 +280,14 @@ abstract class EventsPostType
                 'ticketsMaxId' => max($formIds),
                 'formTitles'   => $formTitles,
                 'formKeys'     => $formIds,
+                'imageNewTab'  => SSV_Global::URL . '/images/link-new-tab-small.png',
             ]
         );
     }
 
-    public static function enqueueScripts()
-    {
-        if (get_post_type() === 'event') {
-//            wp_enqueue_style('mp-ssv-event-edit-css', SSV_Events::URL . '/css/admin.css');
-//            wp_enqueue_script('mp-ssv-event-edit-js', SSV_Events::URL . '/js/event-editor.js');
-        }
-    }
-
     public static function saveMeta($postId)
     {
-        if (!current_user_can('edit_post', $postId)) {
+        if (!current_user_can('edit_post', $postId) || empty($_POST)) {
             return $postId;
         }
         /** @var \wpdb $wpdb */
@@ -241,50 +310,46 @@ abstract class EventsPostType
                 ]
             );
         }
-        if (isset($_POST['registration'])) {
-            update_post_meta($postId, 'registration', BaseFunctions::sanitize($_POST['registration'], array('disabled', 'members_only', 'everyone',)));
-        }
-        if (isset($_POST['start'])) {
-            update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
-        }
-        if (isset($_POST['end'])) {
-            update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
-        }
-        if (isset($_POST['location'])) {
-            update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
-        }
+        update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
+        update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
+        update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
         return $postId;
     }
 
-    public static function applyFrontendTemplate($content)
+    public static function publishDateFilter($the_date, $d, WP_Post $post)
     {
-        global $post;
-        if ($post->post_type === 'event') {
-            /** @var \wpdb $wpdb */
-            global $wpdb;
-            $start     = new DateTime(get_post_meta($post->ID, 'start', true));
-            $end       = new DateTime(get_post_meta($post->ID, 'end', true));
-            $postId    = $post->ID;
-            $tableName = SSV_Events::TICKETS_TABLE;
-            $tickets   = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $postId");
-            if ($tickets === null) {
-                $tickets = [];
+        $startDate = new DateTime(get_post_meta($post->ID, 'start', true));
+        $endDate   = new DateTime(get_post_meta($post->ID, 'end', true));
+        if ($startDate->format('Y-m-d') === $endDate->format('Y-m-d')) {
+            $date = $startDate->format(get_option('date_format')) . ' ' . $startDate->format(get_option('time_format'));
+            if ($startDate->format('H:i') !== $endDate->format('H:i')) {
+                $date .= ' - ' . $endDate->format(get_option('time_format'));
             }
-            ob_start();
-            show_ticket($content, $start, $end, $tickets);
-            $content = ob_get_clean();
+        } else {
+            $date = $startDate->format(get_option('date_format')) . ' ' . $startDate->format(get_option('time_format')) . ' - ' . $endDate->format(get_option('date_format')) . ' ' . $endDate->format(get_option('time_format'));
         }
-        return $content;
+        return $date;
+    }
+
+    public static function customizeSelectQuery(WP_Query $query)
+    {
+        if (!is_admin() && $query->is_main_query() && is_post_type_archive('ssv_event')) {
+            $query->set('meta_key', 'start');
+            $query->set('orderby', 'meta_value');
+            $query->set('groupby', 'meta_value');
+        }
     }
 }
 
 add_filter('archive_template', [EventsPostType::class, 'archiveTemplate']);
-add_filter('the_content', [EventsPostType::class, 'applyFrontendTemplate']);
+add_action('single_template', [EventsPostType::class, 'frontendEventTemplate']);
+add_filter('the_content', [EventsPostType::class, 'frontendEventContentFilter']);
 add_action('save_post', [EventsPostType::class, 'saveEvent'], 10, 2);
 add_filter('post_updated_messages', [EventsPostType::class, 'updatedMessage']);
 add_action('init', [EventsPostType::class, 'registerPostType']);
 add_action('init', [EventsPostType::class, 'registerCategoryTaxonomy']);
 add_action('add_meta_boxes', [EventsPostType::class, 'metaBoxes']);
-add_action('save_post_event', [EventsPostType::class, 'saveMeta']);
+add_action('save_post_ssv_event', [EventsPostType::class, 'saveMeta']);
 add_action('admin_enqueue_scripts', [EventsPostType::class, 'enqueueAdminScripts']);
-add_action('wp_enqueue_scripts', [EventsPostType::class, 'enqueueScripts']);
+add_filter('get_the_date', [EventsPostType::class, 'publishDateFilter'], 10, 3);
+add_action('pre_get_posts', [EventsPostType::class, 'customizeSelectQuery']);
