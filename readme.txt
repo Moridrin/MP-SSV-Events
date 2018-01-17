@@ -33,11 +33,12 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 == Changelog ==
 
 = 3.3.3 =
-* Events Archive
-  * Date displaying correctly
-  * Order updated to order of events (by start date)
-* Displaying Ticket Forms
-  * You can now see the forms on the events page for the tickets.
+* Events Archive mapped to 'events' (instead of 'ssv_event').
+* Share meta box added if is_multisite() for sharing events with other sites.
+  * Implemented in Materialized events archive view.
+    * With Notification that it is an event from a different site and the link opens the event on the correct site in a new tab.
+* Materialize frontend-templates updated (old templates removed).
+  * This does not yet work with registrations or tickets.
 
 = 3.3.2 =
 * Form select added to Tickets

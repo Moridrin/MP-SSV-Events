@@ -1,6 +1,7 @@
 <?php
 
 use mp_ssv_events\models\Event;
+use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\SSV_General;
 use mp_ssv_general\User;
 
@@ -9,10 +10,10 @@ if (!defined('ABSPATH')) {
 }
 
 #region setup variables
-global $post;
+global $post, $currentBlogId;
 $event               = Event::getByID($post->ID);
-$event_registrations = $event->getRegistrations();
-$content             = get_the_content('');
+$event_registrations = [];
+$content             = apply_filters('the_content', $post->post_content);
 #endregion
 ?>
 <article id="post-<?php the_ID(); ?>">
@@ -22,8 +23,13 @@ $content             = get_the_content('');
         </div>
         <div class="card-content">
             <div class="post-title">
-                <h2><?= the_title() ?></h2>
-                <?php if ($event->isRegistrationEnabled()) : ?>
+                <h2>
+                    <?= the_title() ?>
+                    <?php if ($currentBlogId !== get_current_blog_id()) : ?>
+                        <a href="<?= get_home_url() ?>" target="_blank"><span class="new badge" data-badge-caption=""><?= get_bloginfo() ?></span></a>
+                    <?php endif; ?>
+                </h2>
+                <?php if (false) : ?>
                     <span class="new badge" data-badge-caption="Registrations"><?= esc_html(count($event_registrations)) ?></span>
                 <?php endif; ?>
             </div>
@@ -44,8 +50,8 @@ $content             = get_the_content('');
             </div>
         </div>
         <div class="card-action">
-            <a href="<?= get_permalink() ?>" title="Read More" class="read-more">
-                View Event <i class="tiny material-icons right">arrow_forward</i>
+            <a href="<?= get_permalink() ?>" title="Read More" class="read-more" target="<?= $currentBlogId !== get_current_blog_id() ? '_blank' : '_self' ?>">
+                View Event<?= $currentBlogId !== get_current_blog_id() ? ' (on ' . get_bloginfo() . ')' : '' ?> <i class="tiny material-icons right">arrow_forward</i>
             </a>
         </div>
     </div>

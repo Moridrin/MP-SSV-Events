@@ -9,7 +9,7 @@ use mp_ssv_general\User;
 
 get_header();
 $event               = Event::getByID($post->ID);
-$event_registrations = $event->getRegistrations();
+$event_registrations = [];
 ?>
 <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
     <div class="row">
@@ -24,8 +24,7 @@ $event_registrations = $event->getRegistrations();
                     <div class="card-overlay hide-on-small">
                         <div class="page-title">
                             <h1><?= the_title() ?></h1>
-                            <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i')
-                                    : '' ?></h3>
+                            <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i') : '' ?></h3>
                         </div>
                     </div>
                 </div>
@@ -86,7 +85,9 @@ $event_registrations = $event->getRegistrations();
                 </div>
             </div>
             <?php
-            if ($event->isRegistrationPossible()) { ?>
+//            if ($event->isRegistrationPossible()) {
+            if (false) {
+                ?>
                 <div class="card">
                     <div class="card-content">
                         <div class="col s12 xl8" style="padding-bottom: 20px">

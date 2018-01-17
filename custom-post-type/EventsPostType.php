@@ -25,7 +25,7 @@ abstract class EventsPostType
     {
         if (is_post_type_archive('ssv_event')) {
             if (get_theme_support('materialize')) {
-                $archiveTemplate = SSV_Events::PATH . '/custom-post-type/archive-events.php';
+                $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/materialize/archive.php';
             }
         }
         return $archiveTemplate;
@@ -37,7 +37,7 @@ abstract class EventsPostType
 
         if ($post->post_type === 'ssv_event') {
             if (current_theme_supports('materialize')) {
-                return SSV_Events::PATH . '/custom-post-type/event-views/materialize/event-details.php';
+                return SSV_Events::PATH . 'custom-post-type/frontend-templates/materialize/event-details.php';
             }
         }
         return $single;
@@ -194,7 +194,7 @@ abstract class EventsPostType
             'show_in_nav_menus'   => true,
             'publicly_queryable'  => true,
             'exclude_from_search' => false,
-            'has_archive'         => true,
+            'has_archive'         => 'events',
             'query_var'           => true,
             'can_export'          => true,
             'rewrite'             => true,
@@ -202,6 +202,8 @@ abstract class EventsPostType
         );
 
         register_post_type('ssv_event', $args);
+        $args['show_in_menu'] = false;
+        register_post_type('ssv_shared_event', $args);
     }
 
     public static function registerCategoryTaxonomy()
@@ -223,8 +225,11 @@ abstract class EventsPostType
 
     public static function metaBoxes()
     {
-        add_meta_box('ssv_events_date', 'Date', [self::class, 'dateMetaBox'], 'ssv_event', 'side', 'default');
-        add_meta_box('ssv_events_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'ssv_event', 'advanced', 'high');
+        add_meta_box('ssv_event_date', 'Date', [self::class, 'dateMetaBox'], 'ssv_event', 'side', 'default');
+        add_meta_box('ssv_event_tickets', 'Tickets', [self::class, 'ticketsMetaBox'], 'ssv_event', 'advanced', 'high');
+        if (is_multisite()) {
+            add_meta_box('ssv_event_shared', 'Share', [self::class, 'shareMetaBox'], 'ssv_event', 'side', 'default');
+        }
     }
 
     public static function dateMetaBox()
@@ -258,6 +263,17 @@ abstract class EventsPostType
         <div style="margin: 10px;">
             <button onclick="ticketsManager.addNew()" type="button">Add Ticket</button>
         </div>
+        <?php
+    }
+
+    public static function shareMetaBox()
+    {
+        global $post;
+        $share = get_post_meta($post->ID, 'network_share', true);
+        ?>
+        <input type="hidden" name="share" value="false">
+        <input type="checkbox" id="network_share" name="network_share" value="true" <?= $share ? 'checked="checked"' : '' ?>>
+        <label for="network_share">Share this event with other sites on the network</label><br/>
         <?php
     }
 
@@ -318,6 +334,9 @@ abstract class EventsPostType
 
     public static function publishDateFilter($the_date, $d, WP_Post $post)
     {
+        if (!is_archive() || !is_post_type_archive('ssv_event')) {
+            return $the_date;
+        }
         $startDate = new DateTime(get_post_meta($post->ID, 'start', true));
         $endDate   = new DateTime(get_post_meta($post->ID, 'end', true));
         if ($startDate->format('Y-m-d') === $endDate->format('Y-m-d')) {
