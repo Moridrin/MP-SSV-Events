@@ -9,21 +9,21 @@ use WP_Query;
 if (!defined('ABSPATH')) {
     exit;
 }
-#region setup variables
-$sqls = [];
-$currentBlogId = get_current_blog_id();
-$itemsPerPage = 10;
-$currentPage = get_query_var('paged');
-$itemPadding = $itemsPerPage * ($currentPage);
-$itemLimit = $itemPadding + $itemsPerPage;
-$limit = "LIMIT $itemPadding,$itemLimit";
+$upcomingEventsSqls = [];
+$pastEventsSqls = [];
+$currentBlogId  = get_current_blog_id();
+$itemsPerPage   = 10;
+$currentPage    = get_query_var('paged');
+$itemPadding    = $itemsPerPage * ($currentPage);
+$itemLimit      = $itemPadding + $itemsPerPage;
+$limit          = "LIMIT $itemPadding,$itemLimit";
 SSV_Global::runFunctionOnAllSites(function () {
-    global $wpdb, $sqls, $currentBlogId;
-    $posts = $wpdb->posts;
-    $postMeta = $wpdb->postmeta;
-    $blogId = get_current_blog_id();
-    $today = date("Y-m-d", time());
-    $sqls[] = "
+    global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+    $posts            = $wpdb->posts;
+    $postMeta         = $wpdb->postmeta;
+    $blogId           = get_current_blog_id();
+    $today            = date("Y-m-d", time());
+    $pastEventsSqls[] = "
         SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
         FROM $posts AS $posts
             INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
@@ -34,14 +34,24 @@ SSV_Global::runFunctionOnAllSites(function () {
             AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
             AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
     ;
+    $upcomingEventsSqls[] = "
+        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+        FROM $posts AS $posts
+            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+        WHERE
+            $posts.post_type = 'ssv_event'
+            AND $posts.post_status = 'publish'
+            AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
+            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
+    ;
 }, [], $currentBlogId);
 global $wpdb;
-$sql = implode(' UNION ', $sqls).' ORDER BY startDate '.$limit;
-$pastEvents = $wpdb->get_results($sql);
-//BaseFunctions::var_export($pastEvents, 1);
-#endregion
+$pastEventsSql = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
+$pastEvents = $wpdb->get_results($pastEventsSql);
+$upcomingEventsSql = implode(' UNION ', $upcomingEventsSqls) . ' ORDER BY startDate ' . $limit;
+$upcomingEvents = $wpdb->get_results($upcomingEventsSql);
 
-#region base layout
 get_header();
 ?>
     <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
@@ -49,7 +59,7 @@ get_header();
             <div class="col s12 <?= is_dynamic_sidebar() ? 'm7 l8 xxl9' : '' ?>">
                 <div id="primary" class="content-area">
                     <main id="main" class="site-main" role="main">
-                        <?php mp_ssv_events_content_theme_default([], $pastEvents); ?>
+                        <?php mp_ssv_events_content_theme_default($upcomingEvents, $pastEvents); ?>
                     </main>
                 </div>
             </div>
@@ -58,17 +68,16 @@ get_header();
     </div>
     <?php
 get_footer();
-#endregion
 
 /**
  * This function prints the default event preview lists (only for themes with support for "materialize").
  *
- * @param array $upcomingEventsIds
+ * @param array $upcomingEvents
  * @param array $pastEvents
  */
-function mp_ssv_events_content_theme_default(array $upcomingEventsIds, array $pastEvents)
+function mp_ssv_events_content_theme_default(array $upcomingEvents, array $pastEvents)
 {
-    $hasUpcomingEvents = count($upcomingEventsIds) > 0;
+    $hasUpcomingEvents = count($upcomingEvents) > 0;
     $hasPastEvents     = count($pastEvents) > 0;
     if ($hasUpcomingEvents || $hasPastEvents) {
         if ($hasUpcomingEvents) {
@@ -81,6 +90,13 @@ function mp_ssv_events_content_theme_default(array $upcomingEventsIds, array $pa
                 </div>
             </header>
             <?php
+            foreach ($upcomingEvents as $upcomingEvent) {
+                switch_to_blog($upcomingEvent->blogId);
+                global $post;
+                $post = get_post($upcomingEvent);
+                require 'archive-preview.php';
+                restore_current_blog();
+            }
         }
         if ($hasPastEvents) {
             ?>
@@ -97,8 +113,8 @@ function mp_ssv_events_content_theme_default(array $upcomingEventsIds, array $pa
                 global $post;
                 $post = get_post($pastEvent);
                 require 'archive-preview.php';
+                restore_current_blog();
             }
-            restore_current_blog();
         }
         if (function_exists('mp_ssv_get_pagination')) {
             echo mp_ssv_get_pagination();

@@ -202,8 +202,6 @@ abstract class EventsPostType
         );
 
         register_post_type('ssv_event', $args);
-        $args['show_in_menu'] = false;
-        register_post_type('ssv_shared_event', $args);
     }
 
     public static function registerCategoryTaxonomy()

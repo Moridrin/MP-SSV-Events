@@ -32,6 +32,9 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.4 =
+* Shared Events Updated
+
 = 3.3.3 =
 * Events Archive mapped to 'events' (instead of 'ssv_event').
 * Share meta box added if is_multisite() for sharing events with other sites.

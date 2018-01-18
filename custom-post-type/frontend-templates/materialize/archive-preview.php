@@ -24,7 +24,9 @@ $content             = apply_filters('the_content', $post->post_content);
         <div class="card-content">
             <div class="post-title">
                 <h2>
-                    <?= the_title() ?>
+<!--                    <a href="--><?//= get_permalink() ?><!--" title="View Event" target="--><?//= $currentBlogId !== get_current_blog_id() ? '_blank' : '_self' ?><!--">-->
+                        <?= the_title() ?>
+<!--                    </a>-->
                     <?php if ($currentBlogId !== get_current_blog_id()) : ?>
                         <a href="<?= get_home_url() ?>" target="_blank"><span class="new badge" data-badge-caption=""><?= get_bloginfo() ?></span></a>
                     <?php endif; ?>
