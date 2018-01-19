@@ -24,11 +24,63 @@ abstract class EventsPostType
     public static function archiveTemplate($archiveTemplate): string
     {
         if (is_post_type_archive('ssv_event')) {
-            if (get_theme_support('materialize')) {
-                $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/materialize/archive.php';
+            switch (wp_get_theme()->get_stylesheet()) {
+                case 'consulting': {
+                    $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/consulting/archive.php';
+                    break;
+                }
+                case 'ssv-material': {
+                    $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/materialize/archive.php';
+                }
             }
         }
         return $archiveTemplate;
+    }
+
+    public static function getAllEvents() {
+        global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+        $upcomingEventsSqls = [];
+        $pastEventsSqls     = [];
+        $currentBlogId      = get_current_blog_id();
+        $itemsPerPage       = 10;
+        $currentPage        = get_query_var('paged');
+        $itemPadding        = $itemsPerPage * ($currentPage);
+        $itemLimit          = $itemPadding + $itemsPerPage;
+        $limit              = "LIMIT $itemPadding,$itemLimit";
+        SSV_Global::runFunctionOnAllSites(function () {
+            global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+            $posts            = $wpdb->posts;
+            $postMeta         = $wpdb->postmeta;
+            $blogId           = get_current_blog_id();
+            $today            = date("Y-m-d", time());
+            $pastEventsSqls[] = "
+        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+        FROM $posts AS $posts
+            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+        WHERE
+            $posts.post_type = 'ssv_event'
+            AND $posts.post_status = 'publish'
+            AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
+            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
+            ;
+            $upcomingEventsSqls[] = "
+        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+        FROM $posts AS $posts
+            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+        WHERE
+            $posts.post_type = 'ssv_event'
+            AND $posts.post_status = 'publish'
+            AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
+            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
+            ;
+        }, [], $currentBlogId);
+        $pastEventsSql = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
+        $pastEvents = $wpdb->get_results($pastEventsSql);
+        $upcomingEventsSql = implode(' UNION ', $upcomingEventsSqls) . ' ORDER BY startDate ' . $limit;
+        $upcomingEvents = $wpdb->get_results($upcomingEventsSql);
+        return [$pastEvents, $upcomingEvents];
     }
 
     public static function frontendEventTemplate($single)
@@ -269,7 +321,7 @@ abstract class EventsPostType
         global $post;
         $share = get_post_meta($post->ID, 'network_share', true);
         ?>
-        <input type="hidden" name="share" value="false">
+        <input type="hidden" name="network_share" value="false">
         <input type="checkbox" id="network_share" name="network_share" value="true" <?= $share ? 'checked="checked"' : '' ?>>
         <label for="network_share">Share this event with other sites on the network</label><br/>
         <?php
@@ -327,6 +379,9 @@ abstract class EventsPostType
         update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
         update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
         update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
+        if (is_multisite()) {
+            update_post_meta($postId, 'network_share', BaseFunctions::sanitize($_POST['network_share'], 'bool'));
+        }
         return $postId;
     }
 
