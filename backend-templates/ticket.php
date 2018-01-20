@@ -4,8 +4,7 @@ namespace mp_ssv_events\CustomPostTypes;
 
 use DateTime;
 use mp_ssv_events\SSV_Events;
-use mp_ssv_general\base\BaseFunctions;
-use mp_ssv_general\forms\options\Forms;
+use mp_ssv_general\forms\models\Forms;
 use mp_ssv_general\forms\SSV_Forms;
 use wpdb;
 

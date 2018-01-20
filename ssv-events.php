@@ -3,7 +3,7 @@
  * Plugin Name: SSV Events
  * Plugin URI: https://bosso.nl/ssv-events/
  * Description: SSV Events is a plugin that allows you to create events for the Students Sports Club and allows all members from that club to join the event.
- * Version: 3.3.5
+ * Version: 3.3.6
  * Author: moridrin
  * Author URI: http://nl.linkedin.com/in/jberkvens/
  * License: WTFPL
@@ -24,5 +24,7 @@ define('SSV_EVENTS_TICKETS_TABLE', $wpdb->prefix . "ssv_event_tickets");
 define('SSV_EVENTS_REGISTRATIONS_TABLE', $wpdb->prefix . "ssv_event_registrations");
 
 require_once 'SSV_Events.php';
+require_once 'Options.php';
 require_once 'models/Event.php';
-require_once 'custom-post-type/EventsPostType.php';
+//require_once 'options/options.php';
+require_once 'EventsPostType.php';

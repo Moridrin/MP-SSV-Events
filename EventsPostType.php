@@ -26,11 +26,11 @@ abstract class EventsPostType
         if (is_post_type_archive('ssv_event')) {
             switch (wp_get_theme()->get_stylesheet()) {
                 case 'consulting': {
-                    $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/consulting/archive.php';
+                    $archiveTemplate = SSV_Events::PATH . '/frontend-templates/consulting/archive.php';
                     break;
                 }
                 case 'ssv-material': {
-                    $archiveTemplate = SSV_Events::PATH . '/custom-post-type/frontend-templates/materialize/archive.php';
+                    $archiveTemplate = SSV_Events::PATH . '/frontend-templates/materialize/archive.php';
                 }
             }
         }
@@ -47,35 +47,67 @@ abstract class EventsPostType
         $itemPadding        = $itemsPerPage * ($currentPage);
         $itemLimit          = $itemPadding + $itemsPerPage;
         $limit              = "LIMIT $itemPadding,$itemLimit";
-        SSV_Global::runFunctionOnAllSites(function () {
-            global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+        if (get_option('show_shared_events')) {
+            SSV_Global::runFunctionOnAllSites(function () {
+                global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+                $posts            = $wpdb->posts;
+                $postMeta         = $wpdb->postmeta;
+                $blogId           = get_current_blog_id();
+                $today            = date("Y-m-d", time());
+                $pastEventsSqls[] = "
+                    SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+                    FROM $posts AS $posts
+                        INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+                        INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+                    WHERE
+                        $posts.post_type = 'ssv_event'
+                        AND $posts.post_status = 'publish'
+                        AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
+                        AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1)
+                        OR $blogId = $currentBlogId)
+                        GROUP BY $posts.ID, blogId, startDate"
+                ;
+                $upcomingEventsSqls[] = "
+                    SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+                    FROM $posts AS $posts
+                        INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+                        INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+                    WHERE
+                        $posts.post_type = 'ssv_event'
+                        AND $posts.post_status = 'publish'
+                        AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
+                        AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1)
+                        OR $blogId = $currentBlogId)
+                        GROUP BY $posts.ID, blogId, startDate"
+                ;
+            }, [], $currentBlogId);
+        } else {
             $posts            = $wpdb->posts;
             $postMeta         = $wpdb->postmeta;
-            $blogId           = get_current_blog_id();
             $today            = date("Y-m-d", time());
             $pastEventsSqls[] = "
-        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
-        FROM $posts AS $posts
-            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
-            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
-        WHERE
-            $posts.post_type = 'ssv_event'
-            AND $posts.post_status = 'publish'
-            AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
-            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
+                    SELECT $currentBlogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+                    FROM $posts AS $posts
+                        INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+                        INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+                    WHERE
+                        $posts.post_type = 'ssv_event'
+                        AND $posts.post_status = 'publish'
+                        AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
+                        GROUP BY $posts.ID, blogId, startDate"
             ;
             $upcomingEventsSqls[] = "
-        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
-        FROM $posts AS $posts
-            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
-            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
-        WHERE
-            $posts.post_type = 'ssv_event'
-            AND $posts.post_status = 'publish'
-            AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
-            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
+                    SELECT $currentBlogId AS blogId, $posts.*, startMeta.meta_value AS startDate
+                    FROM $posts AS $posts
+                        INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
+                        INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
+                    WHERE
+                        $posts.post_type = 'ssv_event'
+                        AND $posts.post_status = 'publish'
+                        AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
+                        GROUP BY $posts.ID, blogId, startDate"
             ;
-        }, [], $currentBlogId);
+        }
         $pastEventsSql = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
         $pastEvents = $wpdb->get_results($pastEventsSql);
         $upcomingEventsSql = implode(' UNION ', $upcomingEventsSqls) . ' ORDER BY startDate ' . $limit;
@@ -89,7 +121,7 @@ abstract class EventsPostType
 
         if ($post->post_type === 'ssv_event') {
             if (current_theme_supports('materialize')) {
-                return SSV_Events::PATH . 'custom-post-type/frontend-templates/materialize/event-details.php';
+                return SSV_Events::PATH . 'frontend-templates/materialize/event-details.php';
             }
         }
         return $single;

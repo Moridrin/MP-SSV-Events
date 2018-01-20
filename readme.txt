@@ -32,6 +32,10 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.6 =
+* Settings added
+* Support for consulting theme added
+
 = 3.3.5 =
 * Events Archive support for 'consulting'.
 

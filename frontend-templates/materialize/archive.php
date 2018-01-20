@@ -2,55 +2,13 @@
 
 namespace mp_ssv_events;
 
-use mp_ssv_general\base\BaseFunctions;
-use mp_ssv_general\base\SSV_Global;
-use WP_Query;
+use mp_ssv_events\CustomPostTypes\EventsPostType;
 
 if (!defined('ABSPATH')) {
     exit;
 }
-$upcomingEventsSqls = [];
-$pastEventsSqls = [];
-$currentBlogId  = get_current_blog_id();
-$itemsPerPage   = 10;
-$currentPage    = get_query_var('paged');
-$itemPadding    = $itemsPerPage * ($currentPage);
-$itemLimit      = $itemPadding + $itemsPerPage;
-$limit          = "LIMIT $itemPadding,$itemLimit";
-SSV_Global::runFunctionOnAllSites(function () {
-    global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
-    $posts            = $wpdb->posts;
-    $postMeta         = $wpdb->postmeta;
-    $blogId           = get_current_blog_id();
-    $today            = date("Y-m-d", time());
-    $pastEventsSqls[] = "
-        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
-        FROM $posts AS $posts
-            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
-            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
-        WHERE
-            $posts.post_type = 'ssv_event'
-            AND $posts.post_status = 'publish'
-            AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
-            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
-    ;
-    $upcomingEventsSqls[] = "
-        SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
-        FROM $posts AS $posts
-            INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
-            INNER JOIN $postMeta AS networkShareMeta ON ($posts.ID = networkShareMeta.post_id)
-        WHERE
-            $posts.post_type = 'ssv_event'
-            AND $posts.post_status = 'publish'
-            AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
-            AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1) OR $blogId = $currentBlogId)"
-    ;
-}, [], $currentBlogId);
-global $wpdb;
-$pastEventsSql = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
-$pastEvents = $wpdb->get_results($pastEventsSql);
-$upcomingEventsSql = implode(' UNION ', $upcomingEventsSqls) . ' ORDER BY startDate ' . $limit;
-$upcomingEvents = $wpdb->get_results($upcomingEventsSql);
+
+list($pastEvents, $upcomingEvents) = EventsPostType::getAllEvents();
 
 get_header();
 ?>

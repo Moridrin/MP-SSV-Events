@@ -2,6 +2,10 @@
 
 use mp_ssv_events\CustomPostTypes\EventsPostType;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 list($pastEvents, $upcomingEvents) = EventsPostType::getAllEvents();
 get_header(); ?>
 <?php if (have_posts()): ?>
