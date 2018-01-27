@@ -3,6 +3,7 @@
 namespace mp_ssv_events\models;
 
 use mp_ssv_events\SSV_Events;
+use mp_ssv_general\base\SSV_Global;
 use mp_ssv_general\custom_fields\Field;
 use mp_ssv_general\custom_fields\input_fields\CustomInputField;
 use mp_ssv_general\custom_fields\input_fields\TextInputField;
@@ -58,7 +59,7 @@ class Registration
      */
     private function __construct($registrationID, $event = null, $status = null, $user = null)
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $tableName = SSV_Events::TABLE_REGISTRATION;
 
         $this->registrationID = $registrationID;
@@ -90,7 +91,7 @@ class Registration
      */
     public static function getByEventAndUser($event, $user)
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $tableName      = SSV_Events::TABLE_REGISTRATION;
         $eventID        = $event->getID();
         $registrationID = $wpdb->get_var("SELECT ID FROM $tableName WHERE eventID = $eventID AND userID = $user->ID");
@@ -121,7 +122,7 @@ class Registration
     public static function createNew($event, $user = null, $inputFields = array())
     {
         #region Validate
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         if ($user !== null) {
             $table   = SSV_Events::TABLE_REGISTRATION;
             $eventID = $event->getID();
@@ -305,7 +306,7 @@ class Registration
         if (!$this->user) {
             return;
         }
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $userID  = $this->user->ID;
         $eventID = $this->event->getID();
         $wpdb->delete(SSV_Events::TABLE_REGISTRATION, array('userID' => $userID, 'eventID' => $eventID));
@@ -339,7 +340,7 @@ class Registration
      */
     public function getMeta($key)
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $tableName = SSV_Events::TABLE_REGISTRATION_META;
         $value     = $wpdb->get_var("SELECT meta_value FROM $tableName WHERE registrationID = $this->registrationID AND meta_key = '$key'");
         if (empty($value)) {
@@ -352,7 +353,7 @@ class Registration
     #region makePending()
     public function makePending()
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $table = SSV_Events::TABLE_REGISTRATION;
         $wpdb->replace(
             $table,
@@ -382,7 +383,7 @@ class Registration
     #region approve()
     public function approve()
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $table = SSV_Events::TABLE_REGISTRATION;
         $wpdb->replace(
             $table,
@@ -412,7 +413,7 @@ class Registration
     #region deny()
     public function deny()
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $table = SSV_Events::TABLE_REGISTRATION;
         $wpdb->replace(
             $table,

@@ -4,6 +4,7 @@ namespace mp_ssv_events\models;
 
 use DateTime;
 use mp_ssv_events\SSV_Events;
+use mp_ssv_general\base\SSV_Global;
 use mp_ssv_general\custom_fields\Field;
 use mp_ssv_general\custom_fields\InputField;
 use mp_ssv_general\Form;
@@ -315,7 +316,7 @@ class Event
 
     public function updateRegistrations()
     {
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $eventID   = $this->getID();
         $tableName = SSV_Events::TABLE_REGISTRATION;
         if (is_user_logged_in() && current_user_can(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS)) {

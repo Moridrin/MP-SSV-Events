@@ -1,5 +1,5 @@
 // noinspection JSUnresolvedVariable
-let nextTicketId = data.ticketsMaxId;
+let nextTicketId = data.ticketsMaxId + 1;
 let ticketsManager = {
     addNew: function () {
         let ticketsTable = document.getElementById('the-list');
@@ -38,7 +38,6 @@ let ticketsManager = {
     inlineEdit: function (fieldId) {
         let tr = document.getElementById(fieldId + '_tr');
         let properties = JSON.parse(tr.dataset.properties);
-        console.log(properties);
         tr.setAttribute('class', 'inline-edit-row inline-edit-row-base-field quick-edit-row quick-edit-row-base-field inline-edit-base-field inline-editor');
         let html =
             '<td colspan="5" class="colspanchange">' +
@@ -46,17 +45,17 @@ let ticketsManager = {
             '       <legend class="inline-edit-legend">Quick Edit</legend>' +
             '       <div class="inline-edit-col">'
         ;
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Title', 'title', 'text', properties.title);
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Price', 'price', 'number', properties.price);
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Form', 'form', 'select', properties.form, data.formTitles, data.formKeys, 'ticketsManager.onFormChange');
+        html += ticketsManager.getInlineEditTextInputField(fieldId, 'Title', 'title', 'text', properties.title);
+        html += ticketsManager.getInlineEditTextInputField(fieldId, 'Price', 'price', 'number', properties.price);
+        html += ticketsManager.getInlineEditTextInputField(fieldId, 'Form', 'form', 'select', properties.form, data.formTitles, data.formKeys, 'ticketsManager.onFormChange');
         html +=
             '       </div>' +
             '   </fieldset>' +
             '   <fieldset class="inline-edit-col-right" style="width: 50%; margin-top: 32px;">' +
             '       <div class="inline-edit-col">'
         ;
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'From', 'dateTimeStart', 'datetimepicker', properties.dateTimeStart);
-        html += ticketsManager.getCustomizationFieldInput(fieldId, 'Till', 'dateTimeEnd', 'datetimepicker', properties.dateTimeEnd);
+        html += ticketsManager.getInlineEditTextInputField(fieldId, 'From', 'dateTimeStart', 'datetimepicker', properties.dateTimeStart);
+        html += ticketsManager.getInlineEditTextInputField(fieldId, 'Till', 'dateTimeEnd', 'datetimepicker', properties.dateTimeEnd);
         html +=
             '         <span id="' + fieldId + '_editFormLinkContainer" style="line-height: 32px">' +
             '         </span>' +
@@ -141,7 +140,7 @@ let ticketsManager = {
         if (type === 'textarea') {
             html += '<textarea id="' + fieldId + '_' + name + '" name="' + name + '">' + value + '</textarea>';
         } else if (type === 'number') {
-            html += '<input type="number" id="' + fieldId + '_' + name + '" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onInlineEditKeyDown(\'' + fieldId + '\')" style="width: 100%;">';
+            html += '<input type="number" id="' + fieldId + '_' + name + '" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onKeyDown(\'' + fieldId + '\')" style="width: 100%;">';
         } else if (type === 'select') {
             if (typeof(optionValues) === 'undefined') {
                 optionValues = options;
@@ -160,13 +159,13 @@ let ticketsManager = {
             }
             html += '</select>';
         } else if (type === 'datetimepicker') {
-            html += '<input type="text" id="' + fieldId + '_' + name + '" class="datetimepicker" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onInlineEditKeyDown(\'' + fieldId + '\')">';
+            html += '<input type="text" id="' + fieldId + '_' + name + '" class="datetimepicker" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onKeyDown(\'' + fieldId + '\')">';
         } else if (type === 'checkbox') {
             let checked = value === true || value === 'true' ? 'checked="checked"' : '';
             html += '<input type="hidden" name="' + name + '" value="false">';
             html += '<input type="checkbox" id="' + fieldId + '_' + name + '" name="' + name + '" value="true" ' + checked + '>';
         } else {
-            html += '<input type="' + type + '" id="' + fieldId + '_' + name + '" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onInlineEditKeyDown(\'' + fieldId + '\')">';
+            html += '<input type="' + type + '" id="' + fieldId + '_' + name + '" name="' + name + '" value="' + value + '" autocomplete="off" onkeydown="ticketsManager.onKeyDown(\'' + fieldId + '\')">';
         }
         html +=
             '   </span>' +

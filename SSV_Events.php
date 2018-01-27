@@ -28,8 +28,7 @@ abstract class SSV_Events
 
     public static function setupForBlog()
     {
-        /** @var wpdb $wpdb */
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $charset_collate = $wpdb->get_charset_collate();
         $tableName      = $wpdb->prefix . "ssv_event_tickets";
         $sql
@@ -105,16 +104,26 @@ abstract class SSV_Events
         }
     }
 
-    public static function CLEAN_INSTALL($networkWide)
+    public static function cleanInstallForBlog()
     {
-        /** @var wpdb $wpdb */
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        $tableName = self::REGISTRATIONS_TABLE;
+        $tableName      = $wpdb->prefix . "ssv_event_tickets";
         $wpdb->query("DROP TABLE $tableName;");
-        $tableName = self::TICKETS_TABLE;
+        $tableName = $wpdb->prefix . "ssv_event_registrations";
         $wpdb->query("DROP TABLE $tableName;");
-        self::setup($networkWide);
+        $postId = get_option(self::OPTION_EVENTS_PAGE);
+        wp_delete_post($postId);
+        self::setupForBlog();
+    }
+
+    public static function CLEAN_INSTALL($networkEnable)
+    {
+        if ($networkEnable) {
+            SSV_Global::runFunctionOnAllSites([self::class, 'cleanInstallForBlog']);
+        } else {
+            self::cleanInstallForBlog();
+        }
     }
 }
 

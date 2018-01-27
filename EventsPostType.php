@@ -3,7 +3,6 @@
 namespace mp_ssv_events\CustomPostTypes;
 
 use DateTime;
-use mp_ssv_events\models\Event;
 use mp_ssv_events\SSV_Events;
 use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\base\SSV_Global;
@@ -25,19 +24,22 @@ abstract class EventsPostType
     {
         if (is_post_type_archive('ssv_event')) {
             switch (wp_get_theme()->get_stylesheet()) {
-                case 'consulting': {
-                    $archiveTemplate = SSV_Events::PATH . '/frontend-templates/consulting/archive.php';
-                    break;
-                }
-                case 'ssv-material': {
-                    $archiveTemplate = SSV_Events::PATH . '/frontend-templates/materialize/archive.php';
-                }
+                case 'consulting':
+                    {
+                        $archiveTemplate = SSV_Events::PATH . '/frontend-templates/consulting/archive.php';
+                        break;
+                    }
+                case 'ssv-material':
+                    {
+                        $archiveTemplate = SSV_Events::PATH . '/frontend-templates/materialize/archive.php';
+                    }
             }
         }
         return $archiveTemplate;
     }
 
-    public static function getAllEvents() {
+    public static function getAllEvents()
+    {
         global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
         $upcomingEventsSqls = [];
         $pastEventsSqls     = [];
@@ -48,13 +50,15 @@ abstract class EventsPostType
         $itemLimit          = $itemPadding + $itemsPerPage;
         $limit              = "LIMIT $itemPadding,$itemLimit";
         if (get_option('show_shared_events')) {
-            SSV_Global::runFunctionOnAllSites(function () {
-                global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
-                $posts            = $wpdb->posts;
-                $postMeta         = $wpdb->postmeta;
-                $blogId           = get_current_blog_id();
-                $today            = date("Y-m-d", time());
-                $pastEventsSqls[] = "
+            SSV_Global::runFunctionOnAllSites(
+                function () {
+                    global $wpdb, $pastEventsSqls, $upcomingEventsSqls, $currentBlogId;
+                    $posts    = $wpdb->posts;
+                    $postMeta = $wpdb->postmeta;
+                    $blogId   = get_current_blog_id();
+                    $today    = date("Y-m-d", time());
+                    $pastEventsSqls[]
+                              = "
                     SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
                     FROM $posts AS $posts
                         INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
@@ -65,9 +69,9 @@ abstract class EventsPostType
                         AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
                         AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1)
                         OR $blogId = $currentBlogId)
-                        GROUP BY $posts.ID, blogId, startDate"
-                ;
-                $upcomingEventsSqls[] = "
+                        GROUP BY $posts.ID, blogId, startDate";
+                    $upcomingEventsSqls[]
+                              = "
                     SELECT $blogId AS blogId, $posts.*, startMeta.meta_value AS startDate
                     FROM $posts AS $posts
                         INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
@@ -78,14 +82,17 @@ abstract class EventsPostType
                         AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
                         AND ((networkShareMeta.meta_key = 'network_share' AND networkShareMeta.meta_value = 1)
                         OR $blogId = $currentBlogId)
-                        GROUP BY $posts.ID, blogId, startDate"
-                ;
-            }, [], $currentBlogId);
+                        GROUP BY $posts.ID, blogId, startDate";
+                },
+                [],
+                $currentBlogId
+            );
         } else {
-            $posts            = $wpdb->posts;
-            $postMeta         = $wpdb->postmeta;
-            $today            = date("Y-m-d", time());
-            $pastEventsSqls[] = "
+            $posts    = $wpdb->posts;
+            $postMeta = $wpdb->postmeta;
+            $today    = date("Y-m-d", time());
+            $pastEventsSqls[]
+                      = "
                     SELECT $currentBlogId AS blogId, $posts.*, startMeta.meta_value AS startDate
                     FROM $posts AS $posts
                         INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
@@ -94,9 +101,9 @@ abstract class EventsPostType
                         $posts.post_type = 'ssv_event'
                         AND $posts.post_status = 'publish'
                         AND (startMeta.meta_key = 'start' AND startMeta.meta_value < '$today')
-                        GROUP BY $posts.ID, blogId, startDate"
-            ;
-            $upcomingEventsSqls[] = "
+                        GROUP BY $posts.ID, blogId, startDate";
+            $upcomingEventsSqls[]
+                      = "
                     SELECT $currentBlogId AS blogId, $posts.*, startMeta.meta_value AS startDate
                     FROM $posts AS $posts
                         INNER JOIN $postMeta AS startMeta ON ($posts.ID = startMeta.post_id)
@@ -105,13 +112,12 @@ abstract class EventsPostType
                         $posts.post_type = 'ssv_event'
                         AND $posts.post_status = 'publish'
                         AND (startMeta.meta_key = 'start' AND startMeta.meta_value >= '$today')
-                        GROUP BY $posts.ID, blogId, startDate"
-            ;
+                        GROUP BY $posts.ID, blogId, startDate";
         }
-        $pastEventsSql = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
-        $pastEvents = $wpdb->get_results($pastEventsSql);
+        $pastEventsSql     = implode(' UNION ', $pastEventsSqls) . ' ORDER BY startDate ' . $limit;
+        $pastEvents        = $wpdb->get_results($pastEventsSql);
         $upcomingEventsSql = implode(' UNION ', $upcomingEventsSqls) . ' ORDER BY startDate ' . $limit;
-        $upcomingEvents = $wpdb->get_results($upcomingEventsSql);
+        $upcomingEvents    = $wpdb->get_results($upcomingEventsSql);
         return [$pastEvents, $upcomingEvents];
     }
 
@@ -186,48 +192,44 @@ abstract class EventsPostType
         return $content;
     }
 
-    public static function saveEvent(int $postId, WP_Post $postAfter): int
+    public static function saveEvent(int $postId)
     {
-        if (get_post_type() !== 'ssv_event') {
+        if (!current_user_can('edit_post', $postId) || empty($_POST)) {
             return $postId;
         }
-        $event = new Event($postAfter);
-        if ($event->isPublished() && !$event->isValid()) {
-            wp_update_post(
-                array(
-                    'ID'          => $postId,
-                    'post_status' => 'draft',
-                )
+
+        $wpdb = SSV_Global::getDatabase();
+        $ticketIds = implode(',', $_POST['ticketIds']);
+        $table     = SSV_Events::TICKETS_TABLE;
+        $wpdb->query("DELETE FROM $table WHERE t_e_id = '$postId' AND t_id NOT IN ($ticketIds)");
+        foreach ($_POST['ticketIds'] as $id) {
+            $ticket = json_decode(stripslashes($_POST['ticket_' . $id]));
+            $wpdb->replace(
+                SSV_Events::TICKETS_TABLE,
+                [
+                    't_id'    => $id,
+                    't_e_id'  => $postId,
+                    't_title' => $ticket->title,
+                    't_start' => $ticket->dateTimeStart,
+                    't_end'   => $ticket->dateTimeEnd,
+                    't_price' => $ticket->price,
+                    't_f_id'  => $ticket->form,
+                ]
             );
-            update_option(SSV_Events::OPTION_PUBLISH_ERROR, true);
-//        } elseif (empty($event->mailchimpList) && $event->isRegistrationPossible()) {
-//            do_action(SSV_Global::HOOK_USERS_NEW_EVENT, $event);
+        }
+        update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
+        update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
+        update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
+        if (is_multisite()) {
+            update_post_meta($postId, 'network_share', BaseFunctions::sanitize($_POST['network_share'], 'bool'));
         }
         return $postId;
     }
 
     public static function updatedMessage(array $messages): array
     {
-        global $post, $post_ID;
-        if (get_option(SSV_Events::OPTION_PUBLISH_ERROR, false)) {
-            /** @noinspection HtmlUnknownTarget */
-            $messages['ssv_event'] = array(
-                0  => '',
-                1  => sprintf('Event updated. <a href="%s">View Event</a>', esc_url(get_permalink($post_ID))),
-                2  => 'Custom field updated.',
-                3  => 'Custom field deleted.',
-                4  => 'Event updated.',
-                5  => isset($_GET['revision']) ? 'Event restored to revision from ' . wp_post_revision_title((int)$_GET['revision'], false) : false,
-                6  => '',
-                7  => 'Event saved.',
-                8  => sprintf('Event submitted. <a target="_blank" href="%s">Preview event</a>', esc_url(add_query_arg('preview', 'true', esc_url(get_permalink($post_ID))))),
-                9  => sprintf('Event scheduled for: <strong>' . strtotime($post->post_date) . '</strong>. <a target="_blank" href="%s">Preview event</a>', esc_url(get_permalink($post_ID))),
-                10 => sprintf(
-                    'Event draft updated. <a target="_blank" href="%s">Preview event</a>',
-                    esc_url(add_query_arg('preview', 'true', get_permalink($post_ID)))
-                ),
-            );
-        } else {
+        global $post, $post_ID, $wpdb;
+        if ($wpdb->last_error) {
             /** @noinspection HtmlUnknownTarget */
             $messages['ssv_event'] = array(
                 0  => '',
@@ -361,8 +363,7 @@ abstract class EventsPostType
 
     public static function enqueueAdminScripts()
     {
-        /** @var \wpdb $wpdb */
-        global $wpdb;
+        $wpdb = SSV_Global::getDatabase();
         $table   = SSV_Forms::SITE_SPECIFIC_FORMS_TABLE;
         $forms   = $wpdb->get_results("SELECT f_id, f_title FROM $table");
         $formIds = array_column($forms, 'f_id');
@@ -381,40 +382,6 @@ abstract class EventsPostType
                 'imageNewTab'  => SSV_Global::URL . '/images/link-new-tab-small.png',
             ]
         );
-    }
-
-    public static function saveMeta($postId)
-    {
-        if (!current_user_can('edit_post', $postId) || empty($_POST)) {
-            return $postId;
-        }
-        /** @var \wpdb $wpdb */
-        global $wpdb;
-        $ticketIds = implode(',', $_POST['ticketIds']);
-        $table     = SSV_Events::TICKETS_TABLE;
-        $wpdb->query("DELETE FROM $table WHERE t_e_id = '$postId' AND t_id NOT IN ($ticketIds)");
-        foreach ($_POST['ticketIds'] as $id) {
-            $ticket = json_decode(stripslashes($_POST['ticket_' . $id]));
-            $wpdb->replace(
-                SSV_Events::TICKETS_TABLE,
-                [
-                    't_id'    => $id,
-                    't_e_id'  => $postId,
-                    't_title' => $ticket->title,
-                    't_start' => $ticket->dateTimeStart,
-                    't_end'   => $ticket->dateTimeEnd,
-                    't_price' => $ticket->price,
-                    't_f_id'  => $ticket->form,
-                ]
-            );
-        }
-        update_post_meta($postId, 'start', BaseFunctions::sanitize($_POST['start'], 'datetime'));
-        update_post_meta($postId, 'end', BaseFunctions::sanitize($_POST['end'], 'datetime'));
-        update_post_meta($postId, 'location', BaseFunctions::sanitize($_POST['location'], 'text'));
-        if (is_multisite()) {
-            update_post_meta($postId, 'network_share', BaseFunctions::sanitize($_POST['network_share'], 'bool'));
-        }
-        return $postId;
     }
 
     public static function publishDateFilter($the_date, $d, WP_Post $post)
@@ -448,12 +415,11 @@ abstract class EventsPostType
 add_filter('archive_template', [EventsPostType::class, 'archiveTemplate']);
 add_action('single_template', [EventsPostType::class, 'frontendEventTemplate']);
 add_filter('the_content', [EventsPostType::class, 'frontendEventContentFilter']);
-add_action('save_post', [EventsPostType::class, 'saveEvent'], 10, 2);
 add_filter('post_updated_messages', [EventsPostType::class, 'updatedMessage']);
 add_action('init', [EventsPostType::class, 'registerPostType']);
 add_action('init', [EventsPostType::class, 'registerCategoryTaxonomy']);
 add_action('add_meta_boxes', [EventsPostType::class, 'metaBoxes']);
-add_action('save_post_ssv_event', [EventsPostType::class, 'saveMeta']);
+add_action('save_post_ssv_event', [EventsPostType::class, 'saveEvent']);
 add_action('admin_enqueue_scripts', [EventsPostType::class, 'enqueueAdminScripts']);
 add_filter('get_the_date', [EventsPostType::class, 'publishDateFilter'], 10, 3);
 add_action('pre_get_posts', [EventsPostType::class, 'customizeSelectQuery']);

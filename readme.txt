@@ -32,6 +32,15 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.7 =
+* Settings added
+* Support for consulting theme added
+* Added Profile Values to form fields
+* Updated for PHP 7.2
+* Error Handling improved
+* Customizing added for base fields
+* Added Database shell for catching errors
+
 = 3.3.6 =
 * Settings added
 * Support for consulting theme added

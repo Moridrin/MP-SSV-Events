@@ -9,12 +9,11 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-#region setup variables
 global $post, $currentBlogId;
 $event               = Event::getByID($post->ID);
 $event_registrations = [];
 $content             = apply_filters('the_content', $post->post_content);
-#endregion
+
 ?>
 <article id="post-<?php the_ID(); ?>">
     <div class="card">

@@ -2,7 +2,10 @@
 
 use mp_ssv_events\models\Event;
 use mp_ssv_events\SSV_Events;
+use mp_ssv_general\base\BaseFunctions;
 use mp_ssv_general\Form;
+use mp_ssv_general\forms\models\Forms;
+use mp_ssv_general\forms\SSV_Forms;
 use mp_ssv_general\Message;
 use mp_ssv_general\SSV_General;
 use mp_ssv_general\User;
@@ -10,6 +13,11 @@ use mp_ssv_general\User;
 get_header();
 $event               = Event::getByID($post->ID);
 $event_registrations = [];
+$tableName = SSV_Events::TICKETS_TABLE;
+$tickets   = $wpdb->get_results("SELECT * FROM $tableName WHERE t_e_id = $post->ID");
+if ($tickets === null) {
+    $tickets = [];
+}
 ?>
 <div id="page" class="container <?= is_admin_bar_showing() ? 'wpadminbar' : '' ?>">
     <div class="row">
@@ -84,6 +92,30 @@ $event_registrations = [];
                     </div>
                 </div>
             </div>
+            <?php
+            $ticketCount = count($tickets);
+            if ($ticketCount <= 4) {
+                $l = 12 / $ticketCount;
+            } elseif ($ticketCount <= 9 && $ticketCount%3 == 0) {
+                $l = 4;
+            } else {
+                $l = 3;
+            }
+            ?>
+            <?php foreach ($tickets as $ticket): ?>
+                <div class="col s12 l<?= $l ?>">
+                    <form id="ticket_<?= $ticket->t_id ?>" method="post">
+                        <h3><?= $ticket->t_title ?></h3>
+                        <?= Forms::getFormFieldsHTML($ticket->t_f_id) ?>
+                        <?= wp_nonce_field(SSV_Events::TICKET_FORM_REFERER); ?>
+                        <?php if (current_theme_supports('materialize')): ?>
+                            <button type="submit" name="ticket" class="waves-effect waves-light btn" value="<?= $ticket->t_id ?>">Submit</button>
+                        <?php else: ?>
+                            <button type="submit" name="ticket" value="<?= $ticket->t_id ?>">Submit</button>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            <?php endforeach; ?>
             <?php
 //            if ($event->isRegistrationPossible()) {
             if (false) {
