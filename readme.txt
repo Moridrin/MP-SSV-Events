@@ -32,6 +32,10 @@ The best way is to add an issue on GitHub (https://github.com/Moridrin/ssv-event
 
 == Changelog ==
 
+= 3.3.8 =
+* Deleting Form Fields working for Site Specific fields
+* Unique field names
+
 = 3.3.7 =
 * Settings added
 * Support for consulting theme added
