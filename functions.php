@@ -145,3 +145,10 @@ function mp_ssv_events_update_settings_notification()
 
 add_action('admin_notices', 'mp_ssv_events_update_settings_notification');
 #endregion
+
+
+function mp_ssv_events_activate_email_html()
+{
+    return 'text/html';
+}
+add_filter('wp_mail_content_type', 'mp_ssv_events_activate_email_html');
