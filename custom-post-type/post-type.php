@@ -185,6 +185,7 @@ function mp_ssv_events_post_category()
         'can_export'          => true,
         'rewrite'             => true,
         'capability_type'     => 'post',
+	'show_in_rest'       => true,
     );
 
     register_post_type('events', $args);
@@ -243,7 +244,7 @@ function ssv_events_registration()
                 <select name="registration" title="Enable Registration">
                     <option value="disabled" <?= get_post_meta($post->ID, 'registration', true) == 'disabled' ? 'selected' : '' ?>>Disabled</option>
                     <option value="members_only" <?= get_post_meta($post->ID, 'registration', true) == 'members_only' ? 'selected' : '' ?>>Members Only</option>
-                    <option value="everyone" <?= get_post_meta($post->ID, 'registration', true) == 'everyone' ? 'selected' : '' ?>>Everypne</option>
+                    <option value="everyone" <?= get_post_meta($post->ID, 'registration', true) == 'everyone' ? 'selected' : '' ?>>Everyone</option>
                 </select>
             </td>
         </tr>

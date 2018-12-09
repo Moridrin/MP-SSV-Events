@@ -21,8 +21,8 @@ $event_registrations = $event->getRegistrations();
                     <?php else: ?>
                         <div class="thumbnail-placeholder"></div>
                     <?php endif ?>
-                    <div class="card-overlay hide-on-small">
-                        <div class="page-title">
+                    <div class="card-overlay hide-on-small valign-wrapper">
+                        <div class="page-title" style="margin: 0;">
                             <h1><?= the_title() ?></h1>
                             <h3 style="text-transform: none;"><?= $event->getStart('F j<\s\up>S</\s\up> @ H:i') ?> <?= $event->getEnd() != false && $event->getEnd() != $event->getStart() ? ' - ' . $event->getEnd('F j<\s\up>S</\s\up> @ H:i') : '' ?></h3>
                         </div>
