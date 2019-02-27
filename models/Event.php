@@ -381,7 +381,7 @@ class Event
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields(), false);
         }
-        $form->addFields($noShowPolicyActionField, false);
+        $form->addFields($noShowPolicyActionField, true);
         $form->addFields($actionField, false);
         if (count($form->getInputFields()) > 1) {
         ?>

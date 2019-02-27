@@ -303,7 +303,7 @@ class Registration
             json_encode(
                 array(
                     'id'             => '-2',
-                    'title'          => 'I agree and accept All Terrains no <a href="/no-show-policy">No Show Policy</a>',
+                    'title'          => 'I have read and accept All Terrain\'s no <a href="/no-show-policy">No Show Policy</a>',
                     'field_type'     => 'input',
                     'input_type'     => 'checkbox',
                     'name'           => 'no_show_policy',
