@@ -374,10 +374,14 @@ class Event
                 )
             )
         );
+
+        $noShowPolicyActionField = Registration::getNoShowPolicy();
+
         $form        = Form::fromDatabase(SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS);
         if (!is_user_logged_in()) {
             $form->addFields(Registration::getDefaultFields(), false);
         }
+        $form->addFields($noShowPolicyActionField, false);
         $form->addFields($actionField, false);
         if (count($form->getInputFields()) > 1) {
         ?>

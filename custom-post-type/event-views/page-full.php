@@ -49,6 +49,7 @@ function mp_ssv_events_add_registrations_to_content($content)
             if (!is_user_logged_in()) {
                 $form->addFields(Registration::getDefaultFields(), false);
             }
+            $form->addFields(Registration::getNoShowPolicy());
             $form->setValues($_POST);
             $response = $form->isValid();
             if ($response === true) {

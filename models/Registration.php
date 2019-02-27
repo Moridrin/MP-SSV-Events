@@ -294,6 +294,29 @@ class Registration
     }
     #endregion
 
+    /**
+     * @return InputField
+     */    
+    public static function getNoShowPolicy()
+    {
+        return Field::fromJSON(
+            json_encode(
+                array(
+                    'id'             => '-2',
+                    'title'          => 'I agree and accept All Terrains no <a href="/no-show-policy">No Show Policy</a>',
+                    'field_type'     => 'input',
+                    'input_type'     => 'checkbox',
+                    'name'           => 'no_show_policy',
+                    'required'       => 'true',
+                    'default_value'  => '',
+                    'class'          => '',
+                    'style'          => '',
+                    'override_right' => SSV_Events::CAPABILITY_MANAGE_EVENT_REGISTRATIONS,
+                )
+            )
+        );
+    }
+
     #region cancel()
     /**
      * This function removes the database entries and sends an email to the event author (if needed).
